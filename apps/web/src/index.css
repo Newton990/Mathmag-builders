@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: Inter, system-ui, sans-serif;
+  }
+
+  /* Ensure full height for the app shell */
+  html, body, #root {
+    height: 100%;
+  }
+}

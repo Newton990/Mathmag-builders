@@ -1,0 +1,21 @@
+// This is the Prisma schema for MBMS.
+// Step 1: Minimal placeholder schema to prove migrations work.
+// Step 2 will replace this with the full Module 1 schema.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Placeholder model to verify the migration pipeline works.
+// Will be removed in Step 2 when real entities are added.
+model HealthCheck {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  @@map("health_checks")
+}
