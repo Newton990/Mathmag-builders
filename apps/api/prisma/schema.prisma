@@ -1,6 +1,7 @@
-// This is the Prisma schema for MBMS.
-// Step 1: Minimal placeholder schema to prove migrations work.
-// Step 2 will replace this with the full Module 1 schema.
+// ─────────────────────────────────────────────────────────────────────────────
+// MBMS Prisma Schema — Module 1 (Site Visit)
+// Step 2: Full entity schema with all business rules encoded in constraints.
+// ─────────────────────────────────────────────────────────────────────────────
 
 generator client {
   provider = "prisma-client-js"
@@ -11,11 +12,646 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Placeholder model to verify the migration pipeline works.
-// Will be removed in Step 2 when real entities are added.
-model HealthCheck {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
+// ═══════════════════════════════════════════════════════════════════════════════
+// ENUMS — All state machines live here. Never use ad-hoc strings.
+// ═══════════════════════════════════════════════════════════════════════════════
 
-  @@map("health_checks")
+enum UserRole {
+  CLIENT_RELATIONS_OFFICER
+  VISITING_OFFICER
+  LEAD_ARCHITECT
+  JUNIOR_ARCHITECT
+  CLIENT
+  ADMIN_MANAGEMENT
+}
+
+enum ConversationStatus {
+  OPEN
+  IN_DISCUSSION
+  VISIT_AGREED
+  LINKED_TO_PROJECT
+  CLOSED
+}
+
+enum SourceChannel {
+  MANUAL
+  WALK_IN
+  PHONE
+  WHATSAPP
+  FACEBOOK
+  EMAIL
+}
+
+enum BookingStatus {
+  BOOKED
+  RESCHEDULED
+  CANCELLED
+  VISIT_UNDERWAY
+  VISIT_COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  WAIVED
+}
+
+enum SurveyStatus {
+  NOT_STARTED
+  DRAFT
+  SUBMITTED
+  CORRECTIONS_REQUESTED
+  RESUBMITTED
+}
+
+enum MediaKind {
+  PHOTO
+  VIDEO
+  SKETCH
+  DOCUMENT
+}
+
+enum ReportGeneratorStatus {
+  PENDING
+  GENERATING
+  GENERATED
+  FAILED
+}
+
+enum ReportApprovalState {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  RETURNED
+}
+
+enum ReviewDecision {
+  APPROVED
+  RETURNED
+}
+
+enum ProjectStage {
+  VISIT_BOOKED
+  VISIT_UNDERWAY
+  VISIT_COMPLETED
+  REPORT_GENERATING
+  REPORT_GENERATED
+  UNDER_REVIEW
+  CORRECTIONS_REQUESTED
+  APPROVED
+  PUBLISHED_TO_CLIENT
+  STAGE_1_COMPLETE
+}
+
+enum NotificationEvent {
+  BOOKING_CONFIRMED
+  BOOKING_RESCHEDULED
+  BOOKING_CANCELLED
+  VISIT_REMINDER
+  SURVEY_SUBMITTED
+  CORRECTIONS_REQUESTED
+  REPORT_APPROVED
+  JUNIOR_ASSIGNED
+  REPORT_PUBLISHED
+  PUBLICATION_REVOKED
+  ADMIN_OVERRIDE
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  WHATSAPP
+}
+
+enum DeliveryStatus {
+  PENDING
+  DELIVERED
+  FAILED
+  READ
+}
+
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SEQUENCE — Safe project reference generator (MB-2026-001)
+// Uses a row-locked counter per year; never gaps on rollback.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model ProjectSequence {
+  id      Int    @id @default(autoincrement())
+  year    Int
+  prefix  String @default("MB")
+  counter Int    @default(0)
+
+  @@unique([year, prefix])
+  @@map("project_sequences")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// USERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model User {
+  id             String    @id @default(uuid())
+  name           String
+  email          String    @unique
+  passwordHash   String
+  role           UserRole
+  isActive       Boolean   @default(true)
+  lastLoginAt    DateTime?
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations — kept for referential integrity; history never deleted
+  assignedConversations Conversation[]      @relation("ConversationAssignee")
+  messages              Message[]
+  bookedVisits          VisitBooking[]      @relation("BookedByUser")
+  assignedVisitBookings VisitBooking[]      @relation("AssignedOfficerUser")
+  capturedSurveys       SiteSurvey[]
+  approvedReports       ReportVersion[]     @relation("ApprovedByUser")
+  reviews               Review[]
+  juniorAssignments     JuniorAssignment[]  @relation("JuniorArchitectUser")
+  madeAssignments       JuniorAssignment[]  @relation("AssignedByUser")
+  publications          PortalPublication[] @relation("PublishedByUser")
+  revokedPublications   PortalPublication[] @relation("RevokedByUser")
+  auditEvents           AuditEvent[]        @relation("AuditActor")
+  notifications         Notification[]
+
+  @@index([role, isActive])
+  @@map("users")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTACTS — Real people / organisations who enquire
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Contact {
+  id               String        @id @default(uuid())
+  fullName         String
+  organisation     String?
+  primaryPhone     String        // Normalised +254 format; validated before insert
+  alternatePhone   String?
+  email            String?
+  consentMarketing Boolean       @default(false)
+  consentDataProc  Boolean       @default(true)
+  sourceChannel    SourceChannel @default(MANUAL)
+  externalId       String?       // Platform ID for channel adapters
+  notes            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  conversations Conversation[]
+  projects      Project[]
+
+  @@index([primaryPhone])
+  @@index([email])
+  @@index([externalId, sourceChannel])
+  @@map("contacts")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONVERSATIONS (inbox threads) + MESSAGES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Conversation {
+  id               String             @id @default(uuid())
+  contactId        String
+  contact          Contact            @relation(fields: [contactId], references: [id], onDelete: Restrict)
+  assignedStaffId  String?
+  assignedStaff    User?              @relation("ConversationAssignee", fields: [assignedStaffId], references: [id], onDelete: SetNull)
+  channel          SourceChannel      @default(MANUAL)
+  externalThreadId String?            // Dedup key for external platforms
+  status           ConversationStatus @default(OPEN)
+  subject          String?
+  followUpAt       DateTime?
+  lastActivityAt   DateTime           @default(now())
+  // Set when conversation is confirmed into a project booking
+  linkedProjectId  String?
+  linkedProject    Project?           @relation("ConversationProject", fields: [linkedProjectId], references: [id], onDelete: SetNull)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  messages Message[]
+
+  // Prevents the same external thread from being imported twice
+  @@unique([externalThreadId, channel])
+  @@index([contactId])
+  @@index([assignedStaffId])
+  @@index([status, lastActivityAt])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Restrict)
+  authorId       String?      // null for system / automated messages
+  author         User?        @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  content        String
+  isNote         Boolean      @default(false) // true = internal staff note, not sent to client
+  externalMsgId  String?      // Message ID in external platform (dedup)
+  sentAt         DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, sentAt])
+  @@map("messages")
+}
+
+// ─── Channel adapter webhook events (dedup + replay safety) ──────────────────
+
+model WebhookEvent {
+  id          String        @id @default(uuid())
+  channel     SourceChannel
+  externalId  String        // Unique event ID from the platform
+  payload     Json
+  processed   Boolean       @default(false)
+  processedAt DateTime?
+  error       String?
+  receivedAt  DateTime      @default(now())
+
+  @@unique([channel, externalId]) // Idempotency: never process the same event twice
+  @@index([processed, receivedAt])
+  @@map("webhook_events")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROJECTS
+// Business rule: ONE project per booking (enforced by VisitBooking.projectId @unique)
+// Business rule: enquiry != project — never create until booking confirmed
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Project {
+  id                        String       @id @default(uuid())
+  reference                 String       @unique // e.g. MB-2026-001
+  contactId                 String
+  contact                   Contact      @relation(fields: [contactId], references: [id], onDelete: Restrict)
+  projectType               String?
+  siteCounty                String
+  siteSubCounty             String?
+  siteArea                  String
+  siteDirections            String?
+  siteDescription           String?
+  currentStage              ProjectStage @default(VISIT_BOOKED)
+  createdFromConversationId String?      // Nullable: walk-ins/phone calls have no thread
+  createdAt                 DateTime     @default(now())
+  updatedAt                 DateTime     @updatedAt
+
+  visitBooking      VisitBooking?
+  conversations     Conversation[]      @relation("ConversationProject")
+  juniorAssignments JuniorAssignment[]
+  auditEvents       AuditEvent[]        @relation("ProjectAuditEvents")
+
+  @@index([contactId])
+  @@index([currentStage])
+  @@map("projects")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VISIT BOOKINGS
+// Business rule: @unique on projectId enforces one-booking-one-project at DB level.
+// Business rule: idempotencyKey prevents duplicate creation on network retry.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model VisitBooking {
+  id                  String        @id @default(uuid())
+  projectId           String        @unique // ← DB-enforced: one booking per project
+  project             Project       @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  scheduledAt         DateTime      // UTC; display in Africa/Nairobi
+  assignedOfficerId   String?
+  assignedOfficer     User?         @relation("AssignedOfficerUser", fields: [assignedOfficerId], references: [id], onDelete: SetNull)
+  visitFeeKes         Decimal?      @db.Decimal(12, 2)
+  paymentStatus       PaymentStatus @default(PENDING)
+  status              BookingStatus @default(BOOKED)
+  specialInstructions String?
+  idempotencyKey      String        @unique // Client-generated; prevents double-booking on retry
+  bookedById          String
+  bookedBy            User          @relation("BookedByUser", fields: [bookedById], references: [id], onDelete: Restrict)
+  bookedAt            DateTime      @default(now())
+  checkInAt           DateTime?
+  checkInGps          Json?         // { latitude, longitude, accuracy, capturedAt, note? }
+  checkOutAt          DateTime?
+  checkOutGps         Json?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  history  BookingHistory[]
+  surveys  SiteSurvey[]
+
+  @@index([assignedOfficerId, status])
+  @@index([status, scheduledAt])
+  @@map("visit_bookings")
+}
+
+// Append-only history — never deleted, never updated
+model BookingHistory {
+  id             String        @id @default(uuid())
+  bookingId      String
+  booking        VisitBooking  @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  oldScheduledAt DateTime?
+  newScheduledAt DateTime?
+  oldStatus      BookingStatus
+  newStatus      BookingStatus
+  reason         String        // Required for all changes
+  changedById    String        // User ID (not a FK to allow staff deactivation)
+  createdAt      DateTime      @default(now())
+
+  @@index([bookingId, createdAt])
+  @@map("booking_history")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SITE SURVEYS (sections A–G)
+// Sections stored as versioned JSON; schemaVersion tracks breaking changes.
+// lockedAt = non-null means submitted/immutable; new versions start fresh.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model SiteSurvey {
+  id                String       @id @default(uuid())
+  bookingId         String
+  booking           VisitBooking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  capturedById      String
+  capturedBy        User         @relation(fields: [capturedById], references: [id], onDelete: Restrict)
+  version           Int          @default(1)
+  status            SurveyStatus @default(NOT_STARTED)
+  schemaVersion     String       @default("1.0")
+  previousVersionId String?      // Links resubmissions to their predecessor
+
+  // Section A: Project & client details (auto-populated snapshot)
+  sectionA Json? // { projectRef, clientName, siteCounty, siteArea, bookedAt, officerName }
+
+  // Section B: Plot configuration & access
+  // shape: "rectangular"|"corner"|"irregular"|"other"
+  // dimensions: [{ side, lengthM, lengthFt }]
+  // frontageM, accessRoad, adjacentDevelopments, existingStructures, trees, obstacles
+  // surveyDocKey (uploaded survey document), gpsPin { lat, lng, shareUrl }
+  sectionB Json?
+
+  // Section C: Orientation, sun, wind, terrain
+  // compassNorthDeg (manual adjustment), sunPath (COMPUTED via suncalc — labelled "computed/informational")
+  // windDirection (OBSERVED — labelled "observed"), topography, groundNotes, drainageNotes, waterFlow
+  // All ground/drainage notes labelled "preliminary"
+  sectionC Json?
+
+  // Section D: Photo/video register — IDs of SurveyMedia records
+  sectionD Json? // { mediaIds: string[] }
+
+  // Section E: Sketch
+  // sketchVersionId (canvas) OR uploadedKey (photo/PDF of hand sketch)
+  // Always includes label: "Preliminary field sketch - not a cadastral survey"
+  sectionE Json?
+
+  // Section F: Client design brief
+  // description, voiceNoteKey?, buildingType, storeys, rooms [{ type, qty }]
+  // preferences, referencePhotoIds, specialNeeds, budgetRangeKes?, timeline?
+  // officerRecommendations (SEPARATE box — kept internal, never shown to client directly)
+  sectionF Json?
+
+  // Section G: Pre-submission review checklist
+  // completionChecklist: [{ item, status: "complete"|"not_available", reason? }]
+  // officerNotes
+  sectionG Json?
+
+  checkInAt         DateTime?
+  checkInGps        Json?
+  checkOutAt        DateTime?
+  checkOutGps       Json?
+  lockedAt          DateTime?  // Non-null = immutable (submitted)
+  submittedAt       DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  media    SurveyMedia[]
+  sketches SketchVersion[]
+  reports  ReportVersion[]
+
+  @@unique([bookingId, version])
+  @@index([bookingId, status])
+  @@index([capturedById])
+  @@map("site_surveys")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SURVEY MEDIA
+// Originals stored in private bucket only — never public URLs.
+// idempotencyKey prevents duplicate uploads on retry.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model SurveyMedia {
+  id              String     @id @default(uuid())
+  surveyId        String
+  survey          SiteSurvey @relation(fields: [surveyId], references: [id], onDelete: Restrict)
+  kind            MediaKind
+  category        String     // e.g. "plot-boundary", "existing-structure", "road-frontage"
+  caption         String?
+  storageKey      String     // Original in private bucket
+  previewKey      String?    // Compressed preview in private bucket
+  checksum        String     // SHA-256 of original (verified on upload)
+  mimeType        String
+  sizeBytes       BigInt
+  capturedAt      DateTime?
+  idempotencyKey  String     @unique // Prevents duplicate file records on retry
+  uploadedAt      DateTime   @default(now())
+
+  permittedPublications PortalPublication[] @relation("PermittedMedia")
+
+  @@index([surveyId, kind])
+  @@index([surveyId, category])
+  @@map("survey_media")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SKETCH VERSIONS
+// strokesJson preserved for full edit history.
+// Label is enforced: "Preliminary field sketch - not a cadastral survey".
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model SketchVersion {
+  id          String     @id @default(uuid())
+  surveyId    String
+  survey      SiteSurvey @relation(fields: [surveyId], references: [id], onDelete: Restrict)
+  strokesJson Json       // Array of stroke primitives (draw, erase, label, etc.)
+  renderedKey String?    // PNG snapshot in private storage
+  version     Int        @default(1)
+  // Always stored; never omitted
+  label       String     @default("Preliminary field sketch - not a cadastral survey")
+  editedAt    DateTime   @default(now())
+  editedById  String     // User ID
+
+  @@unique([surveyId, version])
+  @@index([surveyId])
+  @@map("sketch_versions")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REPORT VERSIONS
+// Immutability: once APPROVED, the row must not be changed.
+// A revision creates a NEW row with versionNumber + 1.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model ReportVersion {
+  id              String                @id @default(uuid())
+  surveyId        String
+  survey          SiteSurvey            @relation(fields: [surveyId], references: [id], onDelete: Restrict)
+  versionNumber   Int
+  docxKey         String?               // DOCX in private bucket
+  pdfKey          String?               // PDF in private bucket
+  generatorStatus ReportGeneratorStatus @default(PENDING)
+  generatorError  String?
+  approvalState   ReportApprovalState   @default(DRAFT)
+  approvedById    String?
+  approvedBy      User?                 @relation("ApprovedByUser", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt      DateTime?
+  generatedAt     DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  reviews           Review[]
+  publications      PortalPublication[]
+  juniorAssignments JuniorAssignment[]
+
+  @@unique([surveyId, versionNumber])
+  @@index([surveyId, approvalState])
+  @@map("report_versions")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REVIEWS
+// One review per decision event. Append-only (only inserts).
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Review {
+  id              String         @id @default(uuid())
+  reportVersionId String
+  reportVersion   ReportVersion  @relation(fields: [reportVersionId], references: [id], onDelete: Restrict)
+  reviewerId      String
+  reviewer        User           @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+  decision        ReviewDecision
+  comments        String         // Required for RETURNED; optional for APPROVED
+  createdAt       DateTime       @default(now())
+
+  @@index([reportVersionId, createdAt])
+  @@map("reviews")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// JUNIOR ARCHITECT ASSIGNMENTS
+// Separate from approval (business rule 4).
+// References the specific approved report version.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model JuniorAssignment {
+  id                String        @id @default(uuid())
+  projectId         String
+  project           Project       @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  reportVersionId   String
+  reportVersion     ReportVersion @relation(fields: [reportVersionId], references: [id], onDelete: Restrict)
+  juniorArchitectId String
+  juniorArchitect   User          @relation("JuniorArchitectUser", fields: [juniorArchitectId], references: [id], onDelete: Restrict)
+  assignedById      String
+  assignedBy        User          @relation("AssignedByUser", fields: [assignedById], references: [id], onDelete: Restrict)
+  dueDate           DateTime?
+  priority          Priority      @default(NORMAL)
+  instructions      String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([projectId])
+  @@index([juniorArchitectId])
+  @@map("junior_assignments")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PORTAL PUBLICATIONS
+// Publication is SEPARATE from approval (business rule 4).
+// Only APPROVED report versions can be published.
+// Clients receive ONLY the explicitly selected media.
+// supersededById chains: old → new when a publication is replaced.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model PortalPublication {
+  id              String        @id @default(uuid())
+  reportVersionId String
+  reportVersion   ReportVersion @relation(fields: [reportVersionId], references: [id], onDelete: Restrict)
+  publishedById   String
+  publishedBy     User          @relation("PublishedByUser", fields: [publishedById], references: [id], onDelete: Restrict)
+  publishedAt     DateTime      @default(now())
+  revokedAt       DateTime?
+  revokedById     String?
+  revokedBy       User?         @relation("RevokedByUser", fields: [revokedById], references: [id], onDelete: SetNull)
+  revokeReason    String?
+  // Self-relation: tracks which publication replaced this one
+  supersededById  String?
+  supersededBy    PortalPublication?  @relation("PublicationChain", fields: [supersededById], references: [id], onDelete: SetNull)
+  supersedes      PortalPublication[] @relation("PublicationChain")
+
+  permittedMedia SurveyMedia[] @relation("PermittedMedia")
+
+  @@index([reportVersionId])
+  @@index([revokedAt])
+  @@map("portal_publications")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// Events stored even if external delivery fails (decouple storage from delivery).
+// Delivery layer is pluggable (email/WhatsApp adapters added later).
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Notification {
+  id             String              @id @default(uuid())
+  recipientId    String
+  recipient      User                @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  event          NotificationEvent
+  entityType     String              // "Project" | "VisitBooking" | "ReportVersion" | ...
+  entityId       String
+  title          String
+  body           String
+  channel        NotificationChannel @default(IN_APP)
+  deliveryStatus DeliveryStatus      @default(PENDING)
+  deliveryError  String?
+  deliveredAt    DateTime?
+  readAt         DateTime?
+  createdAt      DateTime            @default(now())
+
+  @@index([recipientId, readAt])
+  @@index([recipientId, createdAt])
+  @@index([deliveryStatus, createdAt])
+  @@map("notifications")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUDIT EVENTS — Append-only. Never updated, never deleted.
+// A PostgreSQL trigger (in migration SQL) enforces immutability at DB level.
+// Every critical action MUST write one of these before returning 200.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model AuditEvent {
+  id         String   @id @default(uuid())
+  actorId    String?  // null for system-generated events
+  actor      User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  action     String   // e.g. "BOOKING_CONFIRMED", "REPORT_APPROVED", "PUBLICATION_REVOKED"
+  entityType String   // e.g. "Project", "VisitBooking", "ReportVersion"
+  entityId   String
+  projectId  String?  // Denormalised for fast project-scoped audit queries
+  project    Project? @relation("ProjectAuditEvents", fields: [projectId], references: [id], onDelete: SetNull)
+  before     Json?    // Previous state (null for create events)
+  after      Json?    // New state (null for delete events)
+  reason     String?  // Required for admin overrides and returns
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  // No updatedAt — this table is append-only
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([projectId, createdAt])
+  @@index([createdAt])
+  @@map("audit_events")
 }
