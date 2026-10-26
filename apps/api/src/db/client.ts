@@ -18,4 +18,4 @@ prisma.$on('warn', (e) => {
   logger.warn({ msg: 'Prisma warning', target: e.target, message: e.message });
 });
 
-export { prisma };
+export { prisma, prisma as db };

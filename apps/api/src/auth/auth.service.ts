@@ -7,7 +7,6 @@ import argon2 from 'argon2';
 import { randomUUID } from 'node:crypto';
 import { db } from '../db/client.js';
 import { config } from '../config.js';
-import { logger } from '../logger.js';
 import {
   signAccessToken,
   signStepUpToken,
@@ -25,7 +24,6 @@ import {
 } from './mfa.js';
 import { auditService } from '../services/audit.service.js';
 import * as QRCode from 'qrcode';
-
 // ── Argon2 parameters (tuned for server, not mobile) ─────────────────────────
 const ARGON2_OPTIONS = {
   type: argon2.argon2id,
@@ -87,7 +85,10 @@ export async function login(
 
     await db.user.update({
       where: { id: user.id },
-      data: { failedAttempts: attempts, lockedUntil: lockUntil ?? undefined },
+      data: {
+        failedAttempts: attempts,
+        ...(lockUntil ? { lockedUntil: lockUntil } : {}),
+      },
     });
 
     await auditService.log({

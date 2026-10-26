@@ -4,7 +4,7 @@
 // Refresh token is set as an httpOnly, Secure, SameSite=Strict cookie.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Router, type Request, type Response, type NextFunction } from 'express';
+import { Router, type Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import {
@@ -215,7 +215,7 @@ authRouter.post('/logout-all', requireAuth, async (req, res) => {
 // ═════════════════════════════════════════════════════════════════════════════
 
 authRouter.get('/me', requireAuth, async (req, res) => {
-  const { db } = await import('../db/client.js');
+  const { prisma: db } = await import('../db/client.js');
   const user = await db.user.findUnique({
     where: { id: req.auth!.userId },
     select: { id: true, name: true, email: true, role: true, isActive: true, lastLoginAt: true },
@@ -234,7 +234,7 @@ authRouter.get('/me', requireAuth, async (req, res) => {
 
 // POST /api/auth/mfa/setup — generate secret and QR code
 authRouter.post('/mfa/setup', requireAuth, async (req, res) => {
-  const { db } = await import('../db/client.js');
+  const { prisma: db } = await import('../db/client.js');
   const user = await db.user.findUnique({ where: { id: req.auth!.userId }, select: { email: true } });
   if (!user) { res.status(404).json({ error: 'NOT_FOUND' }); return; }
 

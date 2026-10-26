@@ -37,14 +37,14 @@ export function errorHandler(
     message: err.message,
     path: req.path,
     method: req.method,
-    ...(config.nodeEnv === 'development' ? { stack: err.stack } : {}),
+    ...(config.NODE_ENV === 'development' ? { stack: err.stack } : {}),
   });
 
   res.status(status).json({
     error: {
       code,
       message,
-      ...(config.nodeEnv === 'development' && status >= 500 ? { detail: err.message } : {}),
+      ...(config.NODE_ENV === 'development' && status >= 500 ? { detail: err.message } : {}),
     },
   });
 }

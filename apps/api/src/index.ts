@@ -17,8 +17,8 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const server = app.listen(config.apiPort, () => {
-    logger.info(`MBMS API running on port ${config.apiPort} [${config.nodeEnv}]`);
+  const server = app.listen(config.API_PORT, () => {
+    logger.info(`MBMS API running on port ${config.API_PORT} [${config.NODE_ENV}]`);
   });
 
   // Graceful shutdown

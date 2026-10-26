@@ -29,6 +29,9 @@ export function encryptSecret(plaintext: string): string {
 
 export function decryptSecret(stored: string): string {
   const [ivHex, tagHex, encHex] = stored.split(':');
+  if (!ivHex || !tagHex || !encHex) {
+    throw new Error('Malformed encrypted MFA secret');
+  }
   const iv = Buffer.from(ivHex, 'hex');
   const tag = Buffer.from(tagHex, 'hex');
   const enc = Buffer.from(encHex, 'hex');
