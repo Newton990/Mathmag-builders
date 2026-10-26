@@ -10,9 +10,22 @@ import { requestLogger } from './middleware/requestLogger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
+import { conversationsRouter } from './routes/conversations.js';
+import { bookingsRouter } from './routes/bookings.js';
+import { projectsRouter } from './routes/projects.js';
+import { surveysRouter } from './routes/surveys.js';
+import { mediaRouter } from './routes/media.js';
+import { reportsRouter } from './routes/reports.js';
+import { publicationsRouter } from './routes/publications.js';
+import { portalRouter } from './routes/portal.js';
 
 export function createApp(): express.Application {
   const app = express();
+
+  // Prisma returns BigInt for byte counts; JSON has no BigInt type.
+  app.set('json replacer', (_key: string, value: unknown) =>
+    typeof value === 'bigint' ? value.toString() : value,
+  );
 
   // ── Security headers ──────────────────────────────────────────────────────
   app.use(helmet());
@@ -49,6 +62,15 @@ export function createApp(): express.Application {
   // ── Routes ────────────────────────────────────────────────────────────────
   app.use('/api', healthRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/conversations', conversationsRouter);
+  app.use('/api/bookings', bookingsRouter);
+  app.use('/api/visits', bookingsRouter);
+  app.use('/api/projects', projectsRouter);
+  app.use('/api/surveys', surveysRouter);
+  app.use('/api/media', mediaRouter);
+  app.use('/api/reports', reportsRouter);
+  app.use('/api/publications', publicationsRouter);
+  app.use('/api/portal', portalRouter);
 
   // ── 404 handler ───────────────────────────────────────────────────────────
   app.use((_req, res) => {

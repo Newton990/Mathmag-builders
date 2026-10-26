@@ -65,7 +65,7 @@ function toCreateInput(params: AuditParams): Prisma.AuditEventCreateInput {
 }
 
 // Helper: extract IP and user agent from Express request
-export function extractRequestMeta(req: { ip?: string; headers: Record<string, unknown> }): {
+export function extractRequestMeta(req: { ip?: string | undefined; headers: Record<string, unknown> }): {
   ipAddress: string | undefined;
   userAgent: string | undefined;
 } {
