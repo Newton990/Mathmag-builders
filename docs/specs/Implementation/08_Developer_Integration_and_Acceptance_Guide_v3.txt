@@ -1,0 +1,233 @@
+
+===== PAGE 1 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-DEV-08
+CONFIDENTIAL • v3.0  |  Page 1
+MATHMAG BUILDERS LIMITED
+MANAGEMENT SYSTEM
+Developer Integration & Test Blueprint
+System interfaces • Permission policy • Workflow gates • Delivery acceptance
+Plan better, build better.
+Document ID: MBMS-DEV-08
+Version 3.0 • 25 October 2026
+Status: Business requirements harmonized • Developer implementation not yet performed
+===== PAGE 2 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-DEV-08
+CONFIDENTIAL • v3.0  |  Page 2
+01. Developer scope and working agreements
+Build one secure, mobile-capable management platform with seven domain modules plus common portals. Distinct 
+project modules are joined by canonical project identifiers, signed approvals, event history and independent role 
+permissions. Module 7 supplies common services continuously; do not build it as a project step that starts only after 
+construction.
+ Deliver responsive employee (including low-bandwidth skilled worker), supervisor, PM, department, GM, 
+protected auditor, owner, subcontractor, supplier and client role experiences.
+ Use strong authentication/MFA for approvals/payee changes and protected audit; role-based plus project-scoped 
+authorization validated on server.
+ Never silently edit original submitted evidence. Expose corrected/reviewed versions and preserve immutable 
+original to authorized auditors.
+ Treat permission, contract, statutory, financial and safety gates as server-side invariants, not only disabled 
+browser buttons.
+ Provide API docs, tests, migrations, backups, staging deployments, source ownership handover and staff 
+training.
+02. Top-level navigation
+Portal Minimum screens
+Intake / Site Visits Omnichannel lead inbox, agreed booking wizard, site survey mobile capture, generated report, lead review, publication.
+Design
+Department pipeline boards, task assignment, 2D client 
+review, 3D, working-file revisions, engineering discipline QA, 
+QS budget.
+Client Proposal Summary/detailed finance controls, published revisions, identity/acceptance, receipts, exception and handover to M4.
+Approvals
+Authority case queue, regulatory obligation checklist, 
+controlled issue sets, fee proofs, correction tasks, conditional 
+close.
+Contracts
+Service selection, agreements and versions, negotiation 
+register, management signed offer, acceptance and signatures, 
+PM appointment.
+Construction
+PM overview, supervisor tasks, worker personal portal, 
+original report comparison, GRN, inventory, supplier, finance 
+forecast, equipment, safety, claims and warranty.
+Administration
+HR, staff records and privileges; central Finance/Accounts; 
+supplier master; QA/Compliance; auditor; GM/company 
+administration.
+Client Projects, signed 2D, approved PDFs/images, budget acceptance, billing, final contracts, PM updates, warranties.
+Owner / executive Owner strategic governance and independent oversight; GM operational command separate.
+Settings Authority matrix, thresholds, roles, credential types, licenses, statutory checklists, integrations, retention, backups.
+03. Proposed backend service boundaries
+Domain / API example Authorization and business invariant
+POST /enquiries/{id}/confirm-visit Agreement evidence required to instantiate ProjectId.
+POST /projects/{id}/surveys Project membership; creator original cannot be overwritten.
+POST /projects/{id}/design/2d-acceptances Valid exact 2D revision and client identity/acceptance proof.
+POST /design-packages/{id}/technical-approvals Authorized qualified discipline lead; predecessor stage 
+===== PAGE 3 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-DEV-08
+CONFIDENTIAL • v3.0  |  Page 3
+Domain / API example Authorization and business invariant
+satisfied.
+POST /projects/{id}/proposals/{id}/publish Eligible manager grant and QS approved exact budget version.
+POST /projects/{id}/client-acceptances Client or trusted uploaded signed evidence, immutable revision.
+POST /projects/{id}/module4-releases Management acceptance checked and Accounts verified milestone/exception.
+POST /projects/{id}/compliance/cases Applicable jurisdiction obligation and authorization.
+POST /contracts/{id}/execute Final terms approved; signer legal mandate; counterpart evidence.
+POST /projects/{id}/mobilization Accounts gate, compliance permit, PM readiness, delegated physical-start decision.
+POST /projects/{id}/worker-reports Worker-only own report; immediate independent manager visibility.
+POST /worker-reports/{id}/verifications Separate supervisor review; originals immutable.
+POST /purchase-orders/{id}/amendments Version-specific QS/Accounts reviews, management authorization, supplier notice.
+POST /goods-receipts Storekeeper physical actual accepted quantity, batch, photos and PM verification.
+POST /suppliers/{id}/beneficiary-changes Out-of-band known-contact verification and dual-control; payment hold.
+POST /assets/{id}/pre-use-inspections Equipment-licensed operator check; serious failure creates targeted hold.
+POST /fuel-issues Measured liters/quantity, asset, operator/site/custody, stores reconciliation.
+POST /assets/{id}/return-to-service Qualified independent release; no repairer self-approval.
+POST /projects/{id}/variation-acceptances Exact version, client accepted, manager approved, QS and required technical approval.
+POST /projects/{id}/handover PM technical pack, accounts/contract check, authorized management release.
+POST /audits/cases Protected auditor workflow; no manager edit to independent originals.
+04. Common request and evidence schema
+Suggested minimal request envelope; naming and exact object shape are developer choices, while the semantics 
+below are mandatory.
+Field Type / rule
+id / projectId / engagementId Stable identifiers; project references may not change between modules.
+entityType / entityId / action Controlled resource, action and audit intent.
+actorId / representedRole Actual authenticated identity, acting authority and role at time of action.
+authorityGrantId Specific valid mandate for actions requiring delegated approval.
+timestamp / clientSubmittedAt Authoritative server timestamp plus claimed device time when offline.
+sourceRevision / latestApprovedRevision Hash/version protection; old client signatures still point to old version.
+originalEvidenceHashes / attachmentRefs Evidence ownership, object authorization, checksum and retention.
+previousState / nextState / reason Append-only workflow transition; exception reason and approver.
+idempotencyKey / correlationId Prevent duplicate writes and trace event flows.
+visibilityClass / publicationGrantId Role/project-specific confidentiality and exact client file 
+===== PAGE 4 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-DEV-08
+CONFIDENTIAL • v3.0  |  Page 4
+Field Type / rule
+publication.
+05. End-to-end integration sequence
+ Enquiry -> confirmed visit -> project ID -> mobile original survey -> generated site report -> architect 
+review/assign -> Module 2.
+ Architectural 2D -> client versioned approval -> 3D -> structural -> mechanical/plumbing -> electrical -> QS -> 
+proposal snapshot.
+ Management-approved publication -> client portal/physical approval -> management verifies -> Accounts checks 
+milestone -> separate Module 4 release.
+ Applications and professional certification -> corrections/version control -> conditional planning approval -> 
+contracted service choice and sign.
+ Executed contract -> PM appointed -> planning-only construction -> Accounts and Compliance readiness -> 
+manager physical mobilization authorization.
+ Worker tasks and originals -> supervisor verification -> PM analysis and authorized client publication; store and 
+asset events link project cost.
+ Procurement approved PO -> supplier -> actual accepted GRN -> match invoicing -> independent authorized 
+payment and Accounts reconciliation.
+ Safety / quality / statutory hold -> independent qualified review -> documented clearance -> authorized affected 
+work release.
+ Variations / milestone billing / time impacts -> QS/Contracts/Accounts -> management approved client terms and 
+signature.
+ Practical completion -> separate handover, financial final account, retention, defects, warranty case and final 
+closure.
+06. Non-negotiable business invariants
+ Platform owner must not inherit unrestricted superuser audit data or daily operational approvals just because 
+they own shares.
+ GM and departmental managers cannot unilaterally alter independent whistleblower evidence or audit case 
+attribution.
+ No automated arrears reminders: Accounts must explicitly initiate and log each client payment reminder.
+ No construction use of expired/unsafe asset, unqualified operator, statutory noncompliant site or professionally 
+uncleared structural stage.
+ Financial exceptions only affect eligible financial gate and retain actual balance; they never forgive debt or 
+override statute.
+ Never issue a purchase order from a request alone. Supplier evaluation, commitments, management 
+authorization and PO remain separate.
+ Never pay changed supplier bank/M-Pesa details until independent out-of-band trusted-contact verification and 
+reauthorization.
+ No wage deduction as an automatic variance/loss response; all responsibility decisions require fair and lawful 
+procedure.
+ Advance accounting impairment differs from legal waiver or debt extinguishment; audit both.
+ Opening Module 7 controls does not automatically activate a project stage; service scope per client contract is 
+authoritative.
+===== PAGE 5 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-DEV-08
+CONFIDENTIAL • v3.0  |  Page 5
+07. Acceptance tests and expected behavior
+ID Test situation Expected system result
+UAT-01 Booking without client-agreed site date Reject project activation and record enquiry only.
+UAT-02 Junior 3D attempted before 2D client signature Reject; show required exact 2D version and evidence.
+UAT-03 Client accepts proposal then QS revises quantities Preserve original, require applicable reacceptance, block old acceptance from satisfying new version.
+UAT-04 Accounts inserts unverified mobile money receipt Do not clear milestone or generate “verified” payment receipt.
+UAT-05 Automated nightly client debtor reminder schedule Must not send unless Accounts deliberately initiates each reminder.
+UAT-06 Approvals Officer stamps professional drawing Deny, independent verified professional required.
+UAT-07 Conditional Module 4 complete but NCA pending Construction start blocked; no fake “completed NCA” state.
+UAT-08 Client selects labour-only, does not sign Do not create active binding labour contract.
+UAT-09 Owner account tries routine pay authorization Deny without distinct valid assigned operational role/exception; still allow strategic oversight.
+UAT-10 GM away with registered deputy
+HR-valid preapproved mandate 
+activates only permitted time-limited 
+powers.
+UAT-11 GM absent with no valid deputy
+Preapproved emergency committee logs 
+quorum and limited decisions; never 
+owner-reserved.
+UAT-12 Worker uploads photographic report and supervisor rejects Preserve original; PM and GM see it without supervisor gating; rejection is separate.
+UAT-13 Supervisor tries to delete accident evidence Deny, preserve original and audit attempted action.
+UAT-14 Supplier changes M-Pesa/bank destination with pending payment Hold affected payment, trusted-contact verify, and require revised authorization.
+UAT-15 Supplier invoice value larger than accepted GRN Reject noncontracted overpayment, retain partial delivery balance.
+UAT-16 PO revision after supplier award
+Version, verify independent QS/Accounts 
+and delegated approval before 
+commitments.
+UAT-17 Receiving store checks one of two batches only Only actual independently accepted stock enters receiving store; in-transit remainder distinct.
+UAT-18 Client-owned stock transfer to other project Block without verified title/contract entitlement and required client consent.
+UAT-19 Loss reported against worker Investigate independently; no automatic financial liability or pay deduction.
+UAT-20 Operator with expired qualification accesses excavator Block assignment/operation and alert qualified staff.
+UAT-21 Critical pre-use inspection failure on concrete mixer Targeted asset hold, repair and independent technical release; unaffected assets available.
+UAT-22 Fuel diesel issue without machine/project and recipient Reject record as verified issue until required data/measurement present.
+UAT-23 Site Supervisor requests extra chargeable work Do not execute before professional/QS/Contracts and management-approved client 
+===== PAGE 6 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-DEV-08
+CONFIDENTIAL • v3.0  |  Page 6
+ID Test situation Expected system result
+acceptance.
+UAT-24 Accounts or PM tries publishing worker raw dispute to client Deny without valid publication grant and project-scoped redaction.
+UAT-25 GM subject of fraud allegation Protected audit route bypasses GM and escalates to nonconflicted governance.
+UAT-26 Site inspector fails reinforcement hold point No concreting release until competent approval and PM authorization.
+UAT-27 Accounts issues final subcontract retention by expiry alone Blocked until contract conditions and delegated authorization checked.
+UAT-28 Warranty period expires with open client complaint Keep case and all obligations open for proper determination.
+UAT-29 Project marked handed over before financial reconciliation Track handover and financial close as separate explicit pending/completed statuses.
+UAT-30 User guesses cross-project attachment URL Return forbidden; no file bytes or metadata leaked.
+08. Non-functional requirements and evidence
+ Supported use: responsive browser for operations; low-bandwidth mobile employee capture with offline queue 
+and explicit sync acknowledgment.
+ Availability and recovery targets must be separately approved; implement encrypted offsite backups, restore 
+exercises, encrypted transport, confidentiality and disaster recovery.
+ Use queue-based resilient notifications; if WhatsApp/TikTok/Facebook/YouTube integration is not 
+approved/available, fall back to staff task queue instead of pretending messages were sent.
+ Create staging test users for Owner, GM, acting GM, HR, Accounts requester/payee verifier/payer/reconciler, QS, 
+Architects, PM, supervisors, workers, subcontractors, auditors and clients.
+ Provide documented role matrix, threat model, professional legal regulatory checklist, event-to-record 
+traceability, audit retention and case confidentiality proofs.
+ Write automatic tests for every table row above, show evidence screenshots and the underlying exact records in 
+demonstrations, and obtain signed acceptance per delivery wave.
+09. Company configuration required before production
+Configuration Who validates / supplies
+GM delegation caps, owner-reserved matters, emergency 
+quorum Owner governance + corporate signatories + General Manager
+Staff members, payroll classes, contract types and lawful 
+deductions HR + Accounts + legal advisers
+County, NEMA, NCA, statutory forms and expiry durations Approvals Officer + qualified professionals + Compliance
+Trade/plant licensing, daily checklist and maintenance Technical/Safety + HR + Project Manager
+Procurement quoting thresholds, single-source exception, 
+approved suppliers Procurement + QS + Accounts + GM
+Account codes, taxes, funding, retention and payments Accounts/Finance + external accounting adviser
+Client document publication, portal channels and notification 
+cadence GM/dept heads + Contracts + client project agreement
+Backup period, retention, privacy response and forensic 
+access IT Security + HR + Audit + legal advisers
+===== PAGE 7 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-DEV-08
+CONFIDENTIAL • v3.0  |  Page 7
+10. Handover pack and development completion checklist
+ Approved V3 module specifications and master architecture, version register and change-control process.
+ Interactive wireframes/user role navigation, mobile-first worker and client flows and accessible field labels.
+ Entity relationship diagram and data dictionary, migration scripts, API schema and example state transitions.
+ Security model, identity, confidential audit access, split duties and recovery controls.
+ Automated integration/unit/UAT suite and sample staging projects for design-only and full construction, 
+including negative tests.
+ Runbooks, user/admin training, monitoring, error reporting, source/code ownership and deployment 
+documentation.

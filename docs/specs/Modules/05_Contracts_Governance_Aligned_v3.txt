@@ -1,0 +1,573 @@
+
+===== PAGE 1 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 1
+MODULE 05 | VERSION 3.0
+Contracts & Service Activation
+Governance-aligned controlled consolidation | 25 October 2026
+DOCUMENT
+CONTROL
+APPLICATION
+Status
+Harmonized business specification; approved prior module workflow retained with controlling
+Module 7 alignment.
+Composition
+This V3 addendum and the full previously revised module source are combined in a single
+PDF.
+Priority
+This V3 alignment governs in case of conflict. The original module source remains operative
+where not contradicted.
+Central governance
+Module 7 is a continuous operational backbone; it is not a gate to be completed after Module
+6.
+Authority
+Documented GM-led delegation and owner-reserved matters replace generic or inconsistent
+old “Management alone” labels.
+Scope of this module
+Progressive service selection; versioned negotiation and legally controlled signatures; scope
+and payment readiness; conditional Module 6 activation.
+1. Implementation interpretation and source preservation
+This document intentionally retains the complete existing revised module specification after this amendment.
+Do not erase earlier workflow, screenshots, forms, stages or user-approved protections. Configure the shared
+functions from the V3 Master Architecture and Module 7 specification. The addendum is not permission to skip
+work or approvals.
+2. Shared mandatory company controls
+ • GOV-01 Governance: The owner retains reserved strategic powers and protected oversight, while the
+ employed General Manager (GM) holds company-wide operational accountability. Owner access to reporting
+does not authorize routine operational interference.
+• GOV-02 Delegation: Department heads, Project Managers and designated officers may authorize decisions
+ only within documented project, function, category, value and risk limits; above-limit or exceptional decisions
+go to GM. No employee may approve their own originating action.
+• GOV-03 Technical independence: Valid safety and professional certifications are performed by competent
+ authorized persons; neither a GM nor a financial waiver can substitute for a mandatory technical/statutory
+clearance.
+• GOV-04 Evidence: Worker, junior designer, client, storekeeper, inspector, supplier and auditor original
+ submissions are preserved with authorship, timestamp, linked versions and tamper-evident history. Review
+adds new records; it does not overwrite originals.
+• GOV-05 Segregation: Requests, verification, approval, payment, receipt and audit must be appropriately
+ independent. Where team size makes perfect separation impractical, a documented compensating review by
+an independent qualified officer is mandatory.
+• GOV-06 Client access: Client portal content is limited to that client/project and expressly published revision;
+ source design files, worker complaints, confidential pay, internal contracts and audit cases remain restricted.
+
+===== PAGE 2 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 2
+• GOV-07 Controls: Accounts verifies funds/beneficiaries and books actual transactions; QS values cost and
+ forecasts; Contracts verifies commercial entitlements; Compliance oversees obligations; QA checks systemic
+quality; independent audit observes, investigates and independently verifies closure.
+• GOV-08 Exceptions and continuity: Documented financial/administrative exceptions may be decided by the
+ authorized delegated manager or GM; there is no exception to mandatory law, safety, professional status or
+an already-required client acceptance. GM absence invokes only preapproved and HR-activated acting
+authority.
+3. Updated operating workflow and stage gates
+Selection
+Client selection via portal/meeting of full construction, labour-only, technical supervision, or eligible follow-on
+services is preference, not legally binding acceptance.
+Draft
+Contracts Officer prepares template or custom contract; QS evaluates financial/scope terms; technical
+professionals review appropriate responsibility.
+Negotiation
+Client and company log comments and formal revisions; management approves exact final terms before parties
+sign.
+Sign
+Authorized corporate signatory binds Mathmag only within corporate delegated signature mandate; verify
+identity and physically/e-sign evidence.
+Construction gate
+Accounts verifies initial milestone, Compliance checks permits/NCA, PM documents readiness; planning-only
+Module 6 access may open while physical works locked.
+Mobilization
+GM or specifically authorized manager acts within valid delegation to authorize physical start after all
+nonwaivable gates; GM handles exceptions under matrix.
+4. Module-specific accountability integration
+CONTROL AREA
+REQUIRED V3 BEHAVIOR
+Company signature
+authority
+Registered legal authority and formal GM delegation determine signatory. Contract Officer
+drafts/co-ordinates but does not self-sign beyond mandate.
+New added services
+Contracts coordinates client request and prices; delegated management activates only
+after acceptance and applicable payment check.
+Financial terms
+QS reviews value; Accounts verifies client collections; distinct financial exception required
+if initial milestone unpaid.
+PM appointment
+Delegated GM/management formally appoints PM within personnel/authority matrix;
+owner not automatically project PM appointing officer.
+Statutory requirements
+Compliance clearance independent of contract signature. No GM exception can waive
+NCA or mandated county approvals.
+
+===== PAGE 3 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 3
+5. Conflict resolution register
+OLDER / AMBIGUOUS WORDING
+V3 INTERPRETATION
+“Management alone authorizes
+signing/mobilization”
+Implement eligible assigned delegated manager or GM within approved
+matrix; owner only reserved strategic agreements.
+“Service selected” state
+Require selection, offer, final approved version, signed, financially verified
+and work-authorized as distinct records.
+6. Developer data extensions / shared links
+Maintain one stable ProjectId across all modules; preserve exact FileVersionId and client publication
+authorization, verify role scope server-side and append actor/timestamp/decision history for every state
+transition.
+ • ServiceRequest/Selection
+ • ContractTemplate/ContractVersion
+ • NegotiationComment/ChangeLog
+ • AuthorityMandate
+ • ExecutionSignature
+ • ProjectManagerAppointment
+ • FinanceMilestone
+ • MobilizationReadiness
+ • ReleaseDecision
+ • AuditEvent
+ 
+7. Mandatory integration acceptance tests
+ AT-05-01: Client selecting full contract without signing cannot unlock work.
+ AT-05-02: Unsigned or unapproved draft does not become binding version.
+ AT-05-03: Contract Officer cannot sign for company without recorded mandate.
+ AT-05-04: Construction financial exception cannot bypass missing NCA/permits.
+ AT-05-05: Planning-only work can be opened when physical construction remains blocked.
+ AT-05-06: Contract signature evidence and client accepted version match byte-for-byte/version ID.
+ 
+8. Required developer references
+Read this PDF with 00 Master Architecture, Module 07 Central Administration and 08 Integration & Testing.
+Additional authoritative user decisions for Modules 1-6 prevail over older illustrative implementation examples
+where the later decision is more specific. Regulatory obligations must be validated with qualified advisors and
+current official sources before implementation.
+
+===== PAGE 4 =====
+MATHMAG BUILDERS LIMITED
+MANAGEMENT SYSTEM
+MODULE 05
+CONTRACTS & SERVICE
+ACTIVATION
+Service selection • Negotiations • Signed agreements • Conditional
+construction activation
+Plan better, build better.
+DOCUMENT CONTROL
+DETAIL
+Organization
+Mathmag Builders Limited
+Purpose
+Revised developer-ready functional specification
+Revision
+2.0 | 24 October 2026
+Approval basis
+Confirmed business choices + clearly identified technical implementation recommendations
+System scope
+Module 05 of 06, on one persistent client/project platform
+IMPLEMENTATION RULE
+This revision replaces inconsistent stage assumptions in earlier drafts. A confirmed business decision is
+binding; illustrative fields, example APIs and implementation details must be validated in design review.
+
+===== PAGE 5 =====
+01 Purpose and stage position
+Manage client service choices, construction and non-construction agreements,
+negotiation, signature, payments and controlled construction activation.
+CONFIRMED PRINCIPLE
+BINDING REQUIREMENT
+Owner
+Dedicated Contracts Officer prepares and coordinates client
+contracts and amendments.
+Management control
+Management approves final proposal/agreement and
+authorizes company signing and activation.
+Hybrid service selection
+Client can choose through portal or physical/virtual meeting,
+with formal record of selected scope.
+Contract generation
+Support system templates and manual upload of Word/PDF
+agreement drafts and signed copies.
+Negotiation
+Portal comments and physical/virtual meetings; version every
+amendment and review decision.
+Hybrid execution
+Secure e-signature where legally appropriate or uploaded
+physically executed signed agreement.
+Progressive services
+Later services require a new controlled
+quote/contract/addendum, client acceptance and
+management activation.
+Module 6 preplanning
+After executed construction contract, Module 6
+preconstruction planning may open conditionally; actual work
+remains blocked.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+2 / 10
+
+===== PAGE 6 =====
+02 Service selection and alternative engagement routes
+ ENGAGEMENT TYPE
+ROUTE / RULE
+Design / planning only
+Planning deliverables handed over at contracted stage; no
+automatic approvals or building obligations.
+Printing / drawing delivery only
+Contracted drawing print/delivery closes with a recorded
+authorized package; approvals not forced.
+Design and authority approvals
+Modules 1-4 as applicable, then service close-out or further
+contracted work.
+Client appoints other builder
+Mathmag completes its selected planning/approval tasks and
+records clear construction responsibility handoff.
+Technical inspection / supervision
+Module 6 enables only contracted inspection/supervision
+features, reports and agreed visits; do not imply responsibility
+for all construction works.
+Labour-only construction
+Module 6 includes workforce, tasks, quality, safety, client
+payment and labour responsibilities within contract; material
+ownership/procurement obligations may be client-side.
+Full materials-and-labour construction
+Module 6 full procurement, workforce, contracts, progress,
+safety, approvals, payments and handover as contracted.
+MANDATORY CONTROL
+No client is forced through construction or authority-application modules they have not purchased. Service
+obligations are determined by each executed agreement, not by a default system-wide workflow.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+3 / 10
+
+===== PAGE 7 =====
+03 Contract selection, negotiation and signing
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Client Indicates Service
+Selects route in portal or recorded meeting, linked to existing project and
+accepted deliverables.
+02
+Contracts Officer Drafts Terms
+Uses approved template or uploaded contract document with scope, fee,
+deadlines and responsibilities.
+03
+Technical and Commercial Review
+Project Manager/QS/professionals provide inputs where construction, design
+or approvals obligations require.
+04
+Management Reviews Proposal
+Approves offered terms, payment structure, exceptions and authorization
+for client presentation.
+05
+Client Negotiates
+Comments in portal or recorded meeting; Contracts Officer creates revised
+version and returns for management approval.
+06
+Client and Mathmag Execute
+Physically signed form uploaded or valid supported e-signature recorded;
+signing authority evidenced.
+07
+Accounts Checks Milestone
+Verifies initial agreed payment and receipts; management documents
+eligible financial exception.
+08
+Management Activates Service
+Records executed contract and opens only appropriate next-stage scope,
+with statutory gates intact.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+4 / 10
+
+===== PAGE 8 =====
+04 Contract contents and version controls
+ CLAUSE GROUP
+SPECIFICATION / REVIEW REQUIREMENT
+Parties and property
+Legal client/owner, Mathmag details, project location,
+property/parcel references and signatories.
+Service scope
+Deliverables and exclusions for design, approvals, labour,
+materials, supervision, variations and handover.
+Technical responsibility
+Relevant professionals, professional approval boundaries,
+standards and applicable statutory duties.
+Price and payment
+Contract value, deposits/milestones, valuation methods,
+payment channels, due dates, taxes as applicable.
+Programme
+Commencement requirements, completion targets, excusable
+delays and extension procedure.
+Change management
+Quotation, QS review, amended documents, management
+approval and client consent.
+Risk and completion
+Defects liability, warranties, retention where agreed,
+insurance, safety, handover and termination/dispute clauses.
+Attachments
+Approved scope, drawings/specifications, payment schedule
+and negotiated annexures attached by exact version.
+Versioning
+Draft, under negotiation, management approved, issued,
+executed, superseded, terminated and archived states.
+05 Management approvals and signature controls
+• Contracts Officer may prepare documents but cannot independently bind Mathmag or activate scope without
+management approval.
+• An approval to share a draft with client does not count as acceptance of that draft by the client or completed
+execution.
+• Record signatory identity, capacity, exact document version, type of evidence, time and any witness
+requirements where applicable.
+• Execute through physical or supported electronic signatures suitable to the agreement and applicable law,
+without inventing professional/statutory signatures.
+• Retain all negotiated/redlined versions, messages, meeting minutes and the signed final snapshot.
+• Financial exceptions cannot waive NCA registration, mandatory approvals, professional certification or
+safe-work requirements.
+06 Financial controls before construction
+• Accounts maintains contract deposits, mobilization payment milestones, verified receipts, outstanding
+balances and scheduled contractual payment obligations.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+5 / 10
+
+===== PAGE 9 =====
+• The agreed initial construction payment is a gate for actual mobilization; management may authorize an
+eligible documented exception only as permitted by contract and law.
+• Contracted services are separated into service orders so payments for planning/printing/approvals and
+construction can be reconciled correctly.
+• QS supports construction price/valuation data where the contract uses measured work; the Contracts Officer
+owns formal commercial terms.
+• Management must confirm contractual acceptance and financial readiness before actual work starts,
+separately from Module 4 conditional completion.
+07 Conditional Module 6 handover and physical
+mobilization gate
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Executed Contract Filed
+Store signed agreement, scope, payment schedule, drawings and
+authorizations.
+02
+Preconstruction Planning Opened
+Allow Project Manager to prepare site readiness plan, requisitions and
+worker/subcontractor setup under restricted permission.
+03
+Early Procurement Exception
+Project Manager may request specific early purchases; management
+explicitly approves each financial commitment.
+04
+Approvals and Registration Checked
+Verify applicable authority approvals, contractor details and legally required
+project registrations.
+05
+Project Manager Readiness Report
+Confirm access, temporary works/site controls, technical documents,
+programme, labour, safety, funds and other prerequisites.
+06
+Management Mobilization Decision
+Management alone authorizes actual physical mobilization when all
+mandatory conditions are satisfied.
+07
+Module 6 Execution Activated
+Record start date and release only work packages whose
+inspection/safety/finance gates are clear.
+MANDATORY CONTROL
+Signing the contract opens planning capability; it does not automatically authorize site works, procurement
+expenditure or NCA/statutory bypass.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+6 / 10
+
+===== PAGE 10 =====
+08 Progressive service additions and change of
+engagement
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Client Requests Additional Service
+Capture request from portal, meeting or authorized desk channel.
+02
+Contracts Officer Screens Scope
+Identify price, labour/material responsibility, approvals/compliance and
+requested deliverables.
+03
+QS / Technical Review
+Obtain cost/time/technical input where required.
+04
+Management Authorizes Offer
+Approve proposed separate agreement or addendum and applicable
+payment terms.
+05
+Client Formally Accepts
+Accept the exact supplemental scope and price, then execute as required.
+06
+Accounts / Management Gate
+Verify agreed milestone and activate new service via management decision.
+07
+Existing Project Retained
+Update scope permissions on the same project with a versioned
+service-engagement history.
+09 Subcontract and construction integration
+• When a construction agreement is executed, management appoints the Project Manager directly; project
+manager assignment is not delegated by Contracts Officer.
+• Module 6 subcontract appointments use Procurement quotation comparison, Contracts Officer subcontract
+drafting and management authorization.
+• Client construction variations and additional works must return to Contracts Officer for documented terms,
+QS costing, management approval and client acceptance before execution.
+• Construction reports, worker/client portal media, employee performance, payroll and warranty records
+activate only for contracted scope and appropriate roles.
+• Service termination and exit must preserve already delivered files, statutory obligations and continuing
+warranties where applicable.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+7 / 10
+
+===== PAGE 11 =====
+10 Shared rules carried across all six modules
+ CROSS-MODULE RULE
+IMPLEMENTATION REQUIREMENT
+One lifecycle record
+Maintain one project ID from confirmed site-visit booking
+through design, approvals, contracts, construction and
+post-handover. Never create a disconnected project just to
+open a new module.
+Role separation
+User role, project assignment and explicit approval authority
+determine every permitted action. Technical sign-off, financial
+validation, management approval and client acceptance are
+distinct records.
+Evidence integrity
+Preserve original submissions, attachments, timestamps,
+authors and immutable decision histories. Corrections create
+new records or versions; no silent overwriting.
+Selective client access
+Client accounts can access only their own projects and
+explicitly authorized files or updates. Internal working/source
+files, staff performance data and financial notes are never
+published by default.
+Conditional service scope
+Clients may purchase design only, printing only, approvals,
+technical supervision, labour-only building or full construction.
+Modules not contracted are not mandatory project steps.
+Management-controlled exceptions
+Any permitted exception requires identified management
+authorization, reason, date and retained evidence. Mandatory
+legal/technical clearances cannot be overridden.
+Security and audit
+Require authenticated accounts, least privilege, encrypted
+transport/storage, file scanning, access logs, project-scoped
+permissions, backups and recoverability.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+8 / 10
+
+===== PAGE 12 =====
+11 Screens and user journeys
+ SCREEN
+PRIMARY USERS / BEHAVIOUR
+Service Selection
+Scope/type choice, package inclusions, excluded modules,
+client confirmation.
+Contract Drafting
+Approved templates and uploaded Word/PDF documents,
+attachment manifest and contract-specific clauses.
+Negotiation Workspace
+Version comparisons, redline/comments, meeting history and
+approval loop.
+Management Contract Queue
+Financial/technical risk summary, exact revision approval and
+signing authorization.
+Signature Capture
+Portal e-sign or physical signed upload with signer evidence.
+Accounts Payment Gate
+Contract deposits and mobilisation milestones, receipts and
+manager-approved exceptions.
+Module 6 Readiness
+Executed contract, planning-only status, compliance/finance
+readiness, mobilization recommendation and management
+activation.
+Additional Service Requests
+Change requests, independent quotes/addenda and
+management activation.
+12 Core data objects and key relationships
+Logical entities for developer schema design. Names below are examples rather than
+prescribed database table names.
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+ServiceEngagement / ScopeVersion
+Project, service type, selected deliverables, exclusions, active
+status and change history.
+ContractDraft / ContractVersion
+Word/PDF pointer, attached approved plans/budgets, version,
+negotiated terms, status.
+NegotiationNote / Meeting
+Participant, date, topic, comments, requested change, source
+version.
+ContractApproval / Execution
+Management decision, signing authorization, parties, signature
+evidence, execution date.
+ServicePaymentMilestone
+Amount, due/paid, Accounts verification, permitted
+management exception.
+ProjectManagerAppointment
+Management appointer, designated PM, effective date, scope.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+9 / 10
+
+===== PAGE 13 =====
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+MobilizationReadiness / Release
+Technical, financial, statutory, safety and management gate
+decisions.
+ServiceChangeRequest / Addendum
+Later client request, cost, approved offer, client acceptance
+and activation.
+13 Illustrative service and event contracts
+Suggested API/service boundaries for planning. Authentication, validation, permission
+checks, idempotency and audit metadata apply to all write operations.
+OPERATION / EVENT
+EXAMPLE CONTRACT
+Open selected service
+POST /projects/{id}/engagements from client selection or
+meeting.
+Prepare contract
+POST /engagements/{id}/contract-drafts.
+Management approve issue
+POST /contracts/{ver}/management-approval.
+Record signing
+POST /contracts/{ver}/execute (signatures + evidence).
+Appoint Project Manager
+POST /projects/{id}/manager-appointment
+(management-only).
+Preconstruction handoff
+POST /projects/{id}/module6/preconstruction-open.
+Mobilization authorization
+POST /projects/{id}/module6/mobilization-release.
+Events
+ServiceSelected, ContractExecuted,
+AdditionalServiceActivated, Module6PreplanningOpened,
+MobilizationAuthorized.
+14 User acceptance tests and release criteria
+• TEST 01 - Design-only/printing-only and own-builder clients can complete service without forced construction
+activation.
+• TEST 02 - Contract edits create a new version; executed version is immutable with full signatory proof.
+• TEST 03 - Contracts Officer cannot bind Mathmag or publish final unapproved contract terms.
+• TEST 04 - Client can later purchase an additional service on same project only after new management
+approval and formal acceptance.
+• TEST 05 - Module 6 preconstruction tasks can open upon execution while physical tasks remain blocked.
+• TEST 06 - NCA or other mandatory statutory obligations cannot be waived by a payment exception.
+• TEST 07 - Management directly appoints Project Manager and alone issues mobilization release.
+• TEST 08 - Early material purchase requires item-specific management expenditure approval.
+MATHMAG BUILDERS LIMITED
+MODULE 05 | CONTRACTS & SERVICE ACTIVATION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+10 / 10

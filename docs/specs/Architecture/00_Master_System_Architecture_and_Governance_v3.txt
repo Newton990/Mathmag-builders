@@ -1,0 +1,472 @@
+
+===== PAGE 1 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 1
+MATHMAG BUILDERS LIMITED
+MANAGEMENT SYSTEM
+Master System Architecture & Governance
+Seven core modules • One operational platform • One authority model
+Plan better, build better.
+Document ID: MBMS-ARCH-00
+Version 3.0 • 25 October 2026
+Status: Business requirements harmonized • Developer implementation not yet performed
+===== PAGE 2 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 2
+00. Executive decision and controlled-document precedence
+The Mathmag Builders Management System (MBMS) contains seven CORE MODULES. Modules 1-6 are the 
+client/project delivery lifecycle. Module 7 - Central Administration - is cross-cutting and operates continuously across 
+them. Client, employee, subcontractor, supplier and management dashboards are role-specific portals within this 
+single platform, not extra business modules.
+This V3 document and the corresponding module V3 addenda are the newest governance/integration layer. They 
+preserve previously approved module requirements except where an older generic or inconsistent statement must 
+be interpreted using the later owner vs GM, delegated approval, independent review, statutory/safety and audit 
+policies. Legal compliance and monetary delegation limits need verification and configuration; no software 
+implementation is claimed.
+Document Priority and purpose
+Signed contracts and law
+Mandatory applicable legislation and actual contract 
+obligations are binding; developer must not infer nonwaivable 
+waivers.
+Specific later user-confirmed rules Higher priority than older illustrative drafting assumptions, especially safeguards and escalation.
+Module 7 and this V3 architecture Company-wide governance, HR, compliance, finance, identity, audit and permission rules.
+Module 1-6 V3 addenda Controlling business-rule interpretation of the attached preserved original module text.
+Preserved source module pages Authoritative detailed workflow where no conflict with newer rules.
+Developer design proposals Implementation suggestions only, subject to review, tests and approval.
+01. Seven-module business architecture
+Module Purpose Entry / exit
+01 • Site Visit Client intake after agreed visit date; mobile site survey and report. Agreed booking -> reviewed published site brief.
+02 • Planning 2D approval -> 3D -> Structural -> Mechanical/Plumbing -> Electrical -> QS. Versioned approved technical package and budget.
+03 • Client Acceptance
+Management-published technical/budget 
+proposal; exact-version acceptance; 
+verified finance gate.
+Authorized release to Module 4 or 
+contracted permitted route.
+04 • Approvals
+Controlled printing, professional 
+certification and statutory authority 
+tracking.
+Conditional planning completion; 
+mandatory construction requirements 
+separately cleared.
+05 • Contracts
+Service selection, negotiation, final 
+agreement, execution, project 
+appointment.
+Construction planning-only activated if 
+signed; physical work still gated.
+06 • Construction Procurement, workers, sites, costs, safety, handover, warranty. Formal project closeout after all distinct obligations.
+07 • Administration
+HR, Accounts/Finance, Procurement 
+administration, Compliance, QA, 
+independent audit, corporate IT.
+Continuous, company-wide; no 
+sequential project gate.
+Service pathways are progressive and conditional. Not every client buys construction: planning-only, printing-only, 
+approval-only, technical inspection/supervision, labour-only and full-build engagements receive only relevant 
+permitted scope. No system rule should force all modules as identical paid steps.
+===== PAGE 3 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 3
+02. Organization and authority
+Layer Authority and restriction
+Business Owner
+Company ownership and strategic decisions; approved GM 
+appointment/authority mandate, governance oversight, major 
+reserved transactions, external audit/independent cases; not 
+daily site/HR/procurement approval.
+General Manager (GM)
+Company-wide operational authority; sets/delegates functional 
+matrices, settles GM-level escalations, controls company 
+operating policy, monitors performance and risk.
+Department Head
+Technical, contract, HR, finance, procurement, compliance or 
+QA delegated action within project/category/value/risk 
+permissions.
+Project Manager (PM)
+Execution and site oversight for assigned project; requests 
+resources, verifies progress, recommends major decisions; has 
+only specifically delegated monetary authority.
+Site Supervisor / Storekeeper / Worker Executes distinct worker duties; originals never suppressed; cannot certify own independent approval.
+Independent Auditor
+Protected access to immutable records and protected 
+complaint channel; appointments/removal and GM-related 
+case routing must be insulated from conflicted management.
+Qualified professionals
+Independent scope-limited certified technical 
+opinions/signatures under their validated professional 
+eligibility.
+Clients and suppliers Limited own record access; acceptance and supplier banking verified independently; no cross-project information leakage.
+02.1 Delegation and approval interpretation
+ Every power has authority_category, role/person grant, project scope, value threshold, risk category, effective 
+dates, evidence requirement and substitution/escalation route.
+ “Management” in existing Module 1-6 documents means a valid delegated manager for ordinary decisions and 
+the GM for above-limit or expressly reserved operational approvals; it never implicitly means owner approval.
+ The owner sees protected strategic/audit risk summaries but remains outside routine finance, supplier, 
+attendance, project deadlines and contract-related operational queues unless the matter is expressly owner-
+reserved.
+ Mandatory technical, client, legal, HR and finance review steps are not optional just because a GM has spending 
+authority.
+ PM responsibility to coordinate is distinct from authority to contract, sign, make payment, change material 
+ownership, certify a structural drawing or approve an independent investigation.
+ GM absence: HR activates a time-limited preapproved acting deputy according to standing approved succession; 
+if no deputy is available, preapproved emergency management committee operates via limited quorum and 
+recorded votes, never exercising owner-reserved powers.
+02.2 Cross-functional decision checkpoints
+Case Originator Independent verification Final authorization
+Site cost/visit Desk/site lead Accounts amount and project; supervisor activity Assigned delegated manager/GM on escalation
+Design professional signoff Authorized designer Department technical lead/required professional Qualified signatory; not finance/owner substitution
+Proposal release Lead QS QS costing + Contracts where necessary + Accounts gate Eligible delegated manager/GM
+Permit application/fee Approvals Officer Professional + Compliance Authorized manager for 
+===== PAGE 4 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 4
+Case Originator Independent verification Final authorization
+applicability; Accounts 
+payments spend/publication
+Binding client contract Contracts Officer Contracts/QS/Accounts/professional scope checks Authorized company signatory per actual mandate
+Material PO PM / site requisitioner
+Procurement quotes + QS 
+value + Accounts funding + 
+technical review
+Delegated purchasing 
+approver/GM
+Supplier payment Accounts payable preparation PO, accepted GRN, invoice; verified payment destination Independent payment authorizer; separate payer/reconciler
+Payroll HR/PM verified input Accounts calculation and statutory checks Delegated management approval; Accounts payout
+Critical safety return-to-
+service
+Operator/worker original 
+report
+Qualified independent 
+technical/safety assessment
+Competent documented 
+release and extra GM/PM 
+release as policy requires
+Final handover PM
+Qualified technical, QS final 
+account, Accounts and 
+Contracts
+Delegated management 
+formal release; separate 
+client acceptance
+03. Roles, portals and access model
+Use role-based access PLUS project assignment, relationship type, document classification, service entitlements and 
+record ownership. One person may hold multiple approved roles but the backend must block self-approval on 
+conflicted transactions.
+Portal Must display Must NOT display by default
+Owner
+Company KPIs, material exposure, GM 
+reports, strategic exceptions, 
+independent audit escalations.
+Routine employee payroll details, all 
+unfiltered client files and day-to-day 
+approval chores.
+GM
+Operational summary, consolidated 
+department queues, exceptions, critical 
+site/finance/compliance and staffing 
+risks.
+Restricted whistleblower identity on 
+conflicted case without authorization.
+Department Head
+Owned cases, assigned work, due dates, 
+professional checks, permitted 
+document revisions.
+Unrelated employee grievances, 
+unassigned client data, other 
+confidential suppliers.
+PM
+Assigned project worker originals, site 
+verification, procurement, schedule, QA 
+and cost snapshots.
+Secret audit informant identity, 
+unassigned project ledgers.
+Worker
+Own tasks, original submissions, 
+disputes, attendance, equipment/PPE 
+acknowledgments, lawful own earnings.
+Other workers wages/credentials, 
+sensitive commercial quotes and audits.
+Subcontractor
+Own contracted scope, personnel 
+assignments, claims, retention, evidence 
+and handover.
+Mathmag direct employment payroll or 
+another subcontractor files.
+Client
+Published project drawings, approvals, 
+agreed budgets, acceptance, invoices, 
+selected progress updates, 
+handover/warranty.
+Editable CAD, internal incidents, raw 
+employee media not published and audit 
+results.
+Independent auditor
+Allowed protected originals, append-
+only transaction audit, investigations, 
+corrective action verification.
+Changing primary transactional records 
+or deciding operational payments.
+===== PAGE 5 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 5
+04. Project lifecycle and release gates
+Gate Required proof Prohibited bypass
+G1 / visit activated Site date/time mutually agreed and project record opened. Unqualified enquiry converted automatically to project.
+G2 / architectural 3D Client accepted specific 2D file revision. 3D production or claims based on informal outdated drawings.
+G3 / engineering chain
+Department lead approval for 
+Architectural -> Structural -> MEP -> 
+Electrical -> QS.
+Unreviewed source file passing to next 
+stage.
+G4 / client proposal
+Lead QS technical approval, authorized 
+management publication, exact 
+acceptance version.
+Client approval silently changing when 
+budget/drawings revised.
+G5 / approvals stage
+Client acceptance verified, financial 
+milestone satisfied or explicit eligible 
+finance exception and separate Module 
+4 release.
+Financial bypass alters ledger or erases 
+outstanding debt.
+G6 / contract service activation
+Management-approved executed final 
+contract, signed evidence, service 
+entitlements, appointed PM where 
+appropriate.
+Client service selection treated as signed 
+construction authorization.
+G7 / mobilization
+Required permits and NCA, verified 
+milestone/exception, PM documented 
+readiness and management physical-
+start release.
+Construction simply because M4 
+conditionally closed or M5 was signed.
+G8 / critical work hold
+Relevant competent stage/safety 
+professional and operational release as 
+applicable.
+GM financial override replacing 
+technical approval.
+G9 / variation work
+Scope/technical feasibility, QS 
+rate/schedule, Contracts document, 
+manager offer and client exact 
+acceptance.
+Chargeable extra work authorized solely 
+by supervisor.
+G10 / completion
+Technical certificates, PM completion, 
+QS/Accounts reconciliation, 
+management handover, client evidence.
+Single handover flag clearing 
+unresolved financial or warranty duty.
+05. Shared record architecture
+Canonical identifiers and append-only source/evidence are the foundations. A single project reference follows all 
+modules and company-wide finance; separate engagements, contracts and stage instances reference that stable 
+project rather than cloning it.
+Domain Minimum aggregate / entities Key relationships
+Identity & mandates
+User, Employee, RoleGrant, 
+ProjectMembership, DelegationMandate, 
+ActingAuthority
+User -> granted role/scope; mandatable 
+actions/time-limited deputies.
+Client/Project Client, Enquiry, SiteVisitBooking, Project, ServiceEngagement One Project many service engagements, visits, modules, client access grants.
+Design
+SiteSurvey, DesignFileVersion, 
+DisciplineTask, TechnicalReview, 
+ClientApproval, DesignChange
+Every approval references exact 
+approved document version.
+Commercial ProposalVersion, Acceptance, ContractVersion, Signature, Variation Each financial or work gate checks same acceptance/signed contract version.
+Compliance Obligation, Applicability, License, Permit, Certificate, ComplianceHold Company standard + project applicability and regulator evidence.
+People & execution WorkerProfile, EmployerLink, Assignment, OriginalReport, Original worker report separate from supervisor verification and PM 
+===== PAGE 6 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 6
+Domain Minimum aggregate / entities Key relationships
+Verification, Dispute resolution.
+Procurement
+Supplier, TrustedContact, 
+BeneficiaryChange, Quote, Evaluation, 
+PO, GRN, Invoice
+Approved PO-version -> actual accepted 
+GRN -> supplier invoice -> payment 
+checks.
+Stock/assets
+StockBatch, Store, StockMovement, 
+Asset, OperatorPermit, DailyInspection, 
+FuelIssue
+Custody chain, ownership/title, original 
+worker reports, project costing.
+Finance
+GeneralLedgerEntry, ProjectCostLedger, 
+Payment, Receipt, Advance, 
+Reconciliation, Journal
+No erasure of original financial posts; 
+correcting journals link reversal refs.
+Quality/audit QualityFinding, SafetyHold, AuditEvent, AuditCase, CorrectiveAction, Evidence Independent audit record append-only and case protection.
+Closeout Handover, SnagItem, Retention, WarrantyTerm, WarrantyClaim Completion, client acceptance, financial close and warranty expiry separate.
+05.1 System-wide state envelope and integrity
+ Every workflow action stores id, parent/project/engagement, type, action, actorUserId, representedRole, 
+authorizingMandateId, actionTimestamp, previousState, nextState, reasonCode, attachments, correlationId and 
+source revisions.
+ Business state history and evidence attachments must be tamper-evident and non-deletable by ordinary admins. 
+Personally identifying records need legally valid retention and access safeguards; immutable audit does not 
+mean unrestricted public disclosure.
+ File versions use content hash, classification, owner, documentPurpose, supersedesVersionId, approvedBy, 
+approvedAt and exact client publication grant. Never expose storage URL without server-side authorization.
+ Critical operation endpoints require MFA or step-up verification, replay/idempotency key, server-side authority 
+check and transaction-level segregation of duties. Exceptions reference applicable policy rule.
+ Client-facing or worker-facing notifications are async, retriable and logged; original write transaction is 
+authoritative even if a notification fails.
+06. Cross-module service/event design
+Business event Consumers / gate
+SiteVisitScheduled Create project entry and site brief task only after valid mutually agreed date.
+SiteBriefTechnicallyReleased Module 2 intake; versioned approved survey and assigned architectural lead.
+Client2DApproved Permit controlled 3D work for that exact design revision.
+DisciplinePackageApproved Release next technical discipline and maintain source references.
+ProposalPublished / ProposalAccepted Client portal accepted version and management verification queue.
+PaymentVerified / FinanceExceptionApproved Re-evaluate eligible financial stage gate without altering receivable balance.
+Module4ReleaseAuthorized Create statutory cases/issue sets per project obligations.
+PermitRecorded / ComplianceHoldChanged Update project readiness and Module 6 mobilization lock.
+ContractExecuted / ServiceActivated Enable only contracted dashboard/tools, planning-only Module 6 as applicable.
+MobilizationAuthorized Permit physical construction tasks only when all nonwaivable preconditions true.
+WorkerReportSubmitted Immediate manager/PM read visibility, separate supervisor verification task, audit.
+SupplierBeneficiaryChanged Flag affected pending payments; force trusted-contact 
+===== PAGE 7 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 7
+Business event Consumers / gate
+revalidation/new authorization.
+GRNAccepted / StockMovementVerified Stock and accounts reconciliation of actual accepted quantities.
+EquipmentSafetyRestricted / EquipmentCleared Immediate targeted asset hold and competent technical documented release.
+HandoverAuthorized / WarrantyCaseOpened Start contract-defined warranty monitoring without wiping financial claims.
+07. Security, audit and operational resilience
+ Protected audit channel routes allegations involving the GM or a department head to independent auditor and 
+nonconflicted owner/governance decision-maker; access logs also audited.
+ HR, auditor and customer data have partitioned confidentiality; least privilege applies at tenant, project, case, 
+record type and individual file-level.
+ No transaction creator can approve all stages, no payable payee-change to unverified destination; no duplicate 
+invoices/payroll periods, no hidden versions/stock balance edits.
+ Encrypted transport, encryption at rest, segregated key/secrets administration, backups, restore drills, retention 
+schedule and offboarding revocation.
+ Offline site/mobile sync must display upload acknowledgment, preserve original local client submission id, 
+prevent duplicates and never label not-yet-synced evidence as completed.
+ Alerts escalate based on project risk/severity/threshold; routine site operations continue while only affected 
+unsafe assets/payments/work are restricted.
+08. Master dashboard inventory
+Workspace Core widgets / views
+Executive / owner Strategic cash and project portfolio, profitability by project, major contractual/statutory exposure, audit escalations.
+General Manager GM approvals and exceptions, department SLAs, unresolved safety, cash risk, projects exceeding cost/schedule thresholds.
+Site/PM command
+Site tasks, worker originals vs verification, stock flow, 
+procurement, quality holds, asset utilization, client update 
+queue.
+Finance AR/AP aging, receipts, verified payment batches, escrow-like advances, cash reconciliations, cost codes, payroll.
+HR Role/shift allocation, attendance exceptions, certification expiry, leave/discipline restricted cases.
+Compliance / QA Project obligations, permits/certificates expiry, open stage holds, nonconformity recurrence, corrective verification.
+Independent auditor Risk alerts, immutable records, evidence access logs, protected cases, finding aging and resolution validation.
+Client Personal project service scopes, approved designs, sign-offs, invoices, updates, handover and warranty claims.
+09. Build strategy and acceptance
+Wave Objective Deployment gates
+Foundation
+Identity and authority, project/client 
+model, versions and immutable audit, 
+document storage.
+Prove project isolation, owner vs GM 
+access, delegated authority, backups and 
+security.
+M1-3 Lead capture/booking, Prove exact-version review, client 
+===== PAGE 8 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 8
+Wave Objective Deployment gates
+2D/3D/engineering workflow, published 
+proposal and finance acceptance.
+access, release gates and Accounts 
+reconciliation.
+M4-5
+Application cases, professional certs, 
+service contracts, signature, compliance 
+holds.
+Prove technical signature scope, NCA 
+gate, service flexibility and no 
+construction bypass.
+M6 core
+Worker portals, daily reports, stores, 
+procurement, QA/safety, accounting 
+commitments.
+Prove independent worker evidence, 3-
+way matching, thresholds and material 
+ownership.
+M6 advanced
+Equipment, supplier advances, 
+subcontract claims, valuations, 
+variation, handover/warranty.
+Prove safety clearance, payee protection, 
+finance forecast and distinct closeout 
+stages.
+M7 cross-cutting
+Complete HR, audit, finance reporting, 
+compliance, centralized QA and 
+dashboards.
+Prove auditor independence, legal 
+restrictions, succession and operational 
+resilience.
+Architecture freeze depends on confirmation of actual role holders, corporate signing mandates, approval limits, 
+payroll/legal rules, accounting tax setup, project-specific statutory checklists, notification channels and required 
+integration credentials. These are parameters to obtain, not permission to revisit the already selected business 
+workflow.
+10. Developer acceptance criteria (cross-module)
+ MAST-UAT-01. Customer intake cannot create active project without agreed site visit date.
+ MAST-UAT-02. Only a valid 2D acceptance enables 3D.
+ MAST-UAT-03. No engineering handover unless predecessor technically approved.
+ MAST-UAT-04. Client may not retrieve working editable CAD/ArchiCAD design files.
+ MAST-UAT-05. Client acceptance binds exact published proposal and financial revision.
+ MAST-UAT-06. Accounts manually initiates customer overdue reminders.
+ MAST-UAT-07. An authorized financial milestone exception does not change receivable ledger.
+ MAST-UAT-08. No professional stamp from unverified or expired qualified identity.
+ MAST-UAT-09. M4 conditional completion cannot remove construction NCA statutory lock.
+ MAST-UAT-10. Client service selection is not an executed contract.
+ MAST-UAT-11. Company signature requires approved final version and valid signatory authority.
+ MAST-UAT-12. Module 6 can open planning-only while physical execution is blocked.
+ MAST-UAT-13. Worker original evidence is instantly visible to PM/GM without supervisor gate.
+ MAST-UAT-14. Supervisor disagreement appends review and preserves original media.
+ MAST-UAT-15. Unrelated worker cannot see another worker compensation.
+ MAST-UAT-16. Supplier bank account change automatically holds affected pending payment.
+ MAST-UAT-17. Three-way match against accepted GRN quantity prevents duplicate payment.
+ MAST-UAT-18. Stock transit remains in transit until receiving Storekeeper independently accepts.
+ MAST-UAT-19. Client-owned stock movement blocked absent ownership entitlement/required client consent.
+ MAST-UAT-20. Equipment cannot be assigned to unqualified/expired operator.
+ MAST-UAT-21. Critical pre-use defect restricts affected equipment only.
+ MAST-UAT-22. Repairer cannot self-certify independent return-to-service safety clearance.
+ MAST-UAT-23. Fuel issue has equipment/site/meter/operator/custody evidence.
+ MAST-UAT-24. Serious stock losses trigger fair investigation; no automatic salary deduction.
+ MAST-UAT-25. A chargeable variation needs management-approved client accepted exact scope.
+ MAST-UAT-26. PM cannot publish confidential worker disputes to client portal.
+ MAST-UAT-27. Owner cannot bypass GM operational approvals except reserved governance powers.
+ MAST-UAT-28. GM-linked whistleblower case bypasses conflicted GM controls.
+===== PAGE 9 =====
+MATHMAG  |  MANAGEMENT SYSTEM  |  MBMS-ARCH-00
+CONFIDENTIAL • v3.0  |  Page 9
+ MAST-UAT-29. Management financial override never clears safety/technical/permit gate.
+ MAST-UAT-30. Physical completion, final account, formal client handover and warranty close remain 
+independently trackable.
+11. Source and version register
+Controlled file Content
+Module 01 v3 Site Visit - addendum followed by full revised source.
+Module 02 v3 Planning - addendum followed by full revised source.
+Module 03 v3 Client Acceptance - addendum followed by full revised source.
+Module 04 v3 Approvals - addendum followed by full revised source.
+Module 05 v3 Contracts - addendum followed by full revised source.
+Module 06 v3 Construction - addendum followed by full revised source.
+Module 07 v3 Standalone authoritative central HR, Finance, Compliance, QA, Audit, IT and GM governance rule set.
+Integration Guide 08 v3 Screen inventory, modules/service interfaces, gates, technical tests and implementation configuration.

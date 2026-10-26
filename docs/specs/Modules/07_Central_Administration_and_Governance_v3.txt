@@ -1,0 +1,338 @@
+
+===== PAGE 1 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 1
+MATHMAG BUILDERS LIMITED
+MODULE 07
+CENTRAL ADMINISTRATION, FINANCE & GOVERNANCE
+HR  •  Finance  •  Compliance  •  Quality Assurance  •  Independent Audit  •  Company IT
+Controlled V3 standalone governing specification | 25 October 2026
+Plan better, build better.
+Design control
+Module 7 is a continuous company-wide governance and enabling-services module. It operates alongside all 
+Modules 1-6 and is not a seventh chronological project step. Its GM delegation and owner-reserved decisions 
+override generic references to “Management” in older module documentation. User-approved technical and 
+financial gates remain binding.
+Previously selected Module 7 business rules below are retained without changing the individual approved policy 
+choices. All legal and numerical thresholds require configured validation.
+===== PAGE 2 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 2
+03  Module 7 — Central Administration
+Module 7 is the company-wide control layer across all modules and projects. It contains Governance and 
+Delegation, HR, Finance/Accounts, Compliance, Central QA, Independent Audit and Security/Administration. The 
+selected design deliberately separates daily GM-led operations from owner-reserved governance and professionally 
+independent sign-off.
+A. Governance and administrative leadership
+M7-G01  Owner vs General Manager
+SELECTED RULE — Employed GM controls routine operations within a standing owner-approved delegation 
+framework (confirmed Option B).
+Required control and evidence: Owner receives cross-company audit and risk dashboards, governance proposals 
+and matters explicitly reserved under governing instruments and approved delegation. No per-invoice, hiring, site 
+or standard purchasing intervention.
+M7-G02  Department decisions and escalation
+SELECTED RULE — Delegate HR, procurement, finance and project approvals to appropriate qualified heads 
+within risk, project and spending matrices (confirmed Option B).
+Required control and evidence: Enforce approval authority based on action type, location, source budget, 
+cumulative thresholds, absence status and conflict-of-interest; no purchase splitting, retroactive self-approval or 
+professional safety override.
+M7-G03  GM absence and deputy succession
+SELECTED RULE — Preapproved qualified acting deputies activated through HR under documented limits without 
+fresh owner signoff for each absence (confirmed Option B).
+Required control and evidence: GM nominates succession, owner preapproves standing framework; HR verifies 
+triggering condition, time-limited access and nonconflicted eligibility; owner receives notice, not routine decision 
+queue.
+M7-G04  Emergency management quorum
+SELECTED RULE — If no eligible acting deputy, preapproved Emergency Management Committee exercises 
+collective restricted authority (confirmed policy).
+Required control and evidence: HR activation, recorded attendance/quorum/recusals/votes, heightened consensus 
+for elevated risk, time-bound scope, no owner-reserved decision powers, protected audit and owner notifications.
+M7-G05  Management dashboard and meeting decisions
+SELECTED RULE — Single accountable company task/decision register with cross-project performance and closure 
+verification (new selected Option B).
+Required control and evidence: GM approves department plans/KPIs, management tasks and action owners; 
+deadlines, evidence and independent report-back; elevated exceptions visible to governance. Meeting notes cannot 
+substitute for transactional authorization.
+===== PAGE 3 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 3
+B. Human Resources and employee administration
+M7-H01  Staffing plan and recruitment
+SELECTED RULE — Head proposes vacancy; HR verifies approved position/budget, credentials and fair selection; 
+delegated management appoints (new selected Option B).
+Required control and evidence: Track requisition, conflict disclosures, advert/referrals, structured shortlist, 
+interviews and hiring decisions; protect applicant privacy; material/senior roles require higher delegated 
+authorization.
+M7-H02  Employee onboarding and access
+SELECTED RULE — HR verifies identity, contract and role, work eligibility and any professional licences; role-
+specific training and portal activation (new selected Option B).
+Required control and evidence: Signed employment agreement, pay terms, statutory enrolment where applicable, 
+emergency contacts with privacy controls, induction, PPE, supervisor and permitted sites; IT enables least privilege 
+only after HR/authorized approval.
+M7-H03  Attendance, overtime and payroll input
+SELECTED RULE — Employee-original attendance plus independent supervisor verification and separate payroll 
+calculation/approval (existing; carried forward).
+Required control and evidence: No overwrite of check-in/out timestamps; corrections separately requested and 
+approved. Overtime requires explicit authorized policy/contract approval; evaluate labour law and entitlement. 
+Payroll must not assume subcontractor workers are direct employees.
+M7-H04  Leave, shift, absence and replacement
+SELECTED RULE — Employee-initiated requests and documented operational cover with HR entitlement checking 
+and delegated approval (new selected Option B).
+Required control and evidence: Annual/medical/emergency leave types, dates, supporting sensitive records with 
+strict access, staffing conflict checks, holiday/overtime rules via verified local law, balanced leave ledger, escalating 
+nonconflicted review for disputes.
+M7-H05  Performance reviews and development
+SELECTED RULE — Role-specific evidence-based reviews, worker and manager responses, appeal route and 
+improvement plans (confirmed principle, selected Option B).
+Required control and evidence: Compare to assigned role and actual constraints; original work reports/verified 
+output, quality and safety compliance, fair context (late materials, weather, design changes) and non-retaliation; 
+performance score must not silently trigger wage deduction/discipline.
+M7-H06  Training, trade competency and credential expiry
+SELECTED RULE — HR central training record with independent qualified verification and equipment/professional 
+role restrictions (new selected Option B).
+Required control and evidence: Mandatory training matrix per role/site, renewal reminders, training 
+booking/attendance evidence, qualified signoff; expired mandatory licences block affected professional/operation 
+activities only, not every unrelated task.
+===== PAGE 4 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 4
+M7-H07  Complaints, grievances and discipline
+SELECTED RULE — Confidential HR cases, fair fact-finding, opportunity to respond, independent appeal and 
+protected channels for GM/supervisor cases (new selected Option B).
+Required control and evidence: Role-restricted evidence, due process per contracts/applicable Kenyan law, non-
+retaliation against reporters, no automatic penalties, independent auditor oversight for fraud/retaliation/implicated 
+management, protected appeal separation.
+M7-H08  Employment changes and offboarding
+SELECTED RULE — Documented contract variation, role transfer or exit; immediate risk-based access/asset 
+recovery, final lawful balances and records (new selected Option B).
+Required control and evidence: HR obtains authorization, tracks notices and legally required benefits, 
+projects/worker assignments, PPE/assets, Accounts final payroll/advance settlement under law; revoke access and 
+preserve original worker evidence even after departure.
+M7-H09  Payroll and worker advances
+SELECTED RULE — Accounts independently calculates employee pay and verified recoveries, with separated 
+delegated pay approval and payer controls (previously confirmed Option B).
+Required control and evidence: Supports daily/weekly/monthly/piecework/fixed-task; employee visibility limited to 
+own terms and statements; any pay advance/deduction governed by actual agreement and law; errors corrected 
+transparently with versioned ledger.
+C. Finance, budgeting and commercial controls
+M7-F01  Chart of accounts and project finance
+SELECTED RULE — Central company general ledger with project/job/cost-code subledgers and distinct commercial 
+commitments (new selected Option B).
+Required control and evidence: Separate project quoted budget, approved changes, PO commitment, accrued 
+expense, actual expense, cash paid, receivable and recoverable advance; maintain multi-contract scope, tax 
+categorization and traceable cost center dimensions.
+M7-F02  Budget approvals and variance management
+SELECTED RULE — Management authorizes initial budget and material revisions; QS forecasts and Accounts 
+validates actual finance (new selected Option B).
+Required control and evidence: PM/QS plan cost-to-complete, requisitions checked against budget commitment and 
+delegated thresholds; supported variation vs internal forecast distinguished; exceptions not silently added to client 
+contract price.
+M7-F03  Client billing and debt collection
+SELECTED RULE — Contract-specific milestone/schedule/verified-progress invoices with Accounts reconciliation 
+and management-controlled credit decisions (confirmed Option B).
+Required control and evidence: PM progress certificate and QS valuation when applicable; Accounts issues 
+controlled invoice and posts independently verified payment. Financial reminder sending follows previous rule: 
+Accounts manually controls timing, though overdue risk alerts may be automatic.
+===== PAGE 5 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 5
+M7-F04  Supplier payable control
+SELECTED RULE — Approved supplier/master verification; valid award and PO, accepted GRN or contract-
+permitted advance stage, verified invoice and payment destination (confirmed Option B).
+Required control and evidence: Prevent duplicates and invoice splitting; account changes require out-of-band 
+verification and renewed approval of affected pending payments. Sensitive supplier bank details not exposed to 
+ordinary site users.
+M7-F05  Supplier advances, shortage claims and recoveries
+SELECTED RULE — Contract-permitted risk-screened prepayment with formal milestone offset and monitored 
+recovery (confirmed Option B).
+Required control and evidence: Track supplier default/notice, alternative sourcing, Contracts enforceable remedies, 
+Accounts exposure, settlement vs accounting impairment, delegated financial approval and independent audit; 
+apply precise payment/recovery rights from signed documents.
+M7-F06  Payment batch creation and disbursement
+SELECTED RULE — Independent payable preparation, verification, authorization, secure payment initiation and 
+separate post-payment reconciliation (new selected Option B).
+Required control and evidence: Maker/checker/approver/payer rights cannot collapse into one person; payment file 
+integrity, approved payee crosscheck just before release, duplicate detection, failed/reversed payments, transfer 
+fees and bank references. No pay without valid verified destination.
+M7-F07  Petty cash, travel, expenses and staff imprests
+SELECTED RULE — Controlled imprest/cashless-first approach with receipts, accountable limits, reimbursement 
+review and timely settlement (new selected Option B).
+Required control and evidence: Employee claim or authorized cash advance, manager verifies business purpose, 
+Accounts checks policy/duplicate receipts and budget, delegated approval, reconciliation, repayment/approved 
+lawful recovery of unsupported spending; review recurring patterns.
+M7-F08  Bank, mobile-money and cash reconciliation
+SELECTED RULE — Accounts performs scheduled independent bank/M-Pesa reconciliation with investigation and 
+controlled journal corrections (new selected Option B).
+Required control and evidence: Import statements/read-only direct reconciliation where supported, map 
+receipts/payments and fees, monitor unpresented/failed/duplicate transfers, require second-role signoff for 
+reconciliation and material journals, audit unmatched transactions.
+M7-F09  Payroll authorization and statutory remittances
+SELECTED RULE — HR controls authorized staff/terms; site verifies work; Accounts independently calculates and 
+pays only authorized net pay (confirmed pattern, finalized Option B).
+Required control and evidence: No payroll for unverified or duplicate worker records; applicable 
+PAYE/pension/social-security and other payroll obligations configured from current rules; bank-beneficiary 
+changes under same strong out-of-band safeguards.
+M7-F10  Tax/statutory filing and professional fees
+SELECTED RULE — Central Compliance owns requirements calendar while Accounts prepares financial 
+returns/payments and appropriately authorized professionals certify (new selected Option B).
+===== PAGE 6 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 6
+Required control and evidence: Country/county/project tax and statutory requirements must be confirmed by 
+responsible qualified advisers; never hard-code unverified rates or deadlines; keep returns, acknowledgments, 
+receipts, corrections and escalation evidence.
+M7-F11  Financial period closing and reporting
+SELECTED RULE — Accounts closes periods with reconciliations, aged balances, projects cost-to-complete and 
+management review (new selected Option B).
+Required control and evidence: Versioned management reports: cash and bank, payables, receivables, supplier 
+advances, payroll, VAT/tax as applicable, budget vs actual, profitability, commitments, project exposures, write-offs 
+and liabilities; closed periods changed only via controlled journal adjustment.
+M7-F12  Credit notes, refunds, settlements and write-offs
+SELECTED RULE — Accounts independently calculates balance; Contracts verifies legal entitlement; delegated 
+managers approve within limits (confirmed Option B).
+Required control and evidence: Client/supplier credits require traceable invoice/contract basis and reverified 
+beneficiary where paid; financial impairment recognized separately from legal waiver; high-risk audit oversight 
+and GM escalation.
+M7-F13  Project final commercial reconciliation
+SELECTED RULE — PM confirms physical completion; QS verifies variations and final account; Accounts confirms 
+ledger, retentions and claims (new selected Option B).
+Required control and evidence: Unresolved warranties/client debt/retention/defects remain open in separate 
+registers. No off-book settlement; supplier and client ownership material closeout feeds commercial closeout but is 
+distinct.
+D. Compliance and central quality assurance
+M7-C01  Statutory/professional obligations register
+SELECTED RULE — Central qualified Compliance Officer maintains source-linked register of obligations, proof and 
+renewal dates (confirmed Option B).
+Required control and evidence: Qualified Leads own discipline requirements; Approvals Officer/PM run project 
+submissions; automatic reminders, risk escalation and affected-activity restrictions where mandatory prerequisites 
+missing; management cannot self-issue technical clearance.
+M7-C02  Independent compliance continuity
+SELECTED RULE — GM appoints qualified Compliance Officer; predesignates competent deputies for HR 
+activation; last-resort external backup preapproved (confirmed Option B).
+Required control and evidence: Acting rights time-bounded, scoped and independently audited; external backup 
+must receive least-privilege access and confidentiality terms, without requiring per-absence owner signoff.
+M7-C03  Regulatory change control
+SELECTED RULE — Compliance monitors trusted official changes, qualified professionals assess applicability and 
+effective date; PM/QS/Contracts assess each affected project (confirmed Option B).
+Required control and evidence: Do not assume retroactivity. Mandatory affected work may be restricted; client 
+variations negotiated where lawful, no unilateral charges. Unlock only after professional/safety/compliance 
+clearance and authorized digital work release.
+===== PAGE 7 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 7
+M7-C04  Quality oversight and hold points
+SELECTED RULE — Independent Central QA register for recurring construction defects, lot issues, 
+nonconformances, investigations and preventive actions (confirmed Option B).
+Required control and evidence: QA may impose narrow provisional serious-defect holds but cannot replace 
+licensed professional signoff. Independent qualified lead confirms/resolves hold; PM implements, QS/Accounts 
+track costs and source of legal liability.
+M7-C05  Supplier and material quality lot tracking
+SELECTED RULE — QA tracks supplier lots from PO/GRN through stores, transfer and installation; unsafe or 
+suspect lots quarantined (confirmed Option B).
+Required control and evidence: Storekeeper physically isolates and blocks issuance; professionals test/clear or 
+reject; Procurement pursues supplier remedies; affected installed work gets scoped professional assessment; 
+Accounts adjusts credited cost only against verified documents.
+M7-C06  Corrective action verification and recurrence
+SELECTED RULE — Every defect/incident creates accountable root-cause review and measurable 
+corrective/preventive actions (confirmed Option B).
+Required control and evidence: Technical Leads approve technical measures; independent competent verifier tests 
+effectiveness; QA trends recurrence across sites; protected auditors verify high-risk financial/governance actions 
+are truly closed.
+E. Independent audit, ethics and investigations
+M7-A01  Independent auditor appointment and protection
+SELECTED RULE — Lead independent auditor has owner/governance-controlled appointment/removal, separate 
+from unilateral GM operational control (confirmed Option B).
+Required control and evidence: HR administers terms/resources, GM ensures cooperation, auditor retains protected 
+read access and secured case evidence; no auditor may approve company spending they later audit as independent.
+M7-A02  Automated anomaly and risk analytics
+SELECTED RULE — Risk-based monitoring for duplicate invoices, split purchases, beneficiary changes, suspicious 
+journal entries and material diversion (confirmed Option B).
+Required control and evidence: Alerts preserve allegation/evidence status, not guilt; compare cross-project 
+procurement, material discrepancies, payroll and supplier master records; prioritize serious cases without 
+assuming a flag proves fraud.
+M7-A03  Anonymous/identified whistleblower channel
+SELECTED RULE — Protected confidential or anonymous intake with case reference, status updates and 
+independent triage (confirmed Option B).
+Required control and evidence: Separate GM-related cases from GM; restrict reporter identity and no automatic 
+inference linking anonymous cases to staff identities. Anti-retaliation monitoring for known protected reporters 
+without disclosure; independent appeal review.
+M7-A04  Finding resolution and independent closure
+SELECTED RULE — Auditor records severity, findings/evidence; nonconflicted management assigns corrective 
+owners, independent auditor verifies closure (confirmed Option B).
+===== PAGE 8 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 8
+Required control and evidence: Critical/high issues escalated via protected governance channel, including owner 
+when GM implicated; immutable documents, fair response opportunities, legal privileges/confidentiality, no secret 
+suppression or self-closure.
+M7-A05  External reporting and legal constraints
+SELECTED RULE — Independent legal/compliance assessment of mandatory authority notifications without 
+implicated-management veto (confirmed Option B).
+Required control and evidence: Record date, statutory trigger, notification authority, approvals where law permits, 
+evidence and eventual response; no system requirement should enable illegal withholding of mandatory reports.
+F. Corporate documents, IT and information governance
+M7-I01  User roles, identity and access
+SELECTED RULE — Central role + project scope + approval limit checks, with 2FA for sensitive actions and 
+individual non-shared accounts (new selected Option B).
+Required control and evidence: HR governs activation/deactivation; IT enforces least privilege; emergency time-
+limited privilege elevation separately approved and recorded; no shared supervisor/worker login; client isolated to 
+own project; audit access independent.
+M7-I02  Confidential company document control
+SELECTED RULE — Versioned, project/department-scoped files with formal issue sets, metadata and publication 
+consent (new selected Option B).
+Required control and evidence: Architectural source working files stay internal; contract, HR, payroll, technical 
+certificates and protected cases access-restricted; client sees released PDFs/images only. Digital signatures must be 
+legally appropriate, not counterfeit professional stamps.
+M7-I03  Communication and alerts
+SELECTED RULE — Event-triggered task notifications for compliance, safety, inspections, overdue invoices and 
+role assignments (new selected Option B).
+Required control and evidence: Use SMS/WhatsApp/email/in-app only where permitted/configured; avoid exposing 
+confidential details in notifications. Preserve manual Accounts discretion over CLIENT payment-reminder timing; 
+do not auto-demand payment when not approved.
+M7-I04  Backup, recovery and tamper evidence
+SELECTED RULE — Encrypted protected file storage, backups, disaster recovery drills, audit retention and secure 
+restoration (new selected Option B).
+Required control and evidence: Access/event logs tamper-evident; workers can correct by addendum not overwrite; 
+files use virus scanning/content controls and versioning; data-retention/privacy and breach-response requirements 
+set per applicable law and verified policy.
+M7-I05  Dashboards and company reporting
+SELECTED RULE — Separate owner governance dashboard, GM operating cockpit, departmental task queues and 
+PM project scorecards (new selected Option B).
+Required control and evidence: Owner: portfolio profitability, cash, governance/risks, audit status without daily 
+approval queue. GM: delivery, budgets, resources, exceptions. PM: site operations; Accounts: finance; HR: protected 
+workforce; Audit: independent findings. KPI charts must use verified source transactions.
+===== PAGE 9 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 9
+===== PAGE 10 =====
+MATHMAG • MODULE 07 • GOVERNING SPECIFICATION • V3  |  Page 10
+7.1 Cross-module authority interpretation
+ GOV-01 Governance: The owner retains reserved strategic powers and protected oversight, while the employed 
+General Manager (GM) holds company-wide operational accountability. Owner access to reporting does not 
+authorize routine operational interference.
+ GOV-02 Delegation: Department heads, Project Managers and designated officers may authorize decisions only 
+within documented project, function, category, value and risk limits; above-limit or exceptional decisions go to 
+GM. No employee may approve their own originating action.
+ GOV-03 Technical independence: Valid safety and professional certifications are performed by competent 
+authorized persons; neither a GM nor a financial waiver can substitute for a mandatory technical/statutory 
+clearance.
+ GOV-04 Evidence: Worker, junior designer, client, storekeeper, inspector, supplier and auditor original 
+submissions are preserved with authorship, timestamp, linked versions and tamper-evident history. Review 
+adds new records; it does not overwrite originals.
+ GOV-05 Segregation: Requests, verification, approval, payment, receipt and audit must be appropriately 
+independent. Where team size makes perfect separation impractical, a documented compensating review by 
+an independent qualified officer is mandatory.
+ GOV-06 Client access: Client portal content is limited to that client/project and expressly published revision; 
+source design files, worker complaints, confidential pay, internal contracts and audit cases remain restricted.
+ GOV-07 Controls: Accounts verifies funds/beneficiaries and books actual transactions; QS values cost and 
+forecasts; Contracts verifies commercial entitlements; Compliance oversees obligations; QA checks systemic 
+quality; independent audit observes, investigates and independently verifies closure.
+ GOV-08 Exceptions and continuity: Documented financial/administrative exceptions may be decided by the 
+authorized delegated manager or GM; there is no exception to mandatory law, safety, professional status or an 
+already-required client acceptance. GM absence invokes only preapproved and HR-activated acting authority.
+7.2 Management and audit dashboard expectations
+ GM operational inbox: delegated approvals, department performance, overdue controls, restricted equipment, 
+financial exposure, statutory gates and incident response.
+ Owner oversight: high-level project margins/cash exposure, protected independent audit results, GM 
+performance, strategic risks and owner-reserved resolutions; no routine payment approval queue.
+ Department heads: staff workload, qualification expiries, pending reviews and disciplinary access only within 
+legal and role constraints.
+ Independent auditor: protected access to original immutable records, anomalies and case management, with 
+management-involved cases escalated to non-conflicted owner/governance.
+ System administrators operate infrastructure and permissions under dual-control but cannot impersonate 
+another staff member or silently change audit evidence.
+7.3 Implementation and assurance
+The full audit and functional testing matrix is documented in the Master Architecture and Integration Testing 
+Guide. Modules 1-6 point to Module 7 policies for roles, finance, HR, records, security and audit. All client project 
+routes remain configurable by contracted service, not by forcing all seven stages sequentially.

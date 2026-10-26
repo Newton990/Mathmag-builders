@@ -1,0 +1,577 @@
+
+===== PAGE 1 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 1
+MODULE 02 | VERSION 3.0
+Planning & Technical Design
+Governance-aligned controlled consolidation | 25 October 2026
+DOCUMENT
+CONTROL
+APPLICATION
+Status
+Harmonized business specification; approved prior module workflow retained with controlling
+Module 7 alignment.
+Composition
+This V3 addendum and the full previously revised module source are combined in a single
+PDF.
+Priority
+This V3 alignment governs in case of conflict. The original module source remains operative
+where not contradicted.
+Central governance
+Module 7 is a continuous operational backbone; it is not a gate to be completed after Module
+6.
+Authority
+Documented GM-led delegation and owner-reserved matters replace generic or inconsistent
+old “Management alone” labels.
+Scope of this module
+Architectural 2D approval before 3D; structural, mechanical/plumbing, electrical and QS
+budgeting with independent professional review and controlled versions.
+1. Implementation interpretation and source preservation
+This document intentionally retains the complete existing revised module specification after this amendment.
+Do not erase earlier workflow, screenshots, forms, stages or user-approved protections. Configure the shared
+functions from the V3 Master Architecture and Module 7 specification. The addendum is not permission to skip
+work or approvals.
+2. Shared mandatory company controls
+ • GOV-01 Governance: The owner retains reserved strategic powers and protected oversight, while the
+ employed General Manager (GM) holds company-wide operational accountability. Owner access to reporting
+does not authorize routine operational interference.
+• GOV-02 Delegation: Department heads, Project Managers and designated officers may authorize decisions
+ only within documented project, function, category, value and risk limits; above-limit or exceptional decisions
+go to GM. No employee may approve their own originating action.
+• GOV-03 Technical independence: Valid safety and professional certifications are performed by competent
+ authorized persons; neither a GM nor a financial waiver can substitute for a mandatory technical/statutory
+clearance.
+• GOV-04 Evidence: Worker, junior designer, client, storekeeper, inspector, supplier and auditor original
+ submissions are preserved with authorship, timestamp, linked versions and tamper-evident history. Review
+adds new records; it does not overwrite originals.
+• GOV-05 Segregation: Requests, verification, approval, payment, receipt and audit must be appropriately
+ independent. Where team size makes perfect separation impractical, a documented compensating review by
+an independent qualified officer is mandatory.
+• GOV-06 Client access: Client portal content is limited to that client/project and expressly published revision;
+ source design files, worker complaints, confidential pay, internal contracts and audit cases remain restricted.
+
+===== PAGE 2 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 2
+• GOV-07 Controls: Accounts verifies funds/beneficiaries and books actual transactions; QS values cost and
+ forecasts; Contracts verifies commercial entitlements; Compliance oversees obligations; QA checks systemic
+quality; independent audit observes, investigates and independently verifies closure.
+• GOV-08 Exceptions and continuity: Documented financial/administrative exceptions may be decided by the
+ authorized delegated manager or GM; there is no exception to mandatory law, safety, professional status or
+an already-required client acceptance. GM absence invokes only preapproved and HR-activated acting
+authority.
+3. Updated operating workflow and stage gates
+Architectural 2D
+Lead Architect assigns juniors, checks versions and obtains evidence of client acceptance of exact 2D layout
+before any 3D task is released.
+Architectural 3D
+Assigned junior prepares renders; Lead Architect approves; 3D never substitutes for 2D acceptance.
+Engineering chain
+Approved internal working set moves to Structural, then Mechanical/Plumbing, then Electrical; each lead
+delegates and approves discipline scope.
+Quantity survey
+Lead QS delegates estimators, validates BMS/BQ/budget and prepares summary and detailed controlled
+estimates.
+Proposal handover
+Departmentally approved, coordination-checked working revisions form the Module 3 proposal; financial
+publication requires separately authorized release.
+4. Module-specific accountability integration
+CONTROL AREA
+REQUIRED V3 BEHAVIOR
+Design task deadlines
+GM/delegated management sets overall target; relevant discipline lead sets junior task
+deadlines within target.
+Professional qualifications
+HR stores licences, education, renewals; Compliance monitors expiry; qualified
+signatories alone certify their regulated work.
+Design revisions
+Minor correction under authorized scope; major redesign obtains Contracts/QS impact,
+client change terms and delegated GM/management approval.
+Independent QA
+Department lead performs mandatory technical acceptance; central QA samples risk,
+nonconformities and cross-discipline coordination.
+Working files
+ArchiCAD / editable CAD files internal and versioned; client only specifically published
+PDF/image outputs.
+Project design budget
+QS and Accounts independently track design labour/fees and financial actuals; no
+accidental automatic client proposal change.
+
+===== PAGE 3 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 3
+5. Conflict resolution register
+OLDER / AMBIGUOUS WORDING
+V3 INTERPRETATION
+“Management” sets overall deadline
+Assigned delegated GM/department approval following authority matrix;
+the owner is not the deadline approver.
+Technical “approval” and public
+“publication”
+Separate professional review, commercial acceptance, and delegated
+management publication permissions.
+6. Developer data extensions / shared links
+Maintain one stable ProjectId across all modules; preserve exact FileVersionId and client publication
+authorization, verify role scope server-side and append actor/timestamp/decision history for every state
+transition.
+ • DisciplineTask
+ • WorkingFileVersion/Transmittal
+ • ApprovalEvidence/Client2DAcceptance
+ • ProfessionalCredential
+ • CoordinationIssue
+ • DesignChangeRegister
+ • BudgetRevision
+ • QaFinding/Correction
+ • AuditEvent
+ 
+7. Mandatory integration acceptance tests
+ AT-02-01: Reject any 3D assignment until client acceptance of exact 2D version.
+ AT-02-02: Reject structural handover without Lead Architect completed release.
+ AT-02-03: Do not release MEP/QS before predecessor discipline approvals.
+ AT-02-04: Client downloads cannot expose editable CAD/ArchiCAD files.
+ AT-02-05: Expired professional credential blocks regulated sign-off but not unrelated work.
+ AT-02-06: Large redesign requires approved time and commercial impact, preserving original revisions.
+ 
+8. Required developer references
+Read this PDF with 00 Master Architecture, Module 07 Central Administration and 08 Integration & Testing.
+Additional authoritative user decisions for Modules 1-6 prevail over older illustrative implementation examples
+where the later decision is more specific. Regulatory obligations must be validated with qualified advisors and
+current official sources before implementation.
+
+===== PAGE 4 =====
+MATHMAG BUILDERS LIMITED
+MANAGEMENT SYSTEM
+MODULE 02
+PLANNING & TECHNICAL
+DESIGN
+Architectural → Structural → Mechanical/Plumbing → Electrical →
+Quantity Surveying
+Plan better, build better.
+DOCUMENT CONTROL
+DETAIL
+Organization
+Mathmag Builders Limited
+Purpose
+Revised developer-ready functional specification
+Revision
+2.0 | 24 October 2026
+Approval basis
+Confirmed business choices + clearly identified technical implementation recommendations
+System scope
+Module 02 of 06, on one persistent client/project platform
+IMPLEMENTATION RULE
+This revision replaces inconsistent stage assumptions in earlier drafts. A confirmed business decision is
+binding; illustrative fields, example APIs and implementation details must be validated in design review.
+
+===== PAGE 5 =====
+01 Purpose, workflow and confirmation status
+A five-department controlled design and cost-planning pipeline, with linked evidence,
+roles, versioned technical releases and client approval gates.
+DEPARTMENT
+ORDER / MANDATORY HANDOFF
+Architectural
+Approved Module 1 brief -> 2D -> formal client 2D approval ->
+3D -> formal client 3D approval and architectural package
+release.
+Structural
+Architectural released native working files -> delegated
+analysis, design and detailing -> Lead Structural Engineer
+approval.
+Mechanical / Plumbing
+Structural release -> delegated mechanical/plumbing
+coordination and technical review by Lead Mechanical
+Engineer.
+Electrical
+Mechanical release -> delegated electrical design and Lead
+Electrical Engineer technical approval.
+Quantity Surveying
+Coordinated four-discipline release -> Lead QS assignment,
+quantity takeoff and approved summary/detailed cost outputs
+for Module 3.
+MANDATORY CONTROL
+2D client approval is a mandatory prerequisite before 3D work begins. The departments are ordered as
+confirmed; proposed deliverable details within new MEP units must be project-scope configurable.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+2 / 10
+
+===== PAGE 6 =====
+02 End-to-end technical design workflow
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Module 1 Release
+Lead Architect receives approved brief and assigns 2D junior.
+02
+2D Architectural
+Junior drafts and Lead Architect approves client-facing version; client
+formally accepts the specific layout.
+03
+3D Architectural
+Assigned 3D author creates renderings from approved 2D; Lead Architect
+reviews and client formally approves version.
+04
+Structural
+Lead Structural Engineer delegates and approves structural analysis, design
+and detailing.
+05
+Mechanical / Plumbing
+Lead Mechanical Engineer delegates, checks cross-discipline interfaces and
+releases.
+06
+Electrical
+Lead Electrical Engineer delegates, checks technical and spatial coordination
+and releases.
+07
+QS / Budgeting
+Lead QS assigns estimators, ensures source versions consistent and
+technically approves both budget views.
+08
+Module 3 Handoff
+Lock coordinated package and cost estimate snapshot for proposal
+presentation.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+3 / 10
+
+===== PAGE 7 =====
+03 Departmental owners and segregation of duties
+ ROLE
+AUTHORITY / LIMIT
+Lead Architect
+Delegates 2D and 3D; sets task deadlines; reviews technical
+output; controls architectural client publication; releases
+package after approvals.
+Junior Architect / Renderer
+Produces task-specific outputs, submits drafts/source files and
+evidence, responds to review comments; cannot self-approve.
+Lead Structural Engineer
+Owns structural design and final technical signoff, junior
+allocations, technical deadlines and release to Mechanical.
+Lead Mechanical Engineer
+Owns plumbing/mechanical review, junior assignments and
+release to Electrical.
+Lead Electrical Engineer
+Owns electrical review, junior assignments and release to QS.
+Lead Quantity Surveyor
+Owns estimating allocations, technical budget accuracy,
+version checks and cost-package release.
+Client
+Reviews published PDFs/images; approves 2D and 3D versions
+through portal or signed evidence; no access to internal
+source.
+Management
+Sets overall design deadlines, controls business scope and
+major changes, views all task/authorship evidence and
+dependencies.
+04 Shared assignment, task and review engine
+• Every technical task must have project, discipline, package revision, assignee, originating instruction,
+planned deadline, submission, reviewer and status.
+• System supports draft, submitted for review, returned with comments, technically approved, released and
+superseded states; approval and release are separately logged.
+• The reviewer may create numbered correction comments; the author submits a new working version; earlier
+versions remain accessible to appropriate staff.
+• Management controls overall design/project target; department leads allocate own junior tasks and set
+subordinate deadlines.
+• Individual professionals have attributable submission histories and task-quality/turnaround records.
+Department leads cannot silently erase or alter junior-originated work evidence; management retains visibility.
+• Management can assess employee performance using timely reporting, completeness, verified technical
+quality and rework, with context for client changes or missing inputs.
+05 Architectural 2D phase - client approval gate
+Lead Architect and junior workflow
+• Receive the approved site report and brief; assign an authorized junior 2D task with scope and deadline.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+4 / 10
+
+===== PAGE 8 =====
+• Junior prepares drawings/layout variants, stores editable ArchiCAD project and controlled PDF/image
+proposals in internal workspace.
+• Lead Architect technically reviews the chosen 2D issue; return comments or authorize a specific client-facing
+revision.
+Client review and formal evidence
+• Support portal review or physical/virtual design meeting. Attach meeting notes to the exact shown version.
+• Accept portal approval or uploaded client-signed approval form bound to a specific 2D version and authorized
+client identity.
+• No 3D task activation until a valid formal 2D acceptance exists. Mere viewing or verbal discussion is not
+approval.
+• Scope-controlled minor changes can cycle normally; substantial redesign requests require management
+authorization and may entail fees under approved terms.
+06 Architectural 3D phase and release
+• Lead Architect may assign 2D and 3D to one junior or different juniors, preserving separate task ownership
+and deadlines.
+• 3D must reference the exact client-approved 2D drawing revision; do not produce an unapproved alternative
+layout as the client deliverable.
+• Submit still images/renderings and any contracted visualization outputs for lead review before selective
+client publication.
+• Client comments and revisions must be version-linked; formal 3D acceptance via portal or signed form is
+retained.
+• The architectural internal handover includes native ArchiCAD/source files and locked client-approved
+planning PDFs/images; native files never appear in the client portal.
+• If approved 2D is later materially changed, trigger dependent 3D, structural, MEP and QS revalidation as
+needed.
+07 Structural engineering submodule
+• Lead Structural Engineer accepts the approved architectural ArchiCAD working package internally and
+delegates specific analysis/design/detailing tasks to juniors.
+• Structural packages contain applicable analysis assumptions, design calculations, foundation/ground
+floor/upper structure details, connections, notes, schedules and coordination issues.
+• Lead Structural Engineer reviews calculation/drawing compatibility and is sole discipline technical release
+owner; professional certification remains with appropriately authorized persons.
+• Management sets overall structural deadline; lead sets junior task deadlines and returns incomplete tasks for
+correction.
+• Do not pass structural incomplete or unreviewed packages to costing; release the signed-off technical
+reference package onward to Mechanical / Plumbing.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+5 / 10
+
+===== PAGE 9 =====
+08 Mechanical and plumbing submodule
+• Upon structural release, the Lead Mechanical Engineer receives the compatible architectural and structural
+source references.
+• Lead delegates plumbing/water supply, drainage, sanitary fittings, equipment, ventilation/mechanical
+systems as relevant to contracted scope and project type.
+• Junior deliverables may include PDFs, working files, system sizing, schedules and inspection-ready drawings
+where required; exact content remains configurable.
+• Lead records discipline checks, clash/penetration coordination, corrections and a final technical package
+release to Electrical.
+• Changes to structure/architecture must create cross-discipline coordination issues and revalidate dependent
+cost items.
+09 Electrical submodule
+• Lead Electrical Engineer receives the latest compatible approved Architecture, Structural and
+Mechanical/Plumbing packages.
+• Tasks may cover lighting, power, load distribution, circuits, low-current services, equipment points and
+relevant schedules in accordance with scope.
+• Lead reviews technical design, electrical safety matters, coordination with plumbing and structural elements
+and version completeness.
+• Approved Electrical release is made available to QS; any corrections to upstream disciplines trigger
+controlled dependent revisions.
+10 Quantity surveying and budgeting submodule
+• Lead QS takes control only after required four discipline package approvals and assigns quantity takeoff and
+estimating tasks to estimators.
+• Quantities must reference exact approved drawing revisions, units, measurement assumptions and scope
+exclusions; inconsistencies become coordination questions.
+• Prepare both summary budget and detailed budget. Lead QS gives technical approval before Module 3
+publication consideration.
+• Detailed budget remains permission controlled; client-facing summary or detailed view is an explicit
+management publishing choice in Module 3.
+• Changes with measurable cost consequences require re-estimation; preserve pricing assumptions, source
+date and estimate version.
+• If a client only contracts selected design services, Module 2 still records the appropriate deliverable package
+and honest exclusions, without implying every discipline was commissioned.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+6 / 10
+
+===== PAGE 10 =====
+11 Coordination issues and controlled revisions
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Issue Raised
+Any downstream team logs clash, missing information, inconsistent
+dimension or scope change with drawings/screenshots.
+02
+Owner Assigned
+Affected discipline head accepts responsibility and sets resolution task and
+deadline.
+03
+Corrected Source Released
+Department head approves new version; old issue set remains archived.
+04
+Impacted Departments Flagged
+System marks all affected downstream drawings/budgets as Revalidation
+Required.
+05
+Revalidation Completed
+Impacted leads acknowledge corrected documents and regenerate
+dependent outputs.
+06
+QS / Client Impact Checked
+Cost/time implications escalate to management and to client reacceptance
+where necessary.
+MANDATORY CONTROL
+Do not silently overwrite a client-accepted drawing, pricing proposal or professional approval. Revision
+impact must be evaluated through Modules 3, 4, 5 and 6 when relevant.
+12 File management, visibility and milestones
+ CONTROL
+BINDING RULE
+Internal files
+Authorized technical teams may share images, PDFs and
+ArchiCAD/native engineering files; restrict by project, discipline
+and assignment.
+Client files
+Only selected image/PDF outputs; no native ArchiCAD models,
+internal calculations or staff review comments by default.
+Document version
+Maintain author, uploader, file hash, creation date, review,
+approval, release, supersession and dependency manifest.
+Lead deadlines
+Management sets overall planned design delivery; Lead
+Architect sets 2D/3D assignments; Structural Lead sets
+structural junior targets.
+MEP and QS deadlines
+Provide configurable lead/junior task dates rather than invent
+a non-confirmed fixed company policy.
+Evidence integrity
+Junior submission and correction history remain independently
+accessible to management; no staff may conceal a
+subordinate original submission.
+Client approvals
+Formal 2D and 3D approvals tie to version and
+client/representative identity.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+7 / 10
+
+===== PAGE 11 =====
+13 Shared rules carried across all six modules
+ CROSS-MODULE RULE
+IMPLEMENTATION REQUIREMENT
+One lifecycle record
+Maintain one project ID from confirmed site-visit booking
+through design, approvals, contracts, construction and
+post-handover. Never create a disconnected project just to
+open a new module.
+Role separation
+User role, project assignment and explicit approval authority
+determine every permitted action. Technical sign-off, financial
+validation, management approval and client acceptance are
+distinct records.
+Evidence integrity
+Preserve original submissions, attachments, timestamps,
+authors and immutable decision histories. Corrections create
+new records or versions; no silent overwriting.
+Selective client access
+Client accounts can access only their own projects and
+explicitly authorized files or updates. Internal working/source
+files, staff performance data and financial notes are never
+published by default.
+Conditional service scope
+Clients may purchase design only, printing only, approvals,
+technical supervision, labour-only building or full construction.
+Modules not contracted are not mandatory project steps.
+Management-controlled exceptions
+Any permitted exception requires identified management
+authorization, reason, date and retained evidence. Mandatory
+legal/technical clearances cannot be overridden.
+Security and audit
+Require authenticated accounts, least privilege, encrypted
+transport/storage, file scanning, access logs, project-scoped
+permissions, backups and recoverability.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+8 / 10
+
+===== PAGE 12 =====
+14 Screens and user journeys
+ SCREEN
+PRIMARY USERS / BEHAVIOUR
+Department Pipeline
+Five-stage dependency board with technical gates and
+package release history.
+Lead Architect Review
+2D/3D tasks, versions, review comments, client review/publish
+queue and approvals.
+Junior Technical Workspace
+Assigned workload, file uploads, review rounds, deadlines and
+handover checklists.
+Client Design Review
+2D and 3D authorized PDF/image viewers, comments and
+signed/portal acceptance.
+Structural Workspace
+Native file handover, calculation attachments, junior tasks and
+lead approvals.
+Mechanical/Electrical Workspaces
+Coordination references, component schedules, correction
+cycle and lead release.
+QS Workspace
+Versioned source drawings, quantities, rates,
+summary/detailed budget and approval.
+Management Analytics
+Department turnaround, active rework, original authorship
+trail and schedule forecasts.
+15 Core data objects and key relationships
+Logical entities for developer schema design. Names below are examples rather than
+prescribed database table names.
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+DesignPackage / DisciplineRelease
+Project, discipline, source manifest, issue version, released
+by/at, downstream dependency.
+DesignTask / ReviewComment
+Assignee, target, date, original upload, comments, correction
+rounds, reviewer, status.
+ClientDesignApproval
+Client identity, 2D/3D phase, exact document revision, portal
+or signed evidence, date.
+NativeFile / ClientFile
+Access classification, file hash, approved presentation version
+and upload lineage.
+CoordinationIssue
+Owner discipline, affected documents, severity,
+action/revalidation list, due date.
+CostEstimate / EstimateLine
+QS owner, revision, quantity, unit, rate, amount, source
+version, summary/detail rights.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+9 / 10
+
+===== PAGE 13 =====
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+DesignRevision / ImpactCase
+Origin, minor/major classification, manager decision, client
+acceptance dependencies.
+AuditEvent / PublicationGrant
+All read/write/publish decisions and their immutable approvals.
+16 Illustrative service and event contracts
+Suggested API/service boundaries for planning. Authentication, validation, permission
+checks, idempotency and audit metadata apply to all write operations.
+OPERATION / EVENT
+EXAMPLE CONTRACT
+Create/submit design task
+POST /projects/{id}/design-tasks; POST
+/design-tasks/{id}/submit.
+Review and release
+POST /design-packages/{id}/review; POST
+/design-packages/{id}/release.
+Record client approval
+POST /projects/{id}/design-approvals with version and
+acceptance evidence.
+Publish design
+POST /projects/{id}/client-publications, approved image/PDF
+only.
+Log coordination issue
+POST /projects/{id}/coordination-issues; POST
+/issues/{id}/resolve.
+Events
+2DApprovedByClient, 3DApprovedByClient,
+StructuralReleased, MechanicalReleased, ElectricalReleased,
+QSApproved, Module3Ready.
+17 User acceptance tests and release criteria
+• TEST 01 - Reject creation of 3D execution task without valid client 2D approval on exact version.
+• TEST 02 - Accept portal and signed-form approvals, retaining identity and exact design revision.
+• TEST 03 - Prevent client from downloading native ArchiCAD files or unapproved internal drafts.
+• TEST 04 - Lead Structural Engineer approves structural release; Electrical and QS cannot skip mechanical
+dependency without explicit scope logic.
+• TEST 05 - Show original junior submission and supervisor/lead correction separately to management.
+• TEST 06 - Force downstream revalidation and costing review when structural source file changes.
+• TEST 07 - QS budget cannot pass Module 3 without Lead QS technical approval.
+• TEST 08 - Allow 2D and 3D to be assigned to same or different architects, with independent task deadlines
+and audit.
+MATHMAG BUILDERS LIMITED
+MODULE 02 | PLANNING & TECHNICAL DESIGN
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+10 / 10

@@ -1,0 +1,474 @@
+
+===== PAGE 1 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 1
+MODULE 01 | VERSION 3.0
+Site Visit & Design Data
+Governance-aligned controlled consolidation | 25 October 2026
+DOCUMENT
+CONTROL
+APPLICATION
+Status
+Harmonized business specification; approved prior module workflow retained with controlling
+Module 7 alignment.
+Composition
+This V3 addendum and the full previously revised module source are combined in a single
+PDF.
+Priority
+This V3 alignment governs in case of conflict. The original module source remains operative
+where not contradicted.
+Central governance
+Module 7 is a continuous operational backbone; it is not a gate to be completed after Module
+6.
+Authority
+Documented GM-led delegation and owner-reserved matters replace generic or inconsistent
+old “Management alone” labels.
+Scope of this module
+From an agreed site visit date through verified site survey and Lead Architect release of
+site/design brief to Module 2.
+1. Implementation interpretation and source preservation
+This document intentionally retains the complete existing revised module specification after this amendment.
+Do not erase earlier workflow, screenshots, forms, stages or user-approved protections. Configure the shared
+functions from the V3 Master Architecture and Module 7 specification. The addendum is not permission to skip
+work or approvals.
+2. Shared mandatory company controls
+ • GOV-01 Governance: The owner retains reserved strategic powers and protected oversight, while the
+ employed General Manager (GM) holds company-wide operational accountability. Owner access to reporting
+does not authorize routine operational interference.
+• GOV-02 Delegation: Department heads, Project Managers and designated officers may authorize decisions
+ only within documented project, function, category, value and risk limits; above-limit or exceptional decisions
+go to GM. No employee may approve their own originating action.
+• GOV-03 Technical independence: Valid safety and professional certifications are performed by competent
+ authorized persons; neither a GM nor a financial waiver can substitute for a mandatory technical/statutory
+clearance.
+• GOV-04 Evidence: Worker, junior designer, client, storekeeper, inspector, supplier and auditor original
+ submissions are preserved with authorship, timestamp, linked versions and tamper-evident history. Review
+adds new records; it does not overwrite originals.
+• GOV-05 Segregation: Requests, verification, approval, payment, receipt and audit must be appropriately
+ independent. Where team size makes perfect separation impractical, a documented compensating review by
+an independent qualified officer is mandatory.
+• GOV-06 Client access: Client portal content is limited to that client/project and expressly published revision;
+ source design files, worker complaints, confidential pay, internal contracts and audit cases remain restricted.
+
+===== PAGE 2 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 2
+• GOV-07 Controls: Accounts verifies funds/beneficiaries and books actual transactions; QS values cost and
+ forecasts; Contracts verifies commercial entitlements; Compliance oversees obligations; QA checks systemic
+quality; independent audit observes, investigates and independently verifies closure.
+• GOV-08 Exceptions and continuity: Documented financial/administrative exceptions may be decided by the
+ authorized delegated manager or GM; there is no exception to mandatory law, safety, professional status or
+an already-required client acceptance. GM absence invokes only preapproved and HR-activated acting
+authority.
+3. Updated operating workflow and stage gates
+Intake
+One combined new-client / confirmed site-visit booking; conversations before agreed date remain
+communication leads, not active projects.
+Field survey
+Assigned surveyor records original plot dimensions, GPS pin, sketches, terrain, sunlight and wind observations,
+notes, photographs and videos.
+Technical review
+Lead Architect validates the source survey, requests linked corrections and assigns a junior architect and
+deadline.
+Client publication
+Lead Architect authorizes exact report version to client portal, within defined technical publication delegation.
+Handover
+Approved, versioned design brief and files become Module 2 intake on unchanged project ID.
+4. Module-specific accountability integration
+CONTROL AREA
+REQUIRED V3 BEHAVIOR
+Booking fees / expense
+Desk creates; Accounts confirms receipt or payment; Site Lead approves site costs within
+delegated limit; GM only escalations.
+Field personnel credentials
+HR registers staff; relevant technical lead validates competence; PM/management view
+compliance; no expired restricted-worker assignment.
+Site report quality
+Lead Architect owns technical quality. Central QA monitors recurring errors, but does not
+replace Lead Architect review.
+Project record privacy
+Client ID and parcel details access restricted by role, project assignment and published
+versions.
+Desk AI intake
+Any future multi-channel bot/agent drafts replies and triages; authority, explicit site date
+and human escalation remain controlled.
+
+===== PAGE 3 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 3
+5. Conflict resolution register
+OLDER / AMBIGUOUS WORDING
+V3 INTERPRETATION
+“Management” visibility to all surveys
+GM has operating oversight; assigned technical heads and authorized
+delegated staff have working access; owner sees strategic and protected
+risk reporting.
+Earlier description of “six modules”
+Treat Module 7 as concurrent company-wide administration rather than a
+serial stage.
+6. Developer data extensions / shared links
+Maintain one stable ProjectId across all modules; preserve exact FileVersionId and client publication
+authorization, verify role scope server-side and append actor/timestamp/decision history for every state
+transition.
+ • Client/Enquiry/Channel
+ • SiteVisitBooking/AgreementEvidence
+ • SiteSurvey/Media/GeospatialObservation
+ • StaffAssignment/ProfessionalCredential
+ • SiteReportVersion/TechnicalReview
+ • PublicationGrant
+ • CostTransaction/ApprovalEvent
+ • AuditEvent
+ 
+7. Mandatory integration acceptance tests
+ AT-01-01: Unagreed enquiry does not create active project or trigger Module 2.
+ AT-01-02: A changed client date creates a traceable booking revision.
+ AT-01-03: Junior or surveyor original upload remains immutable after Lead Architect comments.
+ AT-01-04: Lead Architect cannot publish unreviewed draft to a client.
+ AT-01-05: System prevents contractor/site-survey spending beyond approved delegation.
+ AT-01-06: Restricted site photos cannot be accessed by unrelated clients.
+ 
+8. Required developer references
+Read this PDF with 00 Master Architecture, Module 07 Central Administration and 08 Integration & Testing.
+Additional authoritative user decisions for Modules 1-6 prevail over older illustrative implementation examples
+where the later decision is more specific. Regulatory obligations must be validated with qualified advisors and
+current official sources before implementation.
+
+===== PAGE 4 =====
+MATHMAG BUILDERS LIMITED
+MANAGEMENT SYSTEM
+MODULE 01
+SITE VISIT & DESIGN DATA
+COLLECTION
+Unified enquiry and confirmed booking • Mobile survey • Lead Architect
+approval • Selective client publication
+Plan better, build better.
+DOCUMENT CONTROL
+DETAIL
+Organization
+Mathmag Builders Limited
+Purpose
+Revised developer-ready functional specification
+Revision
+2.0 | 24 October 2026
+Approval basis
+Confirmed business choices + clearly identified technical implementation recommendations
+System scope
+Module 01 of 06, on one persistent client/project platform
+IMPLEMENTATION RULE
+This revision replaces inconsistent stage assumptions in earlier drafts. A confirmed business decision is
+binding; illustrative fields, example APIs and implementation details must be validated in design review.
+
+===== PAGE 5 =====
+01 Purpose, boundaries and decisions
+Single-entry client booking and design-data collection, leading to an architect-approved
+site brief.
+CONFIRMED DECISION
+BINDING RULE
+Enquiry versus project
+An enquiry is kept in the communications inbox and is not an
+active project. Create the project only after client and
+Mathmag agree a site-visit date and time.
+Unified booking
+Capture new/existing client details and appointment data in a
+single booking process.
+Communication desk
+Client Relations / desk personnel manage WhatsApp,
+Facebook, TikTok, YouTube and additional supported channel
+enquiries; integration depth is phased.
+Mobile field visit
+Record physical site observations, location, dimensions,
+orientation, wind, terrain, photos/videos, sketches and client
+requirements.
+Architect quality gate
+Lead Architect reviews site report, may return corrections,
+assigns junior architect and independently authorizes portal
+publication.
+Handoff
+Only an approved, assigned site/design brief can progress into
+Module 2 architectural tasks.
+MANDATORY CONTROL
+Publishing is not the same action as approving. A project must not be created from an enquiry without an
+agreed site visit appointment.
+MATHMAG BUILDERS LIMITED
+MODULE 01 | SITE VISIT & DESIGN DATA COLLECTION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+2 / 8
+
+===== PAGE 6 =====
+02 End-to-end site visit workflow
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Communications Desk
+Capture inquiry conversation and identify potential client; inbox lead only.
+02
+Booking Officer
+Agree site visit date/time; register or link client, allocate visit and create
+persistent project ID.
+03
+Visiting Officer
+Receive job in mobile dashboard, attend site, capture evidence and
+requirements.
+04
+Report Engine
+Assemble structured branded site visit/design brief report with previews and
+referenced media.
+05
+Lead Architect
+Return for corrections or technically approve the report; assign junior
+architect.
+06
+Lead Architect
+Explicitly authorize which site report version/media the client may view.
+07
+Architectural Team
+Receive the approved project brief and linked evidence to begin the 2D
+process.
+03 Responsibility and approval matrix
+ ROLE
+ALLOWED RESPONSIBILITIES
+Client Relations / Desk Officer
+Manage conversation, contact identity and confirmed site visit
+booking; coordinate schedules and client questions; no
+authority to approve technical brief.
+Visiting Officer
+Capture field notes, sketches, media and design-data
+observations; submit report and respond to correction
+comments.
+Lead Architect
+Own report technical review, correction requests, junior
+assignment, approved version, and explicit client publication.
+Junior Architect
+Read approved brief and internal attachments for assigned
+project and receive Module 2 tasks.
+Client
+Review only own published site summary/report; submit
+feedback if enabled.
+Management
+See all project reports, assignments, processing delays,
+publication history and audit trails; manage roles and
+exceptions.
+MATHMAG BUILDERS LIMITED
+MODULE 01 | SITE VISIT & DESIGN DATA COLLECTION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+3 / 8
+
+===== PAGE 7 =====
+04 Enquiry and booking capture
+Channel-aware client relations
+• Unify message reference, source channel, date/time, client contacts, client interests and follow-up notes;
+avoid copying conversations without appropriate integration access.
+• Do not mark every inquiry as a pipeline project. Maintain separate Inbox Lead and Confirmed Visit / Project
+statuses.
+• AI-supported enquiry triage and handoff to humans is an optional phased feature, not a prerequisite for
+Module 1 completion.
+Site visit booking form
+• Capture client / legal owner, telephone, email, property location, county, approximate plot size, requested
+development, agreed appointment date/time and visiting officer.
+• System assigns one immutable project reference only when appointment has been jointly agreed. Rebooking
+changes the appointment and retains its history.
+• Invite client to portal when appropriate; absence of a portal account must not block field visit.
+05 Mobile site-data collection and survey integrity
+ SECTION
+REQUIRED FIELDS / BEHAVIOUR
+A. Visit identity
+Project ID; client; visit date; visiting officer; location/address;
+geographic map pin; GPS accuracy if present.
+B. Site geometry
+Measured plot dimensions, approximate boundaries, access
+widths, existing structures, property features, plot sketch and
+measurement confidence.
+C. Physical conditions
+Terrain, slope, drainage/flood cues, soil observations stated as
+preliminary, vegetation, adjacent plots, utilities and access.
+D. Environment
+Observed wind direction, sunlight/sunrise/sunset orientation,
+likely shading and source/assumptions of observations.
+E. Client requirements
+Bedrooms/use cases, storeys, aesthetic preferences, budget
+aspirations, development phasing, accessibility needs and key
+constraints.
+F. Media
+Field photos/videos with captions, category, capture time,
+upload attribution, file hash, project and access classification.
+G. Follow-up
+Unknown measurements, missing title/survey data, required
+investigations and questions for client/architect.
+MANDATORY CONTROL
+Recorded soil observations or field measurements are preliminary and must not be presented as a certified
+geotechnical, boundary or structural survey unless separately commissioned and verified.
+MATHMAG BUILDERS LIMITED
+MODULE 01 | SITE VISIT & DESIGN DATA COLLECTION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+4 / 8
+
+===== PAGE 8 =====
+06 Site report generation and review
+• Generate a versioned Site Visit & Design Brief Report incorporating selected client info, location, dimensions,
+terrain, orientation, client needs, limitations, site sketches and photo captions.
+• Produce a staff-review PDF and editable document if supported; final client publication uses a locked
+PDF/image version. Source and editable files remain internal.
+• Reports have Draft, Submitted, Returned, Approved, Superseded and Published flags as distinct concepts.
+• Lead Architect comments must link to specific report version, required correction, owner and review
+timestamp.
+• Publication control selects exact report version and individual media assets; client visibility may be revoked
+with a logged reason without destroying the internal original.
+• Management can independently inspect original field uploads and the lead review trail, reflecting the
+evidence-transparency principle introduced later in Module 6.
+07 Module 2 integration and project service pathways
+• Handoff artifact contains the approved site report, design brief, photo/sketch set, location and a designated
+junior architect.
+• Lead Architect and assigned junior can access internal working resources; client portal receives only
+approved PDFs/images.
+• Design-only, approval-inclusive, full build, labour-only and supervision clients share the initial ID, but their
+later module activation depends on contracted service scope.
+• Follow-up site visits become additional visit records linked to the same project; never create a new project for
+the same engagement by default.
+• If new site findings materially change the design brief after 2D approval, open a controlled cross-module
+revision and revalidate dependent outputs.
+MATHMAG BUILDERS LIMITED
+MODULE 01 | SITE VISIT & DESIGN DATA COLLECTION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+5 / 8
+
+===== PAGE 9 =====
+08 Shared rules carried across all six modules
+ CROSS-MODULE RULE
+IMPLEMENTATION REQUIREMENT
+One lifecycle record
+Maintain one project ID from confirmed site-visit booking
+through design, approvals, contracts, construction and
+post-handover. Never create a disconnected project just to
+open a new module.
+Role separation
+User role, project assignment and explicit approval authority
+determine every permitted action. Technical sign-off, financial
+validation, management approval and client acceptance are
+distinct records.
+Evidence integrity
+Preserve original submissions, attachments, timestamps,
+authors and immutable decision histories. Corrections create
+new records or versions; no silent overwriting.
+Selective client access
+Client accounts can access only their own projects and
+explicitly authorized files or updates. Internal working/source
+files, staff performance data and financial notes are never
+published by default.
+Conditional service scope
+Clients may purchase design only, printing only, approvals,
+technical supervision, labour-only building or full construction.
+Modules not contracted are not mandatory project steps.
+Management-controlled exceptions
+Any permitted exception requires identified management
+authorization, reason, date and retained evidence. Mandatory
+legal/technical clearances cannot be overridden.
+Security and audit
+Require authenticated accounts, least privilege, encrypted
+transport/storage, file scanning, access logs, project-scoped
+permissions, backups and recoverability.
+MATHMAG BUILDERS LIMITED
+MODULE 01 | SITE VISIT & DESIGN DATA COLLECTION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+6 / 8
+
+===== PAGE 10 =====
+09 Screens and user journeys
+ SCREEN
+PRIMARY USERS / BEHAVIOUR
+Communications Inbox
+Lead pipeline, human handoff, channel links, conversations
+and booking action.
+Unified Booking
+Client lookup/new registration, appointment, assigned visiting
+officer, booking audit.
+Mobile Site Survey
+Offline-capable grouped fields, photo/video capture, sketches,
+coordinates and save/submit.
+Site Report Review
+Lead Architect annotation, correction cycle, version
+comparison and junior allocation.
+Client Publication
+Select authorized report/media; preview exactly what client
+can see.
+Client Portal
+Own confirmed project, appointment and authorized visit
+deliverables.
+Management Queue
+Overdue bookings, reports awaiting review, assigned
+workload, publication and audit.
+10 Core data objects and key relationships
+Logical entities for developer schema design. Names below are examples rather than
+prescribed database table names.
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+Client / Contact
+Client ID, contact details, representative and
+consent/communication preferences.
+Lead / Conversation
+Source channel, external thread reference, history, status; not
+automatically Project.
+VisitBooking / Project
+Agreed date/time, project ID, location, client ID, officer, status,
+changes and booking evidence.
+SiteSurvey / FieldObservation
+Survey version, GPS, dimensions, orientation, terrain, design
+brief, assumptions, uploaded by.
+SurveyMedia / Sketch
+File pointer, hash, author, site/category, creation date, version,
+permissions.
+ReportVersion / TechnicalReview
+Report files, version, Lead Architect review, comments,
+decision and approved snapshot.
+Assignment / PublicationGrant
+Junior assignee/target; published file list, published by, date,
+revoked state.
+MATHMAG BUILDERS LIMITED
+MODULE 01 | SITE VISIT & DESIGN DATA COLLECTION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+7 / 8
+
+===== PAGE 11 =====
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+AuditEvent
+Actor, role, project, object, before/after IDs, event, immutable
+timestamp, reason.
+11 Illustrative service and event contracts
+Suggested API/service boundaries for planning. Authentication, validation, permission
+checks, idempotency and audit metadata apply to all write operations.
+OPERATION / EVENT
+EXAMPLE CONTRACT
+Confirm booking
+POST /visits/confirm -> creates or links the persistent project
+ID on agreed booking.
+Save site survey
+POST /projects/{id}/surveys; PATCH /surveys/{id}/draft;
+submit separate action.
+Review site report
+POST /reports/{version}/lead-review with decision and
+annotations.
+Create assignment
+POST /projects/{id}/architectural-assignments referencing
+approved brief.
+Publish report
+POST /publications with exact media/document versions and
+Lead Architect authority.
+Events
+VisitConfirmed, SurveySubmitted, SiteReportApproved,
+SiteReportPublished, Module2Ready.
+12 User acceptance tests and release criteria
+• TEST 01 - Unconfirmed enquiries remain inbox leads without project IDs; agreed visit immediately creates
+one linked project.
+• TEST 02 - Rebooking preserves original date/time and reason without duplicating a project.
+• TEST 03 - Offline draft captures media and synchronizes without duplicated attachments or wrong project
+access.
+• TEST 04 - Lead Architect can return report and receive new version; previous submitted evidence remains
+accessible.
+• TEST 05 - A report approved internally but not explicitly published is unavailable in the client portal.
+• TEST 06 - Other clients cannot enumerate, open or download site photos or reports.
+• TEST 07 - Module 2 assignment consumes exactly the lead-approved site brief and assigned junior record.
+MATHMAG BUILDERS LIMITED
+MODULE 01 | SITE VISIT & DESIGN DATA COLLECTION
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+8 / 8

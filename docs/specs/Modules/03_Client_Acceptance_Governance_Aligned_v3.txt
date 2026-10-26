@@ -1,0 +1,519 @@
+
+===== PAGE 1 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 1
+MODULE 03 | VERSION 3.0
+Client Acceptance & Budget
+Governance-aligned controlled consolidation | 25 October 2026
+DOCUMENT
+CONTROL
+APPLICATION
+Status
+Harmonized business specification; approved prior module workflow retained with controlling
+Module 7 alignment.
+Composition
+This V3 addendum and the full previously revised module source are combined in a single
+PDF.
+Priority
+This V3 alignment governs in case of conflict. The original module source remains operative
+where not contradicted.
+Central governance
+Module 7 is a continuous operational backbone; it is not a gate to be completed after Module
+6.
+Authority
+Documented GM-led delegation and owner-reserved matters replace generic or inconsistent
+old “Management alone” labels.
+Scope of this module
+Versioned project plans and budget proposal through exact-version client acceptance,
+independent finance gate and explicit Module 4 release.
+1. Implementation interpretation and source preservation
+This document intentionally retains the complete existing revised module specification after this amendment.
+Do not erase earlier workflow, screenshots, forms, stages or user-approved protections. Configure the shared
+functions from the V3 Master Architecture and Module 7 specification. The addendum is not permission to skip
+work or approvals.
+2. Shared mandatory company controls
+ • GOV-01 Governance: The owner retains reserved strategic powers and protected oversight, while the
+ employed General Manager (GM) holds company-wide operational accountability. Owner access to reporting
+does not authorize routine operational interference.
+• GOV-02 Delegation: Department heads, Project Managers and designated officers may authorize decisions
+ only within documented project, function, category, value and risk limits; above-limit or exceptional decisions
+go to GM. No employee may approve their own originating action.
+• GOV-03 Technical independence: Valid safety and professional certifications are performed by competent
+ authorized persons; neither a GM nor a financial waiver can substitute for a mandatory technical/statutory
+clearance.
+• GOV-04 Evidence: Worker, junior designer, client, storekeeper, inspector, supplier and auditor original
+ submissions are preserved with authorship, timestamp, linked versions and tamper-evident history. Review
+adds new records; it does not overwrite originals.
+• GOV-05 Segregation: Requests, verification, approval, payment, receipt and audit must be appropriately
+ independent. Where team size makes perfect separation impractical, a documented compensating review by
+an independent qualified officer is mandatory.
+• GOV-06 Client access: Client portal content is limited to that client/project and expressly published revision;
+ source design files, worker complaints, confidential pay, internal contracts and audit cases remain restricted.
+
+===== PAGE 2 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 2
+• GOV-07 Controls: Accounts verifies funds/beneficiaries and books actual transactions; QS values cost and
+ forecasts; Contracts verifies commercial entitlements; Compliance oversees obligations; QA checks systemic
+quality; independent audit observes, investigates and independently verifies closure.
+• GOV-08 Exceptions and continuity: Documented financial/administrative exceptions may be decided by the
+ authorized delegated manager or GM; there is no exception to mandatory law, safety, professional status or
+an already-required client acceptance. GM absence invokes only preapproved and HR-activated acting
+authority.
+3. Updated operating workflow and stage gates
+Budget approval
+Lead QS approves technical estimate; delegated management separately authorizes client release of summary
+and permissioned detailed budget.
+Client acceptance
+Client portal sign-off or uploaded signed paper acceptance of exact proposal version, with evidence and identity.
+Verification
+Delegated management independently verifies client acceptance and signed scope; unauthorized acceptance
+never advances stage.
+Finance
+Accounts independently verifies actual received net payments and milestone conditions from reconciled
+records; reminders only manually dispatched by Accounts.
+Release
+Management formally authorizes Module 4 once acceptance and financial gate pass; properly documented
+financial exception permitted, debt remains outstanding.
+4. Module-specific accountability integration
+CONTROL AREA
+REQUIRED V3 BEHAVIOR
+Budget content
+QS accountable for pricing and quantities; detailed schedules visible only by explicitly
+authorized role/client permission.
+Client acceptance
+Contracts verifies legal identity/terms when risk warrants; manager validates acceptance
+record, no superseded revision acceptance.
+Client receipt
+Accounts receipts only confirmed transaction, reconciles bank/M-Pesa, posts ledger; no
+self-authorized write-off.
+Financial waiver
+Only authorized manager/GM may approve eligible documented milestone exception;
+financial exception cannot waive statutory obligations.
+Client reminders
+Manual Accounts decision to send; notification service may prepare draft, not
+automatically issue arrears reminders.
+
+===== PAGE 3 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 3
+5. Conflict resolution register
+OLDER / AMBIGUOUS WORDING
+V3 INTERPRETATION
+“Management alone” publishes and
+releases
+Delegated manager authorized for category/threshold may act; GM
+handles exceptions; owner not routine approver.
+Generic “Accounts” receipt field
+Use central Module 7 finance ledger, receipt verification and customer
+balances.
+6. Developer data extensions / shared links
+Maintain one stable ProjectId across all modules; preserve exact FileVersionId and client publication
+authorization, verify role scope server-side and append actor/timestamp/decision history for every state
+transition.
+ • BudgetSummary/BudgetDetail
+ • ProposalSnapshot
+ • ClientAcceptance/SignatureEvidence
+ • ClientPaymentMilestone
+ • Receipt/PaymentVerification
+ • FinanceException
+ • ModuleRelease
+ • PublicationGrant
+ • AuditEvent
+ 
+7. Mandatory integration acceptance tests
+ AT-03-01: Client cannot accept a superseded proposal revision as current.
+ AT-03-02: Client sees detailed budget only when permission granted.
+ AT-03-03: Unverified or duplicate payment reference cannot satisfy gate.
+ AT-03-04: No automatic overdue reminder is sent without Accounts initiation.
+ AT-03-05: Waiver of milestone records outstanding receivable and does not waive statutory hold.
+ AT-03-06: An officer without delegated release permission cannot open Module 4.
+ 
+8. Required developer references
+Read this PDF with 00 Master Architecture, Module 07 Central Administration and 08 Integration & Testing.
+Additional authoritative user decisions for Modules 1-6 prevail over older illustrative implementation examples
+where the later decision is more specific. Regulatory obligations must be validated with qualified advisors and
+current official sources before implementation.
+
+===== PAGE 4 =====
+MATHMAG BUILDERS LIMITED
+MANAGEMENT SYSTEM
+MODULE 03
+CLIENT ACCEPTANCE &
+BUDGET
+Versioned proposal • Formal client approval • Management verification
+• Accounts release gate
+Plan better, build better.
+DOCUMENT CONTROL
+DETAIL
+Organization
+Mathmag Builders Limited
+Purpose
+Revised developer-ready functional specification
+Revision
+2.0 | 24 October 2026
+Approval basis
+Confirmed business choices + clearly identified technical implementation recommendations
+System scope
+Module 03 of 06, on one persistent client/project platform
+IMPLEMENTATION RULE
+This revision replaces inconsistent stage assumptions in earlier drafts. A confirmed business decision is
+binding; illustrative fields, example APIs and implementation details must be validated in design review.
+
+===== PAGE 5 =====
+01 Purpose and main approval boundary
+Controlled presentation and acceptance of the planning package and budget, followed by
+management-verified financial release.
+CONFIRMED CONTROL
+REQUIRED BEHAVIOUR
+Planning intake
+Receive exact released Architecture, Structure, Mechanical,
+Electrical and QS package versions from Module 2 as
+contracted.
+Budget views
+Prepare summary and detailed budgets; detailed access is
+restricted and explicitly published only where authorized.
+Technical budget approval
+Lead QS reviews and approves cost estimate technically
+before client publication.
+Client publication
+Management alone authorizes the proposal version and
+precise files/budget views visible to the client.
+Client acceptance
+Portal acceptance OR uploaded genuine client-signed form
+linked to specific proposal snapshot.
+Acceptance verification
+Management verifies every client acceptance before any
+release.
+Payment check
+Accounts verifies agreed payment milestone; management
+can approve a documented permitted payment exception.
+Module 4 release
+Management gives separate affirmative release after
+acceptance and financial gate.
+MANDATORY CONTROL
+A viewed proposal, meeting note or verbal assent cannot be treated as formal approval. Approval and
+payment clearance are distinct gates.
+MATHMAG BUILDERS LIMITED
+MODULE 03 | CLIENT ACCEPTANCE & BUDGET
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+2 / 9
+
+===== PAGE 6 =====
+02 Process from planning package to released proposal
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Module 2
+Submit locked, coordinated design and approved budget package.
+02
+Lead QS
+Certify technical completeness/consistency of cost summary and detail.
+03
+Management
+Select exact proposal revision and explicitly authorize client publication.
+04
+Client
+Review portal or physical/virtual meeting and request changes or formal
+acceptance.
+05
+Affected Departments
+Process revisions under Module 2 approval and impact control if required.
+06
+Client
+Accept exact published version through portal or signed acceptance form.
+07
+Management
+Verify client identity, approval evidence, content and any conditions.
+08
+Accounts
+Verify contractually agreed payment milestone, receipts and balances.
+09
+Management
+Authorize Module 4 release, or record reasoned eligible financial exception.
+03 Responsibility matrix and separation of duties
+ ROLE
+AUTHORITY AND RESTRICTIONS
+Lead Quantity Surveyor
+Technical review of budgets and estimating revisions; cannot
+independently publish a proposal to client.
+Management
+Authorizes publication, controlled detailed-budget visibility,
+client acceptance verification, any permitted payment
+exception and Module 4 release.
+Accounts Department
+Records/verifies client payments, receipts, statements,
+balances and manual reminder timing; no power to waive
+financial gate.
+Client Relations Officer
+Coordinates meetings/comments; cannot impersonate client
+signature or approve proposals.
+Discipline Leads
+Assess and formally release design corrections required by
+client feedback.
+Client
+Can accept only their own selected published version; may use
+secure portal or signed document.
+System Administrator
+Maintains roles and technical setup but does not acquire
+business approval merely from administrator privilege.
+MATHMAG BUILDERS LIMITED
+MODULE 03 | CLIENT ACCEPTANCE & BUDGET
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+3 / 9
+
+===== PAGE 7 =====
+04 Proposal snapshot and cost presentation
+• Build a read-only proposal snapshot referencing approved drawing revision IDs, approved QS estimate
+revision, scope inclusions/exclusions and document manifest.
+• Generate client proposal summary plus supporting documents; keep the detailed QS budget internally unless
+management explicitly allows the client a detailed view.
+• Store separate timestamps for upload, technical approval, management publication, client access,
+acceptance and subsequent supersession.
+• Provide clear version label on client review screens and sign-off forms so accepted documents cannot be
+confused with newer alternatives.
+• Prevent direct file download through guessed URLs, cached links or copied share links after publication
+access is revoked.
+• Retain historical proposal versions after revision; do not erase a version accepted by the client.
+05 Client review and acceptance routes
+Portal route
+• Authenticated client views authorized PDFs/images and the approved pricing view, submits comments and
+explicitly signs/accepts the exact package.
+• Record authenticated identity, acting capacity, acceptance wording, date/time, version hash and acceptance
+receipt.
+Meeting and signed-form route
+• Staff records physical/virtual review meeting, version actually presented, comments and minutes; meetings
+alone do not imply acceptance.
+• Upload signed acceptance form with identity and signature evidence, identify exact proposal revision and
+assign verification to management.
+Management verification
+• Check client authority, file/scope match, accepted costs, any qualifications, outstanding design corrections
+and authenticity of evidence.
+• Statuses include Pending, Verified, Returned for Clarification and Rejected, each with recorded reasons.
+MATHMAG BUILDERS LIMITED
+MODULE 03 | CLIENT ACCEPTANCE & BUDGET
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+4 / 9
+
+===== PAGE 8 =====
+06 Proposal changes after presentation or acceptance
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Change Requested
+Client or technical team submits specific change with reason and relevant
+proposal version.
+02
+Impact Triage
+Lead Architect and other affected disciplines assess scope and need for
+major revision approval.
+03
+Cost Revalidation
+QS estimates pricing impacts and Lead QS approves updated cost outputs.
+04
+Management Review
+Approves any major redesign commercial consequence and publication of
+revised proposal.
+05
+Client Review
+Receives exact updated issue and renews acceptance when change
+materially affects prior accepted scope.
+06
+Acceptance History
+Original acceptance remains preserved, linked to new version and
+supersession record.
+07 Accounts and payment milestone controls
+• Accounts verifies incoming payments against reliable channel evidence, project fee category and unique
+transaction reference; duplicate reference checks required.
+• Receipts and statements may be published to the client portal and optionally shared via configured
+WhatsApp/email channels.
+• Timing of financial reminders is manually controlled by Accounts (confirmed policy); the system may assist
+with drafts/queues but must not send at a hard-coded automatic cadence.
+• Module 4 financial gate tests the specific agreed planning/approval service milestone, not necessarily the
+entire overall design/build contract price.
+• Only management can authorize a permitted payment exception, with reason, scope, conditions and
+timestamp. Such exception never overrides mandatory statutory requirements.
+• Part-payments, overpayments, reversals, refunds and reallocations require traceable financial adjustments
+rather than edits to historical receipt rows.
+08 Contract and service pathway integration
+• Module 3 acceptance is acceptance of a defined plan/budget proposal; it is not automatically a construction
+contract or authority for mobilization.
+• Clients who select drawings/printing only or own-builder design services can terminate the engagement at
+their contracted milestone without being forced into full approval/build flows.
+• Later service add-ons (approvals, inspection, supervision, labour or full construction) must open controlled
+commercial requests in Module 5, approved by management.
+• If detailed budgets are restricted, the accepted proposal should still clearly show the client-facing financial
+scope and obligations they are agreeing to.
+MATHMAG BUILDERS LIMITED
+MODULE 03 | CLIENT ACCEPTANCE & BUDGET
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+5 / 9
+
+===== PAGE 9 =====
+• When construction variations later revise budget/scope, keep original planning proposal frozen and link
+revised financial commitments to Module 6 variation records.
+09 Module 4 release conditions
+ GATE
+REQUIRED CHECK
+Technical package
+Each contracted planning discipline and Lead QS cost package
+has a released version.
+Management publication
+Exactly accepted client-facing files were authorized for
+publication.
+Client acceptance
+Valid portal acceptance or verified signed form for exact
+proposal revision.
+Management verification
+Positive decision that resolves outstanding acceptance issues.
+Financial milestone
+Accounts-confirmed milestone received or reasoned
+management exception within legal/contractual limits.
+Release decision
+Explicit management action creates Module 4 task; no
+automatic release on receipt alone.
+MATHMAG BUILDERS LIMITED
+MODULE 03 | CLIENT ACCEPTANCE & BUDGET
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+6 / 9
+
+===== PAGE 10 =====
+10 Shared rules carried across all six modules
+ CROSS-MODULE RULE
+IMPLEMENTATION REQUIREMENT
+One lifecycle record
+Maintain one project ID from confirmed site-visit booking
+through design, approvals, contracts, construction and
+post-handover. Never create a disconnected project just to
+open a new module.
+Role separation
+User role, project assignment and explicit approval authority
+determine every permitted action. Technical sign-off, financial
+validation, management approval and client acceptance are
+distinct records.
+Evidence integrity
+Preserve original submissions, attachments, timestamps,
+authors and immutable decision histories. Corrections create
+new records or versions; no silent overwriting.
+Selective client access
+Client accounts can access only their own projects and
+explicitly authorized files or updates. Internal working/source
+files, staff performance data and financial notes are never
+published by default.
+Conditional service scope
+Clients may purchase design only, printing only, approvals,
+technical supervision, labour-only building or full construction.
+Modules not contracted are not mandatory project steps.
+Management-controlled exceptions
+Any permitted exception requires identified management
+authorization, reason, date and retained evidence. Mandatory
+legal/technical clearances cannot be overridden.
+Security and audit
+Require authenticated accounts, least privilege, encrypted
+transport/storage, file scanning, access logs, project-scoped
+permissions, backups and recoverability.
+MATHMAG BUILDERS LIMITED
+MODULE 03 | CLIENT ACCEPTANCE & BUDGET
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+7 / 9
+
+===== PAGE 11 =====
+11 Screens and user journeys
+ SCREEN
+PRIMARY USERS / BEHAVIOUR
+Proposal Assembly
+Version-locked design/budget manifest, inclusions/exclusions
+and publication preview.
+QS Budget Approval
+Summary/detailed views, quantities, source revision, lead
+approval and rework.
+Management Publication Queue
+Per-file visibility, access control, approval and revocation
+history.
+Client Proposal Review
+PDF/image viewer, comment request, acceptance and
+signed-form status.
+Management Acceptance Verification
+Compare exact accepted snapshot with published versions and
+signatures.
+Accounts Payment Desk
+Transactions, receipt verification, statements, manually
+scheduled reminders.
+Release Control
+Audit-friendly gate checklist before Module 4 activation.
+Management Analytics
+Acceptance turnaround, proposal changes, budgets pending
+release and overdue payment flags.
+12 Core data objects and key relationships
+Logical entities for developer schema design. Names below are examples rather than
+prescribed database table names.
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+ProposalSnapshot / ProposalDocument
+Project, released package IDs, budget version, summary/detail
+visibility, source hashes.
+ClientReview / Comment / Meeting
+Participants, date, shown proposal version, change requests,
+source attachment.
+AcceptanceEvidence
+Portal action or scanned signed form, client identity, version,
+signature, timestamp.
+ManagementAcceptanceDecision
+Approval, conditions, reviewer, reason, date, revision linked.
+FinancialMilestone / ClientPayment
+Amount due, date, receipt channel/reference, verification,
+balance.
+PaymentException / ModuleRelease
+Approving manager, reason, financial status, stage release
+time.
+RevisionImpact
+Source discipline change, pricing impact, client reacceptance
+obligations.
+MATHMAG BUILDERS LIMITED
+MODULE 03 | CLIENT ACCEPTANCE & BUDGET
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+8 / 9
+
+===== PAGE 12 =====
+13 Illustrative service and event contracts
+Suggested API/service boundaries for planning. Authentication, validation, permission
+checks, idempotency and audit metadata apply to all write operations.
+OPERATION / EVENT
+EXAMPLE CONTRACT
+Create proposal snapshot
+POST /projects/{id}/proposals/from-planning with approved
+document references.
+Approve budget
+POST /estimates/{rev}/lead-qs-approval.
+Management publish
+POST /proposals/{rev}/publication-grant.
+Client accept
+POST /proposals/{rev}/client-acceptance (portal or authorized
+uploaded evidence).
+Verify payment
+POST /projects/{id}/payments/{txn}/verify.
+Release Module 4
+POST /projects/{id}/module4/release with management gate
+evidence.
+Events
+ProposalPublished, ClientAccepted, ClientAcceptanceVerified,
+MilestonePaid, Module4Released.
+14 User acceptance tests and release criteria
+• TEST 01 - Reject proposal publication without Lead QS approved budget and positive management
+publication authorization.
+• TEST 02 - Allow management to publish summary budget while detailed budget stays inaccessible to client.
+• TEST 03 - Accept both secure portal and client-signed uploaded acceptance, and reject mismatch to proposal
+version.
+• TEST 04 - Management verification must exist for every acceptance, including signed-form route.
+• TEST 05 - Block Module 4 release on unpaid milestone unless permitted management exception is properly
+recorded.
+• TEST 06 - Accounts can issue receipts/statements but cannot approve financial exceptions.
+• TEST 07 - Reminders do not auto-send at a hard-coded frequency; Accounts explicitly schedules/sends them.
+• TEST 08 - Accepted proposal is immutable after change; revisions create new client acceptance route where
+required.
+MATHMAG BUILDERS LIMITED
+MODULE 03 | CLIENT ACCEPTANCE & BUDGET
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+9 / 9

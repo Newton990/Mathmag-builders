@@ -33,6 +33,9 @@ docs/specs/
     └── 07_Central_Administration_and_Governance_v3.docx
 ```
 
+> Each PDF has a plain-text extraction (`*.txt`) beside it for grep/search and
+> review diffs. The PDF/DOCX files remain the authoritative controlled copies.
+
 ## Reading Order for the Agent
 
 1. `Architecture/00` — Master Architecture & Governance (read in full before any code)

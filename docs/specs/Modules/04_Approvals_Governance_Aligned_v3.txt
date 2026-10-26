@@ -1,0 +1,539 @@
+
+===== PAGE 1 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 1
+MODULE 04 | VERSION 3.0
+Printing, Stamping & Statutory Approvals
+Governance-aligned controlled consolidation | 25 October 2026
+DOCUMENT
+CONTROL
+APPLICATION
+Status
+Harmonized business specification; approved prior module workflow retained with controlling
+Module 7 alignment.
+Composition
+This V3 addendum and the full previously revised module source are combined in a single
+PDF.
+Priority
+This V3 alignment governs in case of conflict. The original module source remains operative
+where not contradicted.
+Central governance
+Module 7 is a continuous operational backbone; it is not a gate to be completed after Module
+6.
+Authority
+Documented GM-led delegation and owner-reserved matters replace generic or inconsistent
+old “Management alone” labels.
+Scope of this module
+Issue controlled technical documents, coordinate applications and corrections, track permits
+and enforce contractor-dependent statutory mobilization gates.
+1. Implementation interpretation and source preservation
+This document intentionally retains the complete existing revised module specification after this amendment.
+Do not erase earlier workflow, screenshots, forms, stages or user-approved protections. Configure the shared
+functions from the V3 Master Architecture and Module 7 specification. The addendum is not permission to skip
+work or approvals.
+2. Shared mandatory company controls
+ • GOV-01 Governance: The owner retains reserved strategic powers and protected oversight, while the
+ employed General Manager (GM) holds company-wide operational accountability. Owner access to reporting
+does not authorize routine operational interference.
+• GOV-02 Delegation: Department heads, Project Managers and designated officers may authorize decisions
+ only within documented project, function, category, value and risk limits; above-limit or exceptional decisions
+go to GM. No employee may approve their own originating action.
+• GOV-03 Technical independence: Valid safety and professional certifications are performed by competent
+ authorized persons; neither a GM nor a financial waiver can substitute for a mandatory technical/statutory
+clearance.
+• GOV-04 Evidence: Worker, junior designer, client, storekeeper, inspector, supplier and auditor original
+ submissions are preserved with authorship, timestamp, linked versions and tamper-evident history. Review
+adds new records; it does not overwrite originals.
+• GOV-05 Segregation: Requests, verification, approval, payment, receipt and audit must be appropriately
+ independent. Where team size makes perfect separation impractical, a documented compensating review by
+an independent qualified officer is mandatory.
+• GOV-06 Client access: Client portal content is limited to that client/project and expressly published revision;
+ source design files, worker complaints, confidential pay, internal contracts and audit cases remain restricted.
+
+===== PAGE 2 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 2
+• GOV-07 Controls: Accounts verifies funds/beneficiaries and books actual transactions; QS values cost and
+ forecasts; Contracts verifies commercial entitlements; Compliance oversees obligations; QA checks systemic
+quality; independent audit observes, investigates and independently verifies closure.
+• GOV-08 Exceptions and continuity: Documented financial/administrative exceptions may be decided by the
+ authorized delegated manager or GM; there is no exception to mandatory law, safety, professional status or
+an already-required client acceptance. GM absence invokes only preapproved and HR-activated acting
+authority.
+3. Updated operating workflow and stage gates
+Applicability
+Approvals Officer and Compliance establish project-specific county, NEMA, NCA and other applicable obligations
+from verified official requirements.
+Issue set
+Lead professionals sign/certify only appropriate scope; Approvals Officer manages copies, uploading and portal
+logistics.
+Fee
+Client pays authority directly with evidence or Mathmag pays through Accounts after delegated authorization.
+Corrections
+Authority observations route to discipline head, who assigns junior; revised documents pass qualified technical
+review and resubmission trail.
+Conditional completion
+Planning approvals may permit conditional Module 4 completion while contractor-dependent NCA or other
+compliance conditions stay open.
+Release
+Approvals Officer uploads official result internally; authorized management releases exact approved copies to
+client.
+4. Module-specific accountability integration
+CONTROL AREA
+REQUIRED V3 BEHAVIOR
+Central regulatory register
+Module 7 Compliance holds global obligations and expiry/change register; Approvals
+Officer owns application-specific case evidence.
+Professional stamping
+Only eligible professional signs/stamps personally; management and printing officer
+cannot impersonate professional credential.
+Fees/receipts
+Accounts verifies direct fees and Mathmag-paid authority charges independently of
+Approvals Officer.
+Client publication
+Management delegation governs release after officer upload; only PDFs/images for client
+portal.
+Construction gate
+Conditional planning stage is not proof of NCA / required clearances; Module 6 remains
+locked until project requirements complete.
+
+===== PAGE 3 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 3
+5. Conflict resolution register
+OLDER / AMBIGUOUS WORDING
+V3 INTERPRETATION
+Approvals Officer “manages compliance”
+Officer coordinates cases, while Module 7 Compliance oversees
+company-wide register and independent confirmation.
+Module 4 “complete” status
+Use distinct planning-complete, pending contractor-related obligations
+and construction-cleared states.
+6. Developer data extensions / shared links
+Maintain one stable ProjectId across all modules; preserve exact FileVersionId and client publication
+authorization, verify role scope server-side and append actor/timestamp/decision history for every state
+transition.
+ • StatutoryObligation/Applicability
+ • AuthorityApplication
+ • PermitCase/Submission
+ • ProfessionalCertificate
+ • FeePaymentEvidence
+ • CorrectionNotice/Resubmission
+ • StageCompletion
+ • PublicationGrant
+ • AuditEvent
+ 
+7. Mandatory integration acceptance tests
+ AT-04-01: No valid Module 3 release prevents opening a normal Module 4 case.
+ AT-04-02: Unauthorized officer cannot stamp/sign technical certification.
+ AT-04-03: County approval cannot silently mark NCA complete.
+ AT-04-04: Overdue expiry creates compliance alert but does not erase permit evidence.
+ AT-04-05: Rejected revision cannot overwrite stamped approved original.
+ AT-04-06: Construction mobilization blocked on outstanding statutory prerequisites.
+ 
+8. Required developer references
+Read this PDF with 00 Master Architecture, Module 07 Central Administration and 08 Integration & Testing.
+Additional authoritative user decisions for Modules 1-6 prevail over older illustrative implementation examples
+where the later decision is more specific. Regulatory obligations must be validated with qualified advisors and
+current official sources before implementation.
+
+===== PAGE 4 =====
+MATHMAG BUILDERS LIMITED
+MANAGEMENT SYSTEM
+MODULE 04
+PRINTING, STAMPING &
+APPROVALS
+Controlled issue sets • Authorized professional certification •
+County/NEMA/NCA tracking
+Plan better, build better.
+DOCUMENT CONTROL
+DETAIL
+Organization
+Mathmag Builders Limited
+Purpose
+Revised developer-ready functional specification
+Revision
+2.0 | 24 October 2026
+Approval basis
+Confirmed business choices + clearly identified technical implementation recommendations
+System scope
+Module 04 of 06, on one persistent client/project platform
+IMPLEMENTATION RULE
+This revision replaces inconsistent stage assumptions in earlier drafts. A confirmed business decision is
+binding; illustrative fields, example APIs and implementation details must be validated in design review.
+
+===== PAGE 5 =====
+01 Purpose and statutory boundary
+Coordinate printing, professional certification, authority applications and controlled
+release of approved documents.
+CONFIRMED DECISION
+BINDING RULE
+Stage entry
+Management releases the project after Module 3 acceptance
+and payment gate, for clients whose service scope includes
+approvals.
+Coordinating officer
+Dedicated Approvals Officer handles document logistics,
+authority follow-ups and correction routing.
+Professional certification
+Only appropriately authorized professionals can
+sign/stamp/certify documents within their scope.
+Statutory fees
+Either client pays authority directly with recorded evidence, or
+Mathmag coordinates through Accounts under approvals.
+Authority follow-ups
+System reminds Approvals Officer of scheduled visits/calls;
+officer performs follow-up and records outcomes.
+Corrections
+Approvals Officer sends comments to responsible department
+head; head delegates, approves corrected technical issue and
+authorizes resubmission package.
+Client publication
+Officer uploads official responses/approved docs internally;
+management explicitly authorizes client release.
+Conditional closure
+Required planning approvals may be complete while
+contractor-dependent NCA project registration remains open
+and tracked.
+MANDATORY CONTROL
+No professional stamp is generated or applied automatically by the application. Conditional Module 4
+completion is not construction mobilization authorization.
+MATHMAG BUILDERS LIMITED
+MODULE 04 | PRINTING, STAMPING & APPROVALS
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+2 / 9
+
+===== PAGE 6 =====
+02 End-to-end approvals workflow
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Management
+Releases accepted, financially cleared and versioned proposal from Module
+3.
+02
+Approvals Officer
+Assesses project-specific approval obligations and submission checklists.
+03
+Approvals Officer + Professionals
+Prepares controlled print/digital packages; legally authorized professionals
+review and certify.
+04
+Approvals Officer
+Lodges application through appropriate authorized channel and captures
+reference/proof.
+05
+Accounts / Client
+Records statutory fee payment evidence according to agreed route.
+06
+Approvals Officer
+Tracks authority response and follow-up schedule; logs each
+visit/call/outcome.
+07
+Department Leads
+Receive correction instructions, delegate work, technically approve revised
+files.
+08
+Approvals Officer
+Resubmits certified revised application package and tracks outcome.
+09
+Management
+Authorizes exact final approved PDFs/images for client publication.
+10
+System
+Marks applicable planning approvals complete; keeps any
+contractor-dependent NCA obligation pending.
+MATHMAG BUILDERS LIMITED
+MODULE 04 | PRINTING, STAMPING & APPROVALS
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+3 / 9
+
+===== PAGE 7 =====
+03 Responsibility and permission matrix
+ ROLE
+PRIMARY RESPONSIBILITY / LIMIT
+Approvals Officer
+Package assembly, checklists, printing coordination,
+applications, case logs, deadline follow-up, routed corrections,
+internal evidence upload; not allowed to stamp technical
+documents or publish direct to client.
+Lead Architect / Engineers
+Own discipline-specific technical corrections and professional
+approval/certification by persons appropriately authorized.
+Lead QS
+Reviews pricing, quantity and documentation implications of
+authority comments.
+Accounts
+Verifies statutory payments, approved disbursements, receipts
+and balances; no technical certification.
+Management
+Assigns cases, oversees blockers, authorizes client publication,
+releases next business stage.
+Client
+Views only documents published for own project and may
+upload fee receipts directly when paying an authority.
+Contracts Officer / Project Manager
+Receive contractor-related approval dependencies in Modules
+5/6, but cannot bypass missing statutory conditions.
+04 Application applicability matrix
+• Assess County Government approvals and any relevant environmental, construction registration or other
+applicable authority requirements on a project-by-project basis.
+• Store status as Not Applicable, Required-Not Started, In Preparation, Submitted, Corrections Requested,
+Approved, Rejected or Deferred with documented reason.
+• Do not assume every project needs every listed approval, and do not assert legal exemption without
+appropriately recorded project-specific assessment.
+• Planning applications can run in parallel when lawfully permitted and their inputs are ready; dependent
+actions remain blocked until prerequisites are satisfied.
+• Contractor-dependent NCA project registration is a separate obligation that may be pending while relevant
+planning approvals are complete.
+• A client who buys design-only or printed documents may have no Module 4 application workflow; mark
+skipped by service scope rather than artificially complete.
+MATHMAG BUILDERS LIMITED
+MODULE 04 | PRINTING, STAMPING & APPROVALS
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+4 / 9
+
+===== PAGE 8 =====
+05 Document issue set, printing and stamping
+ DOCUMENT CONTROL
+REQUIRED BEHAVIOUR
+Approved sources
+Use exact Module 2 discipline versions and Module 3 accepted
+proposal snapshot.
+Issue manifest
+List drawing numbers, revision, discipline, issue date, required
+print quantity, file hash, recipient and application.
+Certification queue
+Separate technical approval from authorized physical/digital
+professional signature/stamp; require proof by signatory.
+Print records
+Supplier, print order, receiving officer, print batch, issue set
+and delivery evidence.
+Superseded files
+Disallow selection of outdated files without a logged
+sanctioned revision workflow.
+Client-facing copies
+After management authorization, publish only selected official
+PDF/image documents, never internal native working files.
+06 Government application and payment management
+Application files
+• Create authority-specific case with applicant/owner, property parcel/county, relevant professionals,
+application type, current package and tracking/reference number.
+• Upload official submission receipt, payment voucher, authority portal acknowledgement, permit/approval and
+correspondence as immutable evidence.
+• Keep authority decision chronology and all fee demands; date future follow-ups rather than relying on
+memory.
+Two permitted statutory fee routes
+• Direct client payment: record invoice/instructions, client-uploaded proof, authority confirmation and financial
+responsibility.
+• Mathmag-coordinated payment: Approvals Officer initiates fee request, authorized management expenditure
+gate applies, Accounts disburses and verifies receipts.
+• Never mark a fee paid solely because an upload exists; verify against authority or trusted payment evidence
+when available.
+MATHMAG BUILDERS LIMITED
+MODULE 04 | PRINTING, STAMPING & APPROVALS
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+5 / 9
+
+===== PAGE 9 =====
+07 Follow-ups, corrections and resubmission
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Notice Received
+Approvals Officer records official comment letter, date, authority and
+document revision affected.
+02
+Issue Classified
+Match each item to Architectural, Structural, Mechanical, Electrical, QS or
+administration.
+03
+Department Lead Allocates
+Responsible head assigns junior correction work and deadline; preserve
+original notice.
+04
+Lead Technically Reviews
+Corrected files and any required professional re-certification are approved.
+05
+Cross-Module Impact Review
+Assess whether design, cost, client acceptance or contract obligations
+change.
+06
+Approvals Officer Resubmits
+Create revised submission manifest and upload official resubmission
+proof/reference.
+07
+Authority Outcome Tracked
+Mark approved, additional corrections or rejection, with dates and evidence.
+MANDATORY CONTROL
+Approvals Officer must not directly change approved technical design files or treat an authority comment as
+client authorization for a material scope variation.
+08 Conditional completion, NCA dependency and Module
+5/6 gates
+• Module 4 can reach Planning Approvals Complete / Contractor Registration Pending when applicable
+design/planning permits are available but contractor details are not yet finalized.
+• Manage NCA project registration and contractor appointment information as a separate compliance work
+item triggered by later execution of the applicable contract.
+• Project Manager may open Module 6 preconstruction planning after an executed construction agreement, but
+physical mobilization remains locked until all required registration, approvals, financial gates, readiness
+assessment and management release.
+• For design-only clients or clients appointing another contractor, approvals and contractor-registration
+responsibility must be documented accurately in the relevant engagement; Mathmag cannot override
+requirements placed on the responsible parties.
+• Management authorizes formal publication to the client portal after internal approval evidence has been
+checked.
+• Any late authority corrections that affect client-accepted scope, cost, programme or construction works must
+trigger controlled cross-module impact checks.
+MATHMAG BUILDERS LIMITED
+MODULE 04 | PRINTING, STAMPING & APPROVALS
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+6 / 9
+
+===== PAGE 10 =====
+09 Controlled release to client portal
+• Approvals Officer uploads approved documents to internal case record with issuing authority, reference,
+date, stamped version and validation evidence.
+• Management sees preview, manifest and list of outstanding approvals before authorizing exact file-level
+publication.
+• Client portal shows explicit status and disclaimers for pending obligations; never show NCA project
+registration as approved when still open.
+• Publication can be revoked or superseded only through traceable actions, not deletion of evidence.
+• Professional and county documents retain their authentic original appearance and may not be recreated as
+simulated official permits.
+10 Shared rules carried across all six modules
+ CROSS-MODULE RULE
+IMPLEMENTATION REQUIREMENT
+One lifecycle record
+Maintain one project ID from confirmed site-visit booking
+through design, approvals, contracts, construction and
+post-handover. Never create a disconnected project just to
+open a new module.
+Role separation
+User role, project assignment and explicit approval authority
+determine every permitted action. Technical sign-off, financial
+validation, management approval and client acceptance are
+distinct records.
+Evidence integrity
+Preserve original submissions, attachments, timestamps,
+authors and immutable decision histories. Corrections create
+new records or versions; no silent overwriting.
+Selective client access
+Client accounts can access only their own projects and
+explicitly authorized files or updates. Internal working/source
+files, staff performance data and financial notes are never
+published by default.
+Conditional service scope
+Clients may purchase design only, printing only, approvals,
+technical supervision, labour-only building or full construction.
+Modules not contracted are not mandatory project steps.
+Management-controlled exceptions
+Any permitted exception requires identified management
+authorization, reason, date and retained evidence. Mandatory
+legal/technical clearances cannot be overridden.
+Security and audit
+Require authenticated accounts, least privilege, encrypted
+transport/storage, file scanning, access logs, project-scoped
+permissions, backups and recoverability.
+MATHMAG BUILDERS LIMITED
+MODULE 04 | PRINTING, STAMPING & APPROVALS
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+7 / 9
+
+===== PAGE 11 =====
+11 Screens and user journeys
+ SCREEN
+PRIMARY USERS / BEHAVIOUR
+Approvals Dashboard
+Cases by authority, due action, stage and responsible officer.
+Application Checklist
+Project-specific applicability of County/NEMA/NCA/other
+requirements.
+Print and Certification Desk
+Version manifest, print orders, professional signatory checklist
+and signatures/stamps.
+Application Timeline
+Submission evidence, fee vouchers, authority decisions,
+follow-up tasks.
+Correction Router
+Official notice, required discipline, assigned junior, lead
+approvals, resubmission.
+Client Release Queue
+Management-authorized selected final PDFs/images.
+Compliance Dependency Board
+Pending NCA registration and Module 6 preconstruction
+readiness hold.
+12 Core data objects and key relationships
+Logical entities for developer schema design. Names below are examples rather than
+prescribed database table names.
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+ApprovalRequirement / Case
+Authority, applicability, legal basis/reason, project, documents,
+deadlines, case status.
+SubmissionPackage / Manifest
+Exact drawing/version hashes, certification signatory proof,
+print batch, application reference.
+AuthorityDecision / CorrectionNotice
+Date, authority text/evidence, affected discipline and version,
+next action.
+FeeDemand / FeePayment
+Amount, authority, paid-by route, accounts verification and
+evidence.
+FollowUpAction
+Date, owner, reminder, method, outcome and next scheduled
+date.
+ProfessionalCertification
+Professional identity/authority, scope, document version,
+signed proof and date.
+ClientPublication / StageDependency
+Published official items, manager authorization, NCA pending
+or completed state.
+AuditEvent
+Complete non-destructive file/version and decision trail.
+MATHMAG BUILDERS LIMITED
+MODULE 04 | PRINTING, STAMPING & APPROVALS
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+8 / 9
+
+===== PAGE 12 =====
+13 Illustrative service and event contracts
+Suggested API/service boundaries for planning. Authentication, validation, permission
+checks, idempotency and audit metadata apply to all write operations.
+OPERATION / EVENT
+EXAMPLE CONTRACT
+Open approval case
+POST /projects/{id}/approval-cases from Module 3 release.
+Add submission evidence
+POST /approval-cases/{id}/submissions.
+Schedule follow-up
+POST /approval-cases/{id}/follow-ups, reminder event.
+Route authority correction
+POST /approval-cases/{id}/correction-notices -> department
+task.
+Record professional cert
+POST /documents/{version}/certifications with authorized
+evidence.
+Management publication
+POST /approval-cases/{id}/client-publications.
+Events
+ApplicationSubmitted, AuthorityCommented,
+AuthorityApproved, PlanningApprovalsComplete,
+NcaRegistrationPending, NcaRegistrationVerified.
+14 User acceptance tests and release criteria
+• TEST 01 - Approvals Officer cannot add simulated professional certification or publish client documents
+directly.
+• TEST 02 - Client-pay and Mathmag-pay statutory fee pathways keep evidence and accounts states distinct.
+• TEST 03 - Authority correction returns to the correct department head, preserves original approved versions
+and triggers cost impact checks.
+• TEST 04 - Conditional Module 4 completion can coexist with pending contractor-specific NCA registration.
+• TEST 05 - Module 6 physical mobilization cannot occur simply because county planning approvals are
+complete.
+• TEST 06 - Print-only/design-only client can exit without being forced into authority applications.
+• TEST 07 - Management must authorize every published final approval document.
+• TEST 08 - Resubmission has new manifest/reference and retains prior authority responses.
+MATHMAG BUILDERS LIMITED
+MODULE 04 | PRINTING, STAMPING & APPROVALS
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+9 / 9

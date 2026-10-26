@@ -1,0 +1,1336 @@
+
+===== PAGE 1 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 1
+MODULE 06 | VERSION 3.0
+Construction & Post-Handover
+Governance-aligned controlled consolidation | 25 October 2026
+DOCUMENT
+CONTROL
+APPLICATION
+Status
+Harmonized business specification; approved prior module workflow retained with controlling
+Module 7 alignment.
+Composition
+This V3 addendum and the full previously revised module source are combined in a single
+PDF.
+Priority
+This V3 alignment governs in case of conflict. The original module source remains operative
+where not contradicted.
+Central governance
+Module 7 is a continuous operational backbone; it is not a gate to be completed after Module
+6.
+Authority
+Documented GM-led delegation and owner-reserved matters replace generic or inconsistent
+old “Management alone” labels.
+Scope of this module
+Preconstruction and mobilization; site workforce; materials, procurement, subcontractors,
+equipment, safety, quality, variation, costs and post-handover obligations.
+1. Implementation interpretation and source preservation
+This document intentionally retains the complete existing revised module specification after this amendment.
+Do not erase earlier workflow, screenshots, forms, stages or user-approved protections. Configure the shared
+functions from the V3 Master Architecture and Module 7 specification. The addendum is not permission to skip
+work or approvals.
+2. Shared mandatory company controls
+ • GOV-01 Governance: The owner retains reserved strategic powers and protected oversight, while the
+ employed General Manager (GM) holds company-wide operational accountability. Owner access to reporting
+does not authorize routine operational interference.
+• GOV-02 Delegation: Department heads, Project Managers and designated officers may authorize decisions
+ only within documented project, function, category, value and risk limits; above-limit or exceptional decisions
+go to GM. No employee may approve their own originating action.
+• GOV-03 Technical independence: Valid safety and professional certifications are performed by competent
+ authorized persons; neither a GM nor a financial waiver can substitute for a mandatory technical/statutory
+clearance.
+• GOV-04 Evidence: Worker, junior designer, client, storekeeper, inspector, supplier and auditor original
+ submissions are preserved with authorship, timestamp, linked versions and tamper-evident history. Review
+adds new records; it does not overwrite originals.
+• GOV-05 Segregation: Requests, verification, approval, payment, receipt and audit must be appropriately
+ independent. Where team size makes perfect separation impractical, a documented compensating review by
+an independent qualified officer is mandatory.
+• GOV-06 Client access: Client portal content is limited to that client/project and expressly published revision;
+ source design files, worker complaints, confidential pay, internal contracts and audit cases remain restricted.
+
+===== PAGE 2 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 2
+• GOV-07 Controls: Accounts verifies funds/beneficiaries and books actual transactions; QS values cost and
+ forecasts; Contracts verifies commercial entitlements; Compliance oversees obligations; QA checks systemic
+quality; independent audit observes, investigates and independently verifies closure.
+• GOV-08 Exceptions and continuity: Documented financial/administrative exceptions may be decided by the
+ authorized delegated manager or GM; there is no exception to mandatory law, safety, professional status or
+an already-required client acceptance. GM absence invokes only preapproved and HR-activated acting
+authority.
+3. Updated operating workflow and stage gates
+Start
+Signed construction scope permits planning only; Compliance, Accounts, site technical/safety readiness and
+delegated GM mobilization release unlock physical work.
+Original worker reports
+Every Mathmag skilled worker and subcontractor worker uses a personal account; original daily evidence is
+independently visible to PM and management immediately.
+Materials
+PO -> accepted GRN -> invoice three-way match; stock custody/issue/returns/transfers remain traceable and
+recipient verified.
+Equipment
+Unique asset ID, authorized operator competency, daily pre-use checks, fuel record, hours/cost, rented off-hire
+controls and restricted unsafe equipment.
+Work quality
+Independent stage hold-point certificates, defect logs and safety alerts; technical clearance is mandatory before
+unsafe or covered work proceeds.
+Commercial
+PM progress, QS valuations/forecast, Accounts reconciliation and management-approved client variations,
+subcontract payments and lawful suspension.
+Closeout
+Practical completion, technical approval, management-authorized handover, client response, final account and
+warranty admin closeout remain separate states.
+
+===== PAGE 3 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 3
+4. Module-specific accountability integration
+CONTROL AREA
+REQUIRED V3 BEHAVIOR
+Procurement
+authorizations
+PM requests; Procurement sources; QS checks costs; Accounts checks funding and payee;
+qualified safety reviews technical; delegated management approves financial
+commitments.
+Site daily reports
+Original worker/driver/operator evidence independently preserved; Supervisor
+independently verifies; PM publishes selected client content only.
+Fuel and equipment
+Digital measured issues to asset/project, unique operator, logs hours; Stores+Accounts
+stocks, QS/PM consumption variance, independent audits; serious defect blocks
+equipment.
+Material loss
+PM and QS establish causation/cost; major/suspicious loss audit escalation; lawful
+employer/contractor liability only after fair due process; no automatic deductions.
+Supplier advances and
+default
+Contractual approval, QS risk/value, Accounts exposure; track offset, due notice and
+remedy; impairment separate from legally waiving debt.
+Worker payroll
+Worker reports/attendance cannot directly authorize payment; PM verifies, Accounts
+calculates, delegated management authorizes and Accounts disburses under separate
+controls.
+Safety stop work
+Any competent authorized site/safety role isolates immediate danger; targeted hold
+remains until required competent clearance and management release if serious.
+Handover/warranty
+PM, QS, Accounts, Contracts and professionals each verify own component; management
+authorizes; client acceptance does not silently waive remaining obligations.
+5. Conflict resolution register
+OLDER / AMBIGUOUS WORDING
+V3 INTERPRETATION
+“Management” every PO/repair/payroll
+Decompose into delegated per-category limits, GM exception, finance
+checks and independent auditor visibility; owner not automatic signer.
+PM “authorizes stock adjustments”
+PM may authorize permissible routine adjustment following independent
+evidence, QS value and limits; significant/suspect cases receive higher
+delegated manager and audit.
+“Safety and professionalism” approval
+Qualified technical safety release separate from GM spend approval and
+repair execution.
+Module 6 “last of six”
+Module 7 provides constant HR, Accounts, QA/Compliance and protected
+independent auditing; warranty and post-handover still within Module 6.
+6. Developer data extensions / shared links
+Maintain one stable ProjectId across all modules; preserve exact FileVersionId and client publication
+authorization, verify role scope server-side and append actor/timestamp/decision history for every state
+transition.
+ • ConstructionEngagement/Mobilization
+ • WorkerTask/OriginalWorkReport
+ • Attendance/Adjustment
+ • Supplier/Quote/PO
+ 
+===== PAGE 4 =====
+MATHMAG BUILDERS LIMITED  |  MANAGEMENT SYSTEM  |  v3.0
+Page 4
+• GRN/StockMovement
+ • EquipmentAsset/OperatorPermit
+ • EquipmentPreuseInspection/SafetyRestriction
+ • FuelIssue/MeterReading
+ • Subcontract/Valuation/Retention
+ • ProjectBudget/CostForecast
+ • Variation/PaymentClaim
+ • Handover/WarrantyClaim
+ • AuditEvent
+ 
+7. Mandatory integration acceptance tests
+ AT-06-01: Original worker report reaches management before Supervisor verifies and cannot be hidden.
+ AT-06-02: Unverified supplier bank-change places affected payment on hold.
+ AT-06-03: No invoice payment with unmatched accepted GRN/approved PO unless explicitly authorized
+ legitimate exception.
+AT-06-04: No qualified operator or critical pre-use failure blocks restricted equipment.
+ AT-06-05: Fuel issue links to asset, project and physically acknowledged quantity.
+ AT-06-06: Unsafe construction stage cannot proceed on financial override.
+ AT-06-07: Client portal displays only individually approved progress items.
+ AT-06-08: Warranty case expiry cannot automatically delete or close unresolved claim.
+ 
+8. Required developer references
+Read this PDF with 00 Master Architecture, Module 07 Central Administration and 08 Integration & Testing.
+Additional authoritative user decisions for Modules 1-6 prevail over older illustrative implementation examples
+where the later decision is more specific. Regulatory obligations must be validated with qualified advisors and
+current official sources before implementation.
+
+===== PAGE 5 =====
+MATHMAG BUILDERS LIMITED
+MANAGEMENT SYSTEM
+MODULE 06
+CONSTRUCTION &
+POST-HANDOVER
+Workforce, inventory, quality, safety, finances, subcontractors,
+handover and warranties
+Plan better, build better.
+DOCUMENT CONTROL
+DETAIL
+Organization
+Mathmag Builders Limited
+Purpose
+Revised developer-ready functional specification
+Revision
+2.0 | 24 October 2026
+Approval basis
+Confirmed business choices + clearly identified technical implementation recommendations
+System scope
+Module 06 of 06, on one persistent client/project platform
+IMPLEMENTATION RULE
+This revision replaces inconsistent stage assumptions in earlier drafts. A confirmed business decision is
+binding; illustrative fields, example APIs and implementation details must be validated in design review.
+
+===== PAGE 6 =====
+01 Scope, execution status and controlling principles
+Comprehensive construction operations, project controls, workforce transparency,
+subcontracting, client reporting, completion and post-handover warranty management.
+CONFIRMED PRINCIPLE
+NON-NEGOTIABLE APPLICATION
+Conditional activation
+Executed construction/supervision/labour contract opens only
+relevant Module 6 services. Planning-only access may open
+while physical works remain locked.
+Project Manager
+Management directly appoints the Project Manager, who owns
+integrated project execution oversight and operational
+verification.
+Management approval
+Management controls contractor appointments,
+repair/contract commitments, payroll payments, major
+programme changes, claims, handover and warranty
+administrative close-out.
+Independent employee reporting
+Every directly hired AND subcontractor skilled worker has an
+account and uploads original daily photos/videos/descriptions;
+management sees originals before supervisor approval.
+Supervisor limited verification
+Supervisor independently checks reported work but may never
+edit, hide, delete, delay or suppress original worker evidence.
+Selective client portal
+Project Manager independently filters client-visible
+construction content. No automatic publication of all worker
+uploads.
+Continuous audit
+Link every action to actor, project, task, asset/claim/contract,
+timestamp and preserved revision history.
+MANDATORY CONTROL
+Construction mobilization is blocked until applicable permits/registration, financial and safety readiness
+gates are clear and management has authorized physical start.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+2 / 24
+
+===== PAGE 7 =====
+02 Stage entry and preconstruction readiness
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Contract Execution
+Module 5 stores an executed agreement and management-appointed
+Project Manager.
+02
+Preconstruction Plan
+Project Manager prepares work programme, resource needs, baseline
+budget, labour assignments and site readiness checklist.
+03
+Early Procurement Request
+Any pre-mobilization purchase is itemized and individually
+management-authorized; Procurement handles approved purchase order.
+04
+Compliance Review
+Verify relevant County, NEMA, NCA or other required obligations; conditional
+Module 4 close-out is insufficient by itself.
+05
+Accounts Gate
+Verify contract-specific initial construction milestone or documented eligible
+management financial exception.
+06
+Project Manager Recommendation
+Document manpower, site controls, access, required professionals, safety
+and materials readiness.
+07
+Management Mobilization Release
+Management alone authorizes physical construction and records effective
+start and conditions.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+3 / 24
+
+===== PAGE 8 =====
+03 Role catalogue and separation of duties
+ ACTOR
+AUTHORITY / RESTRICTION
+Management
+Appoints PM; authorizes financial commitments, appointments,
+major schedule/scope changes, payroll, subcontract
+disbursements, handover and final warranty administrative
+close-out.
+Project Manager
+Owns programme, requests procurement, verifies store
+records and progress, monitors workers/quality/safety, selects
+client media, assesses claims, submits recommendations.
+Site Supervisor
+Assigns daily worker tasks from PM plan, changes them with
+reasons, verifies worker work/attendance/PPE, reports site
+delays/defects/incidents; cannot suppress originals.
+Skilled Worker (Mathmag or subcontractor)
+Personal login, check-in/out, daily task evidence, independent
+incident/PPE/equipment reporting, acknowledgments,
+correction and dispute requests.
+Storekeeper
+Receives/checks goods and transfer receipts, records stock
+issues/returns, PPE, asset handoffs, conditions and returns.
+Procurement Officer
+Seeks/comparisons quotations, arranges approved material
+orders, subcontract bids, equipment service providers and
+authorized purchases.
+Accounts
+Verifies receipts, prepares payroll and client/subcontractor
+payment schedules, disburses only approved transactions,
+maintains ledgers.
+QS
+Assesses valuations, change costs, subcontract quantities,
+final account and relevant retention sums.
+Contracts Officer
+Prepares subcontract agreements, variation orders and
+warranty-term interpretations.
+Authorized Professionals
+Own technical inspections, certifications and statutory
+clearances where required.
+Client
+Receives PM-authorized progress media, contractual billing,
+formal variation approvals, handover and warranty case portal
+access.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+4 / 24
+
+===== PAGE 9 =====
+04 Procurement requisitions and approved orders
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Project Manager
+Creates resource/material requisition against activity, planned quantity,
+available stock and required date.
+02
+Procurement Officer
+Obtains and compares quotations, documents suppliers, price, lead times
+and specifications.
+03
+Management
+Authorizes specific vendor/amount/purchase order; extra restrictions for
+early procurement before mobilization.
+04
+Procurement Officer
+Places approved purchase order and tracks shipment/partial deliveries.
+05
+Accounts
+Processes authorized payments and retains financial evidence.
+06
+Storekeeper / Supervisor
+Checks physical delivery; Project Manager verifies record before final stock
+acceptance.
+MANDATORY CONTROL
+The Project Manager cannot create a financial commitment merely by requesting supplies. Procurement
+places orders only after applicable management authorization.
+05 Material delivery receiving and inspection
+• Storekeeper OR Site Supervisor physically receives material deliveries and checks purchase order, delivery
+note, quantities, item specifications, damage and condition.
+• Original delivery documents, timestamp, receiver identity, photos and any shortages are captured; receiving
+personnel cannot inflate actual quantity to match the order.
+• Project Manager verifies receiving records and cross-checks material ordered, delivered and accepted.
+• Part-delivery and rejection states remain traceable. Notify Procurement Officer of damaged, incorrect or
+incomplete supply.
+• The system separately tracks ordered, dispatched, physically received, accepted, rejected and outstanding
+quantities; payments use only approved transaction conditions.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+5 / 24
+
+===== PAGE 10 =====
+06 Material stock issuance and use
+ OWNER / OBJECT
+REQUIRED CONTROL
+Site Supervisor
+Requests project/activity-specific materials and quantities
+against available stock and planned work.
+Storekeeper
+Checks availability, issues actual quantity, records recipient,
+date, item, stock location and remaining balance.
+Project Manager
+Monitors material usage versus budget, approved material
+schedules, waste and productivity.
+Stock record
+Distinguish requested, issued, returned, transferred,
+consumed and adjusted quantities.
+Worker activity
+Link issued stock to authorized activities and daily site
+reporting; do not assume every issued unit was physically
+consumed.
+07 Material wastage, discrepancies and stock adjustments
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Issue Detected
+Site Supervisor or Storekeeper reports missing, damaged, wasted or
+unexplained items with evidence.
+02
+Project Manager Investigates
+Compares receiving, issuance, stock movement and actual work records;
+documents findings.
+03
+Adjustment Approved
+Project Manager authorizes justified stock adjustment and quantity/cost
+effect.
+04
+Significant Loss Escalated
+Management receives an alert under configured thresholds and may
+intervene.
+05
+Inventory Updated
+System posts a separate adjustment transaction with original record
+untouched.
+• Management configures significant-loss thresholds; do not invent permanent fixed values.
+• No worker or supplier is automatically blamed solely due to a stock variance.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+6 / 24
+
+===== PAGE 11 =====
+08 Inter-store transfers and future central warehouse
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Project Manager Requests
+Specifies sending store, project destination, materials, required quantities
+and reason.
+02
+Sending Storekeeper Dispatches
+Records release, batch, driver/vehicle where relevant, transit status and
+actual quantities.
+03
+System Tracks Transit
+Keeps in-transit inventory separate from received project stock.
+04
+Receiving Storekeeper / Supervisor
+Checks actual condition and quantities on delivery, accepts or records
+shortage/damage.
+05
+Project Manager Monitors
+Reconciles movement records and investigates discrepancies; all
+movements remain auditable.
+MANDATORY CONTROL
+Dispatched does not mean received. A receiving site balance must not increase solely on the sending
+storekeeper marking dispatch complete.
+09 Individual worker onboarding and reporting channels
+• Every directly engaged skilled worker has a unique personal account at onboarding; skilled workers
+employed by appointed subcontractors also receive unique accounts linked to their subcontractor employer
+and project.
+• Worker profile includes contact, trade/competence, permitted projects, employment relationship,
+supervisor/PM, safety induction/PPE, assigned tasks, pay arrangement only if directly employed, and activation
+dates.
+• Original daily work report captures assigned task, self-reported quantities, description, date/time and
+photos/videos; immediately visible directly to PM and management.
+• A worker submission is not the same as verified work. Supervisors append independent verification status
+(confirmed, partial, disputed or pending) and reasons without editing or suppressing the submission.
+• Mobile-first, practical low-bandwidth media uploads with draft/offline queuing, compression and confirmation
+of successful sync are recommended.
+• Worker may contest verification through portal. PM investigates; management sees disputes independently
+and may intervene with a reasoned logged decision.
+• Subcontractor representative has a restricted dashboard of their authorized team and project; individual
+worker accounts do not create an automatic direct Mathmag payroll/employment relationship.
+MANDATORY CONTROL
+There must be no "supervisor approval before management visibility" queue. Worker media and descriptions
+enter the central record immediately and remain unaltered.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+7 / 24
+
+===== PAGE 12 =====
+10 Daily construction task planning, assignment and
+changes
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Project Manager Plans
+Establishes approved work programme, daily/weekly activity targets and
+priority order.
+02
+Site Supervisor Assigns
+Allocates worker-specific task, location, quantity, expected finish and
+instructions.
+03
+Worker Receives
+Assignment is immediately available in the individual portal; PM and
+management can also see it.
+04
+Conditions Change
+Supervisor revises routine assignment/target with mandatory reason and
+immediate PM/management visibility.
+05
+Worker Reports
+Uploads actual task progress and evidence against the applicable version of
+task.
+06
+Verification and Review
+Supervisor inspects work; PM compares original/revised target, worker claim
+and verified result.
+MANDATORY CONTROL
+Changes materially affecting budget, approved project programme or contractual scope must be escalated
+for Project Manager/management approval under the relevant change-control policy. All original task targets
+are retained.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+8 / 24
+
+===== PAGE 13 =====
+11 Worker daily reports, supervisor verification and
+site-level reports
+ EVIDENCE LAYER
+BEHAVIOUR
+Individual worker original
+Photo/video + short description, task/worker/project/date and
+self-reported quantity; immediately visible to
+PM/management.
+Supervisor work verification
+Records actual observed quantity/quality and status; never
+edits worker original.
+Supervisor daily site report
+Separate daily overview: activities, work quantities,
+attendance, materials consumed, equipment, weather,
+challenges, safety, quality and next actions.
+Project Manager review
+Validates site report; approves or returns for correction;
+compares totals against original worker evidence.
+Performance evidence
+Stores verified output, deadlines, rework and disputes with
+attribution and contextual causes.
+Client publication
+PM selects exact reviewed photos/videos/report extracts for
+client portal; no blanket publishing of uploads.
+12 Client progress updates and media selection
+• Project Manager reviews approved daily site reports and worker-generated media, then authorizes specific
+photos/videos/descriptions for that client project.
+• Client sees only approved media and construction summaries, not original work disputes, confidential
+employee performance, raw financial records or internal safety investigation details by default.
+• Publication is an explicit item-level grant with PM ID, selected version, date, project and
+revocation/supersession history; originals remain internal.
+• Construction update frequency must follow the project-specific contract or management-approved
+arrangement; earlier choices about frequency were recommendations, not a confirmed uniform daily/weekly
+policy.
+• Client can view construction progress independent from invoices and warranty case statuses, each governed
+by distinct publication and visibility controls.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+9 / 24
+
+===== PAGE 14 =====
+13 Individual and team performance evaluation
+ ROLE
+QUANTITATIVE + QUALITY INDICATORS
+Skilled worker
+Assigned vs verified quantity, time, reporting consistency,
+workmanship, defects/rework attributable after investigation,
+contextual constraints.
+Site Supervisor
+Timely verification, quality/site report accuracy, task planning,
+dispute patterns, hazard response, delays and inspection
+oversight.
+Project Manager
+Programme adherence, risk response, accurate verification,
+cost/stock oversight, closure timeliness, client communication
+and team safety.
+Storekeeper / Procurement
+Inventory accuracy, traceability, compliant issue/receiving,
+lead time, authorized orders and supplier quality.
+QS / Technical Staff
+Technical completeness, quantification accuracy, review
+speed, rework and approved work quality.
+Subcontractor team
+Verified progress, quality, schedule, safety and
+defect-response performance at contract/team level.
+MANDATORY CONTROL
+Unresolved disputes are not automatic performance penalties. Compare employees on role-relevant
+denominators and consider missing materials, unsafe conditions, weather, client changes and technical
+errors outside their control.
+14 Attendance, corrections and employee pay
+arrangements
+Independent attendance
+• Workers check in/out using their own portal. Supervisor separately verifies on-site
+presence/arrival/departure; PM and management compare both sets.
+• Original worker timestamps must never be replaced. Missing entry corrections are requested by worker with
+reason, checked by supervisor and approved or rejected by PM; post an adjustment record.
+• Keep check-in/out date, assigned site, verifier, attendance exceptions, evidence and audit timestamps; align
+payroll to relevant verified attendance.
+Flexible wages / payment terms
+• Support daily wage, weekly wage, monthly salary, piecework/quantities and fixed task agreements at
+individual worker level.
+• PM verifies eligible attendance/work and recommends pay; Accounts calculates/validates payroll;
+management finally authorizes; Accounts disburses and records transactions.
+• Worker portal displays own wage terms, payable/approved amounts, statements, prior payments and
+permitted deductions, never other employees financial details.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+10 / 24
+
+===== PAGE 15 =====
+• If part of work is contested, segregate disputed quantities from undisputed amounts and apply the actual
+contract and applicable law.
+15 Worker pay advances and recovery
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Worker Requests
+Individual portal form captures requested amount, reason and date.
+02
+Project Manager Recommends
+Checks worker engagement, related project and operational context.
+03
+Accounts Verifies
+Reviews earned amounts, prior advances, eligible recovery terms and limits.
+04
+Management Authorizes
+Approves, rejects or amends amount and lawful recovery terms.
+05
+Accounts Disburses / Recovers
+Records paid advance and agreed, legally permitted recovery against
+ledger.
+06
+Worker Views Ledger
+Displays outstanding advance, approved recoveries, dates and history.
+MANDATORY CONTROL
+Do not automatically deduct money merely because an advance was requested. Recovery must follow
+documented agreement and applicable law.
+16 Quality defects and mandatory construction hold points
+Construction defect management
+• Supervisor creates defect with location, condition, severity, evidence, assigned corrective task and deadline.
+• Individual workers independently upload repair evidence; Supervisor checks correction; PM verifies and
+authorizes closure.
+• Management can inspect originals, repeat defects, rejected corrections and reasons; no silent deletion or
+attribution of fault.
+Mandatory stage inspections
+• Supervisor uses checklist/photos to request inspection before concreting, covering up services or moving
+beyond configured critical stage.
+• PM verifies readiness and authorizes progression only after every required independent
+professional/statutory technical clearance is recorded.
+• Failed or pending check leaves stage on hold. Original report, professional certificate and PM release are
+separate audited decisions.
+• Applicable checks may include foundations, reinforcement, DPM, suspended slabs, concealed services, roof
+water proofing and trade-specific tests.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+11 / 24
+
+===== PAGE 16 =====
+17 Delay reports, recovery and construction programme
+revisions
+• Supervisor logs delay cause, event time, work packages, evidence, impact and mitigation on the day it
+occurs.
+• PM assesses time, critical path, procurement, labour, cost and client consequences; may direct routine
+recovery within approved contract/budget/programme.
+• Any major completion-date, budget, scope or contractual commitment change requires management
+authorization and client notice/acceptance where contractually required.
+• Maintain original baseline programme, every approved revised programme, change rationale, dated
+decisions and activity dependency links.
+• Delays unrelated to worker performance must not automatically penalize individual productivity indicators.
+18 Construction variations and additional works
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Request Registered
+Client or authorized project actor proposes altered/additional work with
+origin and description.
+02
+Project Manager Assesses
+Reviews physical scope, schedule, feasibility and operational impacts.
+03
+Relevant Professionals Review
+Check design implications, technical safety, revisions and permit needs.
+04
+QS Costs
+Prepares variation prices, allowances, credits and resource/time impacts.
+05
+Contracts Officer Documents
+Creates controlled variation order and amended conditions.
+06
+Management Authorizes Offer
+Approves scope, pricing, payment arrangement and client-facing issue.
+07
+Client Formally Accepts
+Signs or accepts exact terms before variation is executable.
+08
+Finance/Compliance Checks
+Accounts verifies any contractually due payment gate; mandatory
+professional/statutory prerequisites remain enforced.
+09
+Project Manager Releases Execution
+Adds variation tasks to approved work plan without overwriting original
+contract.
+MANDATORY CONTROL
+A Site Supervisor instruction alone cannot create chargeable extra works; an approved variation requires
+technical review, QS assessment as needed, management offer approval and formal client acceptance.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+12 / 24
+
+===== PAGE 17 =====
+19 Flexible variation payments and client construction
+payment claims
+ TRANSACTION TYPE
+CONTROL WORKFLOW
+Variation advance / milestones
+Contracts Officer defines variation-specific terms;
+management approves; client accepts; Accounts verifies
+amounts due at the relevant execution point.
+Construction milestone claim
+PM validates milestone evidence; management authorizes
+claim; Accounts issues invoice and verifies receipt.
+QS-measured progress
+PM confirms physical progress; QS values work where contract
+requires; management approves claim; Accounts invoices and
+records receipts.
+Scheduled instalment
+Accounts issues contractual invoice according to agreed dates
+after required checks and authorization.
+Hybrid contract terms
+May combine schedule, milestone and valuations; configure
+per signed contract rather than one universal method.
+Account ledger
+Track contract sum, signed variations, claims, certified
+amounts, invoices, verified receipts, balances and adjustments
+separately.
+20 Overdue client payments and contractual suspension
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Accounts Flags Overdue
+Records amount, due date, missed milestone and client
+communication/reminders.
+02
+Project Manager Assesses
+Evaluates exposure to site resources, labour, procurement, programme,
+safety and contract.
+03
+Management Decides
+May authorize continued works, agreed payment plan or lawful suspension
+after applicable notice and safety requirements.
+04
+Project Holds Updated
+System records decision, scope, required notices, demobilization/safety
+precautions and authorized effective date.
+05
+Accounts Verifies Recovery
+Records receipts and remaining obligations; management authorizes
+resumption where necessary.
+MANDATORY CONTROL
+An overdue invoice must not automatically suspend construction. Management makes the decision under
+the signed contract, applicable law and site-protection requirements.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+13 / 24
+
+===== PAGE 18 =====
+21 Safety hazards, incident reporting and work
+resumption
+Independent hazard and incident channel
+• All workers can independently report hazards, near misses, incidents and injuries with photos/videos; original
+report directly reaches PM and management without supervisor approval.
+• Supervisor takes immediate protective actions, including halting unsafe activity and requesting emergency
+help. Critical cases generate immediate management escalation.
+• PM investigates, records contributing factors and tracks corrective actions, with competent safety/technical
+personnel and statutory notifications where required.
+Release after hazard correction
+• Supervisor independently checks corrective actions and records evidence; PM may authorize routine
+resumption.
+• Serious events require management authorization and all applicable competent professional or regulator
+clearance before affected activity resumes.
+• Retain safety hold, inspection outcome, clearance certificates, manager decision and date. Worker reporting
+must not trigger retaliation.
+22 Safety induction, toolbox talks and PPE
+Induction and talks
+• Supervisor conducts site induction and toolbox briefings; logs topic, hazards, instructions, trainer, date and
+attendees.
+• Every worker independently acknowledges attendance through own portal, immediately visible to
+PM/management; acknowledgments do not substitute for competency checks.
+• PM verifies compliance; mandatory inductions, qualifications and briefing conditions gate hazardous
+assignments.
+PPE issuance
+• Storekeeper issues role-appropriate PPE to named worker and records size/type/condition/date; worker
+independently acknowledges receipt.
+• Supervisor verifies availability, fit, condition and use; PM monitors compliance and management sees all
+records.
+PPE replacement
+• Worker independently requests replacement of lost/damaged/unsuitable/worn PPE; supervisor checks;
+Storekeeper promptly provides replacement and updates stock.
+• Worker acknowledges new issue. Essential PPE must never be delayed as punishment; affected hazardous
+activity is held or safe alternative task offered.
+23 Tools and equipment custody, maintenance and repair
+Asset custody
+• Supervisor requests tools for assigned work; Storekeeper issues against uniquely identified item and
+responsible worker/operator.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+14 / 24
+
+===== PAGE 19 =====
+• Worker independently acknowledges receipt and return through portal; Storekeeper physically verifies
+returned condition; PM tracks location and overdue assets.
+• Powered/restricted equipment is allocated only to authorized competent personnel.
+Breakdowns and repairs
+• Worker independently reports fault; Supervisor or Storekeeper checks asset; unsafe machine is marked Out
+of Service.
+• PM coordinates diagnostic/repair; management approves repair expenditure; Procurement arranges
+approved supplier/service; Accounts pays according to approved route.
+• Equipment cannot be released for reuse until documented inspection and any required safety/technical
+testing.
+Preventive maintenance
+• System tracks service based on dates, logged operating hours and manufacturer schedules and issues
+upcoming/due/overdue reminders.
+• PM coordinates; Procurement arranges management-authorized servicing; retain service history, costs,
+operating hours and release-to-service clearance.
+24 Subcontractor appointment, worker accounts and
+oversight
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Project Manager Recommends
+Identifies specialist scope and technically appropriate candidate providers.
+02
+Procurement Quotes
+Obtains and compares quotations, credentials, lead times and commercial
+details.
+03
+Contracts Officer Drafts
+Prepares subcontract, scope, pricing, milestone, warranty, safety and
+retention terms.
+04
+Management Appoints
+Authorizes binding subcontract commitment and contractor engagement.
+05
+Subcontractor Onboards
+Representative portal and personal accounts for each skilled subcontract
+worker are created and scoped to project.
+06
+Project Manager Supervises
+Monitors performance, individual worker evidence, defects, safety, schedule
+and contract compliance.
+MANDATORY CONTROL
+Subcontractor worker reporting rights do not automatically create a direct Mathmag wage obligation;
+employee and subcontractor contractual relationships remain separate.
+25 Subcontractor claims, retention and final payment
+• Representative submits subcontractor payment application through portal against agreed contract, progress
+and attachments.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+15 / 24
+
+===== PAGE 20 =====
+• PM verifies physical progress, quality and site evidence; QS values quantities where required by subcontract;
+Accounts checks prior claims, variations, deductions and agreed commercial terms.
+• Management authorizes final payment schedule; Accounts disburses and records the transaction. Worker
+daily reports do not independently authorize subcontractor payments.
+• Retention is flexible per subcontract: none, fixed amount or percentage, cap, release milestones, defect
+period and conditions where agreed.
+• PM verifies completion/defects; QS assesses final account if required; Accounts reconciles held/released
+retention; management explicitly authorizes each release.
+• Passing retention expiry does not automatically release money unless the relevant payment conditions and
+legally applicable obligations have been satisfied.
+26 Subcontractor completion, inspections and handover
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Subcontractor Requests Handover
+Representative submits completion package and related worker evidence.
+02
+Site Supervisor Inspects
+Records physical inspection, snag list, quantity and quality observations.
+03
+Workers Correct Snags
+Individual subcontract workers upload independent correction evidence,
+linked to defects.
+04
+Project Manager Verifies
+Checks scope completion, defect closure and any permitted pending
+obligations.
+05
+Required Professional Clearance
+Independent authorized professionals provide specialist/technical
+certificates where necessary.
+06
+PM Records Recommendation
+Issues completion recommendation with evidence and conditions, visible to
+management.
+07
+Final Account Proceeds
+Completion supports valuation/retention review but does not itself authorize
+Accounts to pay.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+16 / 24
+
+===== PAGE 21 =====
+27 Main construction completion and client handover
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+PM Prepares Completion
+Organizes final inspections, final works documentation and defect close-out.
+02
+Technical Professionals Sign
+Provide applicable completion, system-testing or statutory certificates.
+03
+QS and Accounts Reconcile
+Check approved variations, contract value, final account, invoices, balances
+and retention terms.
+04
+PM Compiles Pack
+Applicable as-built documents, manuals, warranties, certificates, photos and
+handover record.
+05
+Management Authorizes
+Reviews technical, financial and contractual readiness and permits formal
+client handover.
+06
+Client Accepts
+Signs at physical meeting or accepts through client portal; record any
+expressly agreed minor remaining items.
+07
+After-Handover Starts
+Warranty/defects-liability clocks and continuing obligations tracked under
+actual contract trigger dates.
+MANDATORY CONTROL
+Physical completion, client handover, financial close-out and end of defects-liability obligations are distinct.
+Client sign-off must not silently waive unresolved or statutory responsibilities.
+28 Post-handover defect claims, coverage and costs
+ STEP
+OWNER / ACTION
+EXPECTED RESULT
+01
+Client Claims
+Client opens claim via portal, attaches descriptions/photos/videos and marks
+urgency.
+02
+Project Manager Investigates
+Records inspection, cause, repair evidence and immediate safety response if
+warranted.
+03
+Professionals Assess
+Specialist/structural/safety defects receive independent technical review as
+needed.
+04
+Contracts Officer Reviews
+Checks original construction agreement, warranty/defects liability,
+supplier/subcontractor responsibilities.
+05
+QS Costs Where Needed
+Prepares repair-cost estimate if cost allocation or chargeable work requires.
+06
+Management Resolves
+Approves covered remedy/cost allocation or offer of chargeable work.
+07
+Client Accepts Charges
+Non-emergency chargeable correction requires client acceptance of
+documented scope, price and terms.
+08
+Worker/Subcontractor Repairs
+Original corrective evidence entered through assigned portal, independently
+visible to management.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+17 / 24
+
+===== PAGE 22 =====
+29 Priority response, verified closure and no-response rule
+Response-time priority
+• Classify claims Critical, Urgent or Routine. Management configures separate initial-response and resolution
+target intervals consistent with contract, severity and legal obligations.
+• System timestamps claim, acknowledgment, inspection, response, resolution; escalates
+approaching/overdue milestones to PM and management.
+• Critical safety hazards receive immediate protective or emergency action regardless of liability and ordinary
+business approvals.
+Client confirmation and dispute
+• PM verifies repairs and obtains mandatory technical clearances; client reviews evidence and explicitly
+confirms satisfaction or disputes findings in portal.
+• Disputed claims remain under investigation with independent management oversight; client-confirmed and
+management-administrative closures have distinct statuses.
+Client non-response
+• System sends reminders at management-set intervals and logs delivery/response. PM compiles completed
+repair evidence and communication history.
+• Management alone may authorize a reasoned administrative closure if contract and law permit. Client silence
+is never satisfaction or release of rights.
+30 Reopening claims, expiry tracking and final warranty
+close-out
+Reopening
+• Client can request reopening of a previous claim with new evidence; PM reviews original history and
+investigates. Management sees all requests and can intervene in contested decisions.
+• Original complaints, prior repairs and closures are retained. Reopening does not automatically prove
+eligibility for free work or extinguish applicable rights.
+Expiry monitoring
+• Maintain contract-specific warranty and defects-liability start/end dates for overall building and separately for
+trades, suppliers, components and subcontractors if applicable.
+• System calculates due dates, sends reminders at management-defined intervals and alerts management of
+approaching/passed expiry and outstanding claims.
+• Expiry never erases, auto-closes or prejudges unresolved/reopened claims or statutory/contractual duties.
+Final administrative close-out
+• Project Manager prepares a final report: expiry periods, original/reopened claims, repairs, client
+confirmations/disputes, administrative no-response closures, outstanding defects, clearances and continuing
+obligations.
+• Management independently reviews and alone authorizes administrative close-out when appropriate. The
+system must not label it "all liabilities discharged".
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+18 / 24
+
+===== PAGE 23 =====
+• Retain evidence, employee uploads, decisions, correspondence and re-opening capability subject to
+applicable retention/legal policies.
+31 Shared rules carried across all six modules
+ CROSS-MODULE RULE
+IMPLEMENTATION REQUIREMENT
+One lifecycle record
+Maintain one project ID from confirmed site-visit booking
+through design, approvals, contracts, construction and
+post-handover. Never create a disconnected project just to
+open a new module.
+Role separation
+User role, project assignment and explicit approval authority
+determine every permitted action. Technical sign-off, financial
+validation, management approval and client acceptance are
+distinct records.
+Evidence integrity
+Preserve original submissions, attachments, timestamps,
+authors and immutable decision histories. Corrections create
+new records or versions; no silent overwriting.
+Selective client access
+Client accounts can access only their own projects and
+explicitly authorized files or updates. Internal working/source
+files, staff performance data and financial notes are never
+published by default.
+Conditional service scope
+Clients may purchase design only, printing only, approvals,
+technical supervision, labour-only building or full construction.
+Modules not contracted are not mandatory project steps.
+Management-controlled exceptions
+Any permitted exception requires identified management
+authorization, reason, date and retained evidence. Mandatory
+legal/technical clearances cannot be overridden.
+Security and audit
+Require authenticated accounts, least privilege, encrypted
+transport/storage, file scanning, access logs, project-scoped
+permissions, backups and recoverability.
+Work reporting fairness
+Worker-originated material is permanently visible to Project
+Manager and management separately from Site Supervisor
+verification; manager decisions can override erroneous
+assessment with reason and without alteration of originals.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+19 / 24
+
+===== PAGE 24 =====
+32 Screens and user journeys
+ SCREEN
+PRIMARY USERS / BEHAVIOUR
+Project Manager Command Center
+Projects, programme, financial gates, exceptions, daily
+reports, live delays and approval queues.
+Worker Mobile Portal
+Assigned task, evidence upload, check-in/out,
+correction/dispute, incident, PPE, tool custody, earnings and
+advances where applicable.
+Supervisor Site Dashboard
+Daily task assignments, versioned changes, individual work
+verification, attendance, defects, safety and stage inspections.
+Central Store / Site Store
+Receiving, stock balances, issue request, consumption,
+returns, transfers, adjustments, PPE, assets.
+Procurement Workspace
+Requisitions, quotes, supplier bids, purchase orders and
+approved repairs.
+Client Construction Portal
+PM-approved progress photos/videos, selected reports,
+milestone invoices, variations, handover and warranty support.
+Management Oversight
+Original worker evidence vs supervisor verification, disputes,
+safety alerts, PM recommendations and approval decisions.
+Accounts and Payroll
+Worker advances, pay recommendations, payroll approval,
+subcontract claims, client invoicing and receipts.
+QS Valuation Desk
+Variation costing, subcontract payment valuations, progress
+claims and final account.
+Subcontractor Representative
+Agreement, workers/tasks, representative claims, compliance,
+handover and retention ledger.
+Quality / Safety Register
+Construction hold points, defects, safety incidents, technical
+clearances and release conditions.
+Asset Management
+Equipment custody, operating hours, defects, repair
+authorizations and preventive service alerts.
+Warranty and Close-Out
+Client claims, severity timers, corrective works, re-openings,
+expiries, final management close-out.
+33 Core data objects and key relationships
+Logical entities for developer schema design. Names below are examples rather than
+prescribed database table names.
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+ConstructionEngagement / Mobilization
+Executed Module 5 service scope, appointed PM, readiness
+gates, permit IDs, management approval.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+20 / 24
+
+===== PAGE 25 =====
+ENTITY / AGGREGATE
+REQUIRED DATA / RELATIONSHIP
+WorkPlan / Activity / WorkerTask
+Baseline/current programme, task versions, assigned workers,
+quantities, deadlines, change reason.
+WorkerProfile / SubcontractorEmployeeLink
+Trade, employing entity, verified permissions, project
+allocation, induction, PPE, payment relationship.
+WorkerWorkReport / WorkerMedia
+Original worker submission, hash, timestamp, task/project,
+self-reported quantity and independently stored evidence.
+SupervisorVerification / WorkerDispute
+Separate observed work, status, findings, PM resolution and
+management intervention.
+AttendanceEvent / AttendanceAdjustment
+Original check-in/out record; supervisor verification;
+worker-initiated correction and PM authorization.
+MaterialStock / StockMovement
+Item/batch, store, receipt, issue, return, consumption, transfer,
+variance and adjustment reference.
+PpeIssue / PpeReplacement / Acknowledgment
+Worker-specific equipment, issuance, inspection,
+return/replacement and direct worker confirmation.
+EquipmentAsset / Custody / Maintenance
+Asset ID, operator, usage, faults, repair approvals, service
+schedule and inspection release.
+ConstructionDefect / StageInspection / SafetyIncident
+Severity, photo/video evidence, technical clearance, work
+holds, corrective action and audited closure.
+Subcontract / Claim / RetentionLedger
+Representative account, signed terms, valuations, staged
+payment, defect conditions and authorized releases.
+VariationOrder / PaymentClaim / ClientLedger
+Technical/QS/contract review, client acceptance, claim,
+invoice, payment and financing gate.
+HandoverCertificate / WarrantyTerm / WarrantyClaim
+Client acceptance, coverage, expiry, cases, reopening history,
+admin versus satisfactory close-out.
+PublicationGrant / AuditEvent / Notification
+File-specific PM publication, actor, state changes, immutable
+audit and channels.
+34 Illustrative service and event contracts
+Suggested API/service boundaries for planning. Authentication, validation, permission
+checks, idempotency and audit metadata apply to all write operations.
+OPERATION / EVENT
+EXAMPLE CONTRACT
+Worker evidence
+POST /projects/{id}/worker-reports with worker task, media
+and immutable original.
+Supervisor check / dispute
+POST /worker-reports/{id}/verifications; POST
+/verifications/{id}/disputes.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+21 / 24
+
+===== PAGE 26 =====
+OPERATION / EVENT
+EXAMPLE CONTRACT
+Daily tasks/changes
+POST /projects/{id}/worker-tasks; POST
+/worker-tasks/{id}/revisions.
+Attendance and adjustment
+POST /workers/{id}/attendance-events; POST
+/attendance/{id}/correction-requests.
+PM client media selection
+POST /projects/{id}/client-media-publications with exact
+media IDs.
+Stock and assets
+POST /stores/{id}/stock-issues; POST /stock-transfers; POST
+/assets/{id}/maintenance-orders.
+Safety and quality gates
+POST /projects/{id}/incidents; POST
+/stage-inspections/{id}/pm-clearance.
+Payroll approvals
+POST /projects/{id}/pay-recommendations; POST
+/payment-schedules/{id}/management-authorization.
+Subcontract claims
+POST /subcontracts/{id}/claims; POST
+/claims/{id}/qs-valuation.
+Construction variations
+POST /projects/{id}/variation-requests; POST
+/variations/{id}/client-acceptance.
+Warranty cases
+POST /projects/{id}/warranty-claims; POST
+/warranty-claims/{id}/reopen.
+Events
+WorkerReportSubmitted, SupervisorVerificationRecorded,
+WorkDisputed, SafetyHoldApplied,
+ProfessionalClearanceRecorded, ClientMediaPublished,
+PaymentAuthorized,
+WarrantyClaimExpiredPeriodWithOpenCase.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+22 / 24
+
+===== PAGE 27 =====
+35 Mandatory notification and automation matrix
+ EVENT
+RECIPIENT / RESPONSE
+Original worker report submitted
+Project Manager and management: immediately available; Site
+Supervisor gets verification task.
+Supervisor reports conflict
+Worker, Project Manager and management can view reasons;
+PM receives decision queue.
+Safety critical incident
+Immediate alert to management/PM; site protective action
+proceeds immediately.
+Stock shortage / significant adjustment
+Procurement/PM alerts; management escalation on configured
+significant threshold.
+Task revised
+Worker notified; PM and management receive
+original-versus-revised visibility.
+Payroll/contractor payment awaiting approval
+Management decision queue; Accounts cannot disburse until
+authorized.
+Stage inspection hold / clearance
+Assigned responsible inspector/professional/PM notified; next
+activity remains blocked.
+Critical equipment service overdue
+Storekeeper/PM and management; restrict unsafe equipment.
+Warranty response due/overdue
+Assigned PM plus management escalation under configured
+severity target.
+Warranty approaching expiry
+Project Manager, management and authorized client
+reminders on selected configured schedule.
+36 User acceptance tests and release criteria
+• TEST 01 - Permit Module 6 planning-only access after contract execution, but deny on-site task start until
+approved compliance, financial, readiness and management mobilization gates.
+• TEST 02 - Independent skilled worker report appears in PM and management records before Site Supervisor
+action; supervisor cannot change/delete evidence.
+• TEST 03 - Subcontractor worker has distinct personal portal and management-visible originals; no automatic
+direct Mathmag payroll account created.
+• TEST 04 - Project Manager selects individual verified media to publish; client cannot see unselected worker
+uploads or internal employee reviews.
+• TEST 05 - Site Supervisor may revise routine daily tasks only with reason and audit; original targets retained;
+major programme change escalates.
+• TEST 06 - Worker check-in/out timestamps are immutable; PM-approved corrections create separate
+adjustment and original remains visible.
+• TEST 07 - Inventory dispatch does not increase receiving site balance until actual acceptance; partial
+damaged deliveries handled.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+23 / 24
+
+===== PAGE 28 =====
+• TEST 08 - Stock discrepancies require PM adjustment approval and management escalation when threshold
+exceeded.
+• TEST 09 - Management alone approves payroll, significant repair commitments, subcontract
+appointment/payment, major programme change and final handover.
+• TEST 10 - Hold concrete placement on pending required stage inspection/professional clearance and prevent
+bypass.
+• TEST 11 - Unsafe equipment and serious incident holds prevent use/resumption until all applicable
+technical/statutory and management approvals.
+• TEST 12 - Variation without management-approved price and formal client acceptance cannot become an
+executable extra task.
+• TEST 13 - Overdue client invoice alerts but cannot automatically suspend construction without lawful
+management decision.
+• TEST 14 - Subcontract retention remains contract-specific; no universal percentage or auto-release of funds.
+• TEST 15 - Warranty case with no client response may be administratively closed only by management and
+never marked client-satisfied.
+• TEST 16 - Reopen warranty cases while preserving originals; warranty expiry alone never erases or closes
+claims.
+• TEST 17 - Final warranty administrative close-out requires Project Manager final report and independent
+management authorization.
+37 Phased implementation priorities and developer
+handover
+ DELIVERY WAVE
+RECOMMENDED SCOPE / DEPENDENCY
+Wave 1 - Core field evidence
+User/roles, project/site, individual worker and subcontractor
+portals, original media storage, supervisor verification,
+PM/management side-by-side view, daily site reporting.
+Wave 2 - Operational stores and people
+Procurement requests, goods receiving, inventory
+issue/transfer, attendance, worker tasks/changes, PPE,
+equipment custody and payroll approvals.
+Wave 3 - Controlled execution
+Stage inspections, hazards, quality defects, programme
+changes, subcontract appointment/claims, client publication
+and financial controls.
+Wave 4 - Commercial completion
+Variation orders, client progress invoices, handover, warranty
+claims, response timers, expiry and management close-out.
+Cross-cutting
+Responsive mobile portal, secure uploads, notification queue,
+managed object permissions, audit logs, backups, test data
+migration and monitoring.
+MANDATORY CONTROL
+Waves are an implementation recommendation, not confirmed management policy. Business rules above
+take precedence over convenient developer shortcuts.
+MATHMAG BUILDERS LIMITED
+MODULE 06 | CONSTRUCTION & POST-HANDOVER
+INTERNAL / DEVELOPER SPECIFICATION  •  REVISION 2.0
+24 / 24
