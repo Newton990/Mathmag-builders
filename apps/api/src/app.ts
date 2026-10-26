@@ -9,6 +9,7 @@ import { config } from './config.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { healthRouter } from './routes/health.js';
+import { authRouter } from './routes/auth.js';
 
 export function createApp(): express.Application {
   const app = express();
@@ -19,10 +20,10 @@ export function createApp(): express.Application {
   // ── CORS ──────────────────────────────────────────────────────────────────
   app.use(
     cors({
-      origin: config.corsOrigin.split(',').map((o) => o.trim()),
+      origin: config.CORS_ORIGIN.split(',').map((o) => o.trim()),
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'X-Request-ID'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID', 'X-Idempotency-Key'],
     }),
   );
 
@@ -47,6 +48,7 @@ export function createApp(): express.Application {
 
   // ── Routes ────────────────────────────────────────────────────────────────
   app.use('/api', healthRouter);
+  app.use('/api/auth', authRouter);
 
   // ── 404 handler ───────────────────────────────────────────────────────────
   app.use((_req, res) => {

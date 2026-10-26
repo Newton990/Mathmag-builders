@@ -183,6 +183,8 @@ model User {
   revokedPublications   PortalPublication[] @relation("RevokedByUser")
   auditEvents           AuditEvent[]        @relation("AuditActor")
   notifications         Notification[]
+  refreshTokens         RefreshToken[]
+  mfa                   UserMfa?
 
   @@index([role, isActive])
   @@map("users")
@@ -624,6 +626,49 @@ model Notification {
   @@index([recipientId, createdAt])
   @@index([deliveryStatus, createdAt])
   @@map("notifications")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REFRESH TOKENS — Opaque rotation tokens. One active per session.
+// Revoked on logout, logout-all, rotation (reuse detection), or account lock.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model RefreshToken {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token       String    @unique  // Opaque 96-char hex string
+  mfaVerified Boolean   @default(false)
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  revokeReason String?  // LOGOUT | LOGOUT_ALL | ROTATED | REUSE_DETECTED | ADMIN
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// USER MFA — TOTP configuration per user. One row per user.
+// Secret is AES-256-GCM encrypted at rest. Backup codes are SHA-256 hashed.
+// enabled=false means setup initiated but not yet confirmed.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model UserMfa {
+  userId           String    @id
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  encryptedSecret  String    // AES-256-GCM: iv:tag:ciphertext (all hex)
+  backupCodeHashes String[]  // SHA-256 of each code; consumed on use
+  enabled          Boolean   @default(false)
+  enabledAt        DateTime?
+  disabledAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("user_mfa")
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
