@@ -95,7 +95,7 @@ function readSection(record: unknown, key: string): unknown {
   return isRecord(record) ? record[key] : undefined;
 }
 
-function buildLines(source: ReportSource): Array<{ heading: string; lines: Line[] }> {
+export function buildReportLines(source: ReportSource): Array<{ heading: string; lines: Line[] }> {
   const { sections } = source;
   const b = sections.b;
   const c = sections.c;
@@ -214,14 +214,13 @@ function buildLines(source: ReportSource): Array<{ heading: string; lines: Line[
       ],
     },
     {
-      heading: '6. Limitations and follow-up',
+      heading: '6. Limitations',
       lines: [
         {
           label: 'Limitations',
           value:
             'Field measurements, soil observations and sketches are preliminary. They are not a certified geotechnical, boundary or structural survey unless separately commissioned and verified.',
         },
-        { label: 'Follow-up notes', value: describe(readSection(sections.g, 'officerNotes')) },
       ],
     },
   ];
@@ -233,7 +232,7 @@ function safeText(value: string): string {
 }
 
 export async function generateDocx(source: ReportSource): Promise<Buffer> {
-  const blocks = buildLines(source);
+  const blocks = buildReportLines(source);
   const children: Array<Paragraph | Table> = [
     new Paragraph({
       alignment: AlignmentType.CENTER,
@@ -362,7 +361,7 @@ export function generatePdf(source: ReportSource): Promise<Buffer> {
       );
     doc.fillColor('#000000').moveDown(1);
 
-    for (const block of buildLines(source)) {
+    for (const block of buildReportLines(source)) {
       if (doc.y > 690) doc.addPage();
       doc.font('Helvetica-Bold').fontSize(11).text(block.heading);
       doc.moveDown(0.3);
