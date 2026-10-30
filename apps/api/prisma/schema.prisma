@@ -289,6 +289,42 @@ enum ServiceEngagementType {
   FULL_CONSTRUCTION
 }
 
+// Module 6 enums
+
+enum MobilizationStatus {
+  PENDING
+  IN_PROGRESS
+  READY
+  BLOCKED
+  RELEASED
+}
+
+enum SiteLogStatus {
+  DRAFT
+  SUBMITTED
+  REVIEWED
+}
+
+enum GRNStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum WorkHoldStatus {
+  OPEN
+  CLEARED
+  LIFTED
+}
+
+enum VariationStatus {
+  DRAFT
+  SUBMITTED
+  REVIEWED
+  APPROVED
+  REJECTED
+}
+
 enum Priority {
   LOW
   NORMAL
@@ -506,6 +542,12 @@ model Project {
   approvalCases         ApprovalCase[]
   contracts             Contract[]
   serviceEngagements    ServiceEngagement[]
+  mobilizations         Mobilization[]
+  siteLogs              SiteLog[]
+  grns                  GoodsReceivedNote[]
+  workHolds             WorkHold[]
+  variations            Variation[]
+  handovers             Handover[]
 
   @@index([contactId])
   @@index([currentStage])
@@ -1387,4 +1429,121 @@ model Contract {
 
   @@index([projectId, status])
   @@map("contracts")
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE 6 — Construction
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Mobilization {
+  id             String             @id @default(uuid())
+  projectId      String
+  project        Project            @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  status         MobilizationStatus @default(PENDING)
+  checklist      Json?
+  releasedById   String?
+  releasedAt     DateTime?
+  blockedReason  String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([projectId, status])
+  @@map("mobilizations")
+}
+
+model SiteLog {
+  id             String        @id @default(uuid())
+  projectId      String
+  project        Project       @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  logDate        DateTime      @default(now())
+  weather        String?
+  workSummary    String?
+  workers        Json?
+  issues         String?
+  status         SiteLogStatus @default(DRAFT)
+  submittedById  String?
+  reviewedById   String?
+  submittedAt    DateTime?
+  reviewedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([projectId, logDate])
+  @@map("site_logs")
+}
+
+model GoodsReceivedNote {
+  id             String     @id @default(uuid())
+  projectId      String
+  project        Project    @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  grnNumber      String     @unique
+  supplier       String?
+  poNumber       String?
+  items          Json?
+  receivedById   String?
+  status         GRNStatus  @default(PENDING)
+  receivedAt     DateTime   @default(now())
+  notes          String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([projectId, status])
+  @@map("goods_received_notes")
+}
+
+model WorkHold {
+  id              String         @id @default(uuid())
+  projectId       String
+  project         Project        @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  reason          String
+  status          WorkHoldStatus @default(OPEN)
+  issuedById      String?
+  liftedById      String?
+  issuedAt        DateTime       @default(now())
+  liftedAt        DateTime?
+  clearanceNotes  String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([projectId, status])
+  @@map("work_holds")
+}
+
+model Variation {
+  id              String          @id @default(uuid())
+  projectId       String
+  project         Project         @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  variationNo     String          @unique
+  title           String
+  description     String?
+  value           Decimal?        @db.Decimal(14, 2)
+  status          VariationStatus @default(DRAFT)
+  requestedById   String?
+  approvedById    String?
+  submittedAt     DateTime?
+  approvedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([projectId, status])
+  @@map("variations")
+}
+
+model Handover {
+  id              String    @id @default(uuid())
+  projectId       String
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  checklist       Json?
+  snags           Json?
+  handedOverById  String?
+  receivedById    String?
+  handedOverAt    DateTime?
+  acceptedAt      DateTime?
+  completed       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([projectId])
+  @@map("handovers")
 }
