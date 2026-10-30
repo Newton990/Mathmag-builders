@@ -3,7 +3,7 @@
 // visible in the portal until one of these actions creates a publication.
 import { Router } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { actorFromRequest } from '../services/access.service.js';
@@ -18,7 +18,7 @@ import {
 import { getParam } from './request.js';
 
 export const publicationsRouter = Router();
-publicationsRouter.use(requireAuth);
+publicationsRouter.use(requireAuth, requireStaff);
 
 publicationsRouter.post(
   '/',

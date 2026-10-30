@@ -18,6 +18,11 @@ import { mediaRouter } from './routes/media.js';
 import { reportsRouter } from './routes/reports.js';
 import { publicationsRouter } from './routes/publications.js';
 import { portalRouter } from './routes/portal.js';
+import { directoryRouter } from './routes/directory.js';
+import { planningRouter } from './routes/planning.js';
+import { acceptanceRouter } from './routes/acceptance.js';
+import { approvalsRouter } from './routes/approvals.js';
+import { contractsRouter } from './routes/contracts.js';
 
 export function createApp(): express.Application {
   const app = express();
@@ -71,6 +76,11 @@ export function createApp(): express.Application {
   app.use('/api/reports', reportsRouter);
   app.use('/api/publications', publicationsRouter);
   app.use('/api/portal', portalRouter);
+  app.use('/api/directory', directoryRouter);
+  app.use('/api/planning', planningRouter);
+  app.use('/api/acceptance', acceptanceRouter);
+  app.use('/api/approvals', approvalsRouter);
+  app.use('/api/contracts', contractsRouter);
 
   // ── 404 handler ───────────────────────────────────────────────────────────
   app.use((_req, res) => {

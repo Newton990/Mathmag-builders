@@ -2,7 +2,7 @@
 // Survey drafts, submission (immutable lock) and report generation trigger.
 import { Router } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { actorFromRequest } from '../services/access.service.js';
@@ -16,7 +16,7 @@ import { IdParamSchema, SurveyDraftPatchSchema } from './schemas.js';
 import { getParam } from './request.js';
 
 export const surveysRouter = Router();
-surveysRouter.use(requireAuth);
+surveysRouter.use(requireAuth, requireStaff);
 
 surveysRouter.get(
   '/:id',

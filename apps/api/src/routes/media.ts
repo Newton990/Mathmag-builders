@@ -5,7 +5,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import { z } from 'zod';
 import { config } from '../config.js';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { httpError } from '../middleware/errorHandler.js';
@@ -25,6 +25,23 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: config.MAX_UPLOAD_SIZE_BYTES, files: 1 },
 });
+
+// Clients may read only media explicitly included in an active publication of
+// their own project. authorizeMediaRead() enforces that.
+mediaRouter.get(
+  '/:id/download',
+  validate(IdParamSchema),
+  asyncHandler(async (req, res) => {
+    const result = await getMediaDownloadUrl(
+      actorFromRequest(req),
+      getParam(req, 'id'),
+    );
+    res.json(result);
+  }),
+);
+
+// Uploading and listing survey evidence is internal only.
+mediaRouter.use(requireStaff);
 
 mediaRouter.post(
   '/surveys/:id',
@@ -65,17 +82,5 @@ mediaRouter.get(
   asyncHandler(async (req, res) => {
     const items = await listSurveyMedia(actorFromRequest(req), getParam(req, 'id'));
     res.json({ items });
-  }),
-);
-
-mediaRouter.get(
-  '/:id/download',
-  validate(IdParamSchema),
-  asyncHandler(async (req, res) => {
-    const result = await getMediaDownloadUrl(
-      actorFromRequest(req),
-      getParam(req, 'id'),
-    );
-    res.json(result);
   }),
 );

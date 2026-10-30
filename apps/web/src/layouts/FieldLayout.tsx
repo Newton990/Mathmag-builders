@@ -1,20 +1,32 @@
-// Field layout — mobile-first layout for visiting officers (PWA)
-import { Outlet } from 'react-router-dom';
+// Field layout — mobile-first, offline-capable PWA shell.
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 
 export function FieldLayout() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await logout();
+    navigate('/login', { replace: true });
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col" data-testid="field-layout">
-      {/* Top navigation bar */}
-      <header className="bg-brand-900 text-white sticky top-0 z-10 safe-top">
-        <div className="px-4 py-3 flex items-center justify-between">
+    <div className="flex min-h-screen flex-col bg-gray-50" data-testid="field-layout">
+      <header className="safe-top sticky top-0 z-10 bg-brand-900 text-white">
+        <div className="flex items-center justify-between px-4 py-3">
           <div>
             <h1 className="text-base font-bold">MBMS Field</h1>
-            <p className="text-xs text-blue-200">Mathmag Builders</p>
+            <p className="text-xs text-blue-200">{user?.name ?? 'Visiting officer'}</p>
           </div>
-          {/* Offline indicator — Step 6 will wire this up */}
-          <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full" id="sync-status">
-            Online
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-blue-200" id="sync-status">
+              {navigator.onLine ? 'Online' : 'Offline'}
+            </span>
+            <button type="button" onClick={() => void handleLogout()} className="text-xs underline">
+              Sign out
+            </button>
+          </div>
         </div>
       </header>
 
@@ -22,13 +34,12 @@ export function FieldLayout() {
         <Outlet />
       </main>
 
-      {/* Bottom navigation bar */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-bottom">
+      <nav className="safe-bottom fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white">
         <div className="flex items-center justify-around py-2">
-          <a href="/field" className="flex flex-col items-center text-xs text-brand-700">
-            <span className="text-xl">🏠</span>
-            <span>Home</span>
-          </a>
+          <NavLink to="/field" end className="flex flex-col items-center text-xs text-brand-700">
+            <span className="text-xl">⌂</span>
+            <span>My visits</span>
+          </NavLink>
         </div>
       </nav>
     </div>

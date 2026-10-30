@@ -4,7 +4,7 @@
 // never be confused.
 import { Router } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { actorFromRequest } from '../services/access.service.js';
@@ -28,6 +28,25 @@ import { getParam } from './request.js';
 export const reportsRouter = Router();
 reportsRouter.use(requireAuth);
 
+// Clients may download the PDF of an actively published report. The service
+// re-checks ownership, publication and approval. DOCX is rejected for clients.
+reportsRouter.get(
+  '/:id/download',
+  validate(DownloadQuery),
+  asyncHandler(async (req, res) => {
+    const query = req.query as unknown as z.infer<typeof DownloadQuery>['query'];
+    const result = await getReportDownloadUrl(
+      actorFromRequest(req),
+      getParam(req, 'id'),
+      query.format,
+    );
+    res.json(result);
+  }),
+);
+
+// Every other report operation is internal.
+reportsRouter.use(requireStaff);
+
 reportsRouter.get(
   '/',
   validate(ReportListQuery),
@@ -39,20 +58,6 @@ reportsRouter.get(
       skip: query.skip,
       take: query.take,
     });
-    res.json(result);
-  }),
-);
-
-reportsRouter.get(
-  '/:id/download',
-  validate(DownloadQuery),
-  asyncHandler(async (req, res) => {
-    const query = req.query as unknown as z.infer<typeof DownloadQuery>['query'];
-    const result = await getReportDownloadUrl(
-      actorFromRequest(req),
-      getParam(req, 'id'),
-      query.format,
-    );
     res.json(result);
   }),
 );

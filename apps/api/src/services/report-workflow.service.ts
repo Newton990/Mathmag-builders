@@ -106,6 +106,8 @@ export async function generateReportForSurvey(
     },
   });
   if (!survey) throw httpError('Survey not found', 404, 'SURVEY_NOT_FOUND');
+  assertStaff(actor);
+  await getProjectAccess(actor, survey.booking.projectId);
   if (survey.lockedAt === null) {
     throw httpError('Submit the survey before generating its report', 409, 'SURVEY_NOT_SUBMITTED');
   }
@@ -211,6 +213,7 @@ export async function submitReportForReview(
   req?: Request,
 ) {
   const report = await loadReportOrThrow(reportVersionId);
+  assertStaff(actor);
   await getProjectAccess(actor, report.survey.booking.projectId);
   if (report.generatorStatus !== ReportGeneratorStatus.GENERATED) {
     throw httpError('Generate the report before sending it for review', 409, 'REPORT_NOT_GENERATED');
@@ -679,6 +682,7 @@ export async function listReports(actor: Actor, filter: ReportFilter) {
 }
 
 export async function getReport(actor: Actor, reportVersionId: string) {
+  assertStaff(actor);
   const report = await loadReportOrThrow(reportVersionId);
   await getProjectAccess(actor, report.survey.booking.projectId);
   return report;

@@ -3,7 +3,7 @@
 // is the only endpoint that creates a project.
 import { Router } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { actorFromRequest } from '../services/access.service.js';
@@ -30,7 +30,7 @@ import {
 import { getParam } from './request.js';
 
 export const bookingsRouter = Router();
-bookingsRouter.use(requireAuth);
+bookingsRouter.use(requireAuth, requireStaff);
 
 const confirmHandler = asyncHandler(async (req, res) => {
   const body = req.body as z.infer<typeof ConfirmBookingSchema>['body'];

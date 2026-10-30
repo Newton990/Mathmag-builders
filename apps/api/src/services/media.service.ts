@@ -7,7 +7,7 @@ import { MediaKind, Prisma, UserRole } from '@prisma/client';
 import { prisma } from '../db/client.js';
 import { httpError } from '../middleware/errorHandler.js';
 import { extractRequestMeta, writeAudit } from './audit.service.js';
-import { assertCanCaptureSurvey, getProjectAccess, type Actor } from './access.service.js';
+import { assertCanCaptureSurvey, assertStaff, getProjectAccess, type Actor } from './access.service.js';
 import { buildStorageKey, getSignedUrl, putObject, removeObject } from './storage.service.js';
 
 const ALLOWED_MIME = new Set([
@@ -142,6 +142,7 @@ export async function uploadSurveyMedia(
 }
 
 export async function listSurveyMedia(actor: Actor, surveyId: string) {
+  assertStaff(actor);
   const survey = await prisma.siteSurvey.findUnique({
     where: { id: surveyId },
     select: {

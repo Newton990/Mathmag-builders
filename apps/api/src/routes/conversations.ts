@@ -3,7 +3,7 @@
 // projects here; only POST /api/visits/confirm does that.
 import { Router } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { actorFromRequest } from '../services/access.service.js';
@@ -24,7 +24,7 @@ import {
 import { getParam } from './request.js';
 
 export const conversationsRouter = Router();
-conversationsRouter.use(requireAuth);
+conversationsRouter.use(requireAuth, requireStaff);
 
 conversationsRouter.get(
   '/',

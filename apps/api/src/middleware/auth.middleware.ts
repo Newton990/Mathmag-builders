@@ -87,6 +87,16 @@ export function requireRole(...roles: string[]) {
   };
 }
 
+// ── requireStaff — every internal role except CLIENT ────────────────────────
+
+export const requireStaff = requireRole(
+  'ADMIN_MANAGEMENT',
+  'LEAD_ARCHITECT',
+  'CLIENT_RELATIONS_OFFICER',
+  'VISITING_OFFICER',
+  'JUNIOR_ARCHITECT',
+);
+
 // ── requireOwnerOrRole — allows access if userId matches OR role is in list ──
 
 export function requireOwnerOrRole(userIdParam: string, ...roles: string[]) {

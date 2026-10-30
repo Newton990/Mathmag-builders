@@ -10,6 +10,15 @@ export enum UserRole {
   JUNIOR_ARCHITECT = 'JUNIOR_ARCHITECT',
   CLIENT = 'CLIENT',
   ADMIN_MANAGEMENT = 'ADMIN_MANAGEMENT',
+  GENERAL_MANAGER = 'GENERAL_MANAGER',
+  DEPARTMENT_HEAD = 'DEPARTMENT_HEAD',
+  PROJECT_MANAGER = 'PROJECT_MANAGER',
+  SITE_SUPERVISOR = 'SITE_SUPERVISOR',
+  STOREKEEPER = 'STOREKEEPER',
+  INDEPENDENT_AUDITOR = 'INDEPENDENT_AUDITOR',
+  QUALIFIED_PROFESSIONAL = 'QUALIFIED_PROFESSIONAL',
+  SUBCONTRACTOR = 'SUBCONTRACTOR',
+  SUPPLIER = 'SUPPLIER',
 }
 
 /** Conversation (thread) states in the communications inbox. */
@@ -100,4 +109,167 @@ export enum DeliveryStatus {
   DELIVERED = 'DELIVERED',
   FAILED = 'FAILED',
   READ = 'READ',
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE 2 — Planning & Technical Design
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Disciplines for design work in Module 2. */
+export enum DesignDiscipline {
+  ARCHITECTURAL_2D = 'ARCHITECTURAL_2D',
+  ARCHITECTURAL_3D = 'ARCHITECTURAL_3D',
+  STRUCTURAL = 'STRUCTURAL',
+  MECHANICAL_PLUMBING = 'MECHANICAL_PLUMBING',
+  ELECTRICAL = 'ELECTRICAL',
+  QUANTITY_SURVEYING = 'QUANTITY_SURVEYING',
+}
+
+/** Design task lifecycle states. */
+export enum DesignTaskStatus {
+  DRAFT = 'DRAFT',
+  ASSIGNED = 'ASSIGNED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  SUBMITTED_FOR_REVIEW = 'SUBMITTED_FOR_REVIEW',
+  RETURNED_WITH_COMMENTS = 'RETURNED_WITH_COMMENTS',
+  TECHNICALLY_APPROVED = 'TECHNICALLY_APPROVED',
+  RELEASED = 'RELEASED',
+  SUPERSEDED = 'SUPERSEDED',
+}
+
+/** Working file categories. */
+export enum WorkingFileKind {
+  NATIVE_CAD = 'NATIVE_CAD',
+  PDF = 'PDF',
+  IMAGE = 'IMAGE',
+  CALCULATION = 'CALCULATION',
+  SCHEDULE = 'SCHEDULE',
+  OTHER = 'OTHER',
+}
+
+/** Client design approval types. */
+export enum DesignApprovalType {
+  TWO_D = 'TWO_D',
+  THREE_D = 'THREE_D',
+}
+
+/** Design approval status. */
+export enum DesignApprovalStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+/** Coordination issue status. */
+export enum CoordinationIssueStatus {
+  OPEN = 'OPEN',
+  ASSIGNED = 'ASSIGNED',
+  IN_RESOLUTION = 'IN_RESOLUTION',
+  RESOLVED = 'RESOLVED',
+  CLOSED = 'CLOSED',
+}
+
+/** Design change classification. */
+export enum DesignChangeType {
+  MINOR = 'MINOR',
+  MAJOR = 'MAJOR',
+}
+
+/** Cost estimate status. */
+export enum EstimateStatus {
+  DRAFT = 'DRAFT',
+  IN_REVIEW = 'IN_REVIEW',
+  APPROVED = 'APPROVED',
+  SUPERSEDED = 'SUPERSEDED',
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE 3 — Client Acceptance & Budget
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export enum ProposalStatus {
+  DRAFT = 'DRAFT',
+  PUBLISHED = 'PUBLISHED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  SUPERSEDED = 'SUPERSEDED',
+}
+
+export enum AcceptanceMethod {
+  PORTAL = 'PORTAL',
+  SIGNED_FORM = 'SIGNED_FORM',
+  MEETING = 'MEETING',
+}
+
+export enum AcceptanceStatus {
+  PENDING = 'PENDING',
+  VERIFIED = 'VERIFIED',
+  RETURNED_FOR_CLARIFICATION = 'RETURNED_FOR_CLARIFICATION',
+  REJECTED = 'REJECTED',
+  ACCEPTED = 'ACCEPTED',
+}
+
+export enum PaymentMilestoneStatus {
+  PENDING = 'PENDING',
+  PARTIALLY_PAID = 'PARTIALLY_PAID',
+  PAID = 'PAID',
+  WAIVED = 'WAIVED',
+}
+
+export enum ModuleReleaseStatus {
+  PENDING = 'PENDING',
+  RELEASED = 'RELEASED',
+  BLOCKED = 'BLOCKED',
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE 4 — Approvals
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export enum ApprovalCaseStatus {
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  SUBMITTED = 'SUBMITTED',
+  RETURNED = 'RETURNED',
+  CLEARED = 'CLEARED',
+  REJECTED = 'REJECTED',
+}
+
+export enum PermitStatus {
+  PENDING = 'PENDING',
+  APPLIED = 'APPLIED',
+  ISSUED = 'ISSUED',
+  EXPIRED = 'EXPIRED',
+  SUSPENDED = 'SUSPENDED',
+  REJECTED = 'REJECTED',
+}
+
+export enum PrintingStatus {
+  PENDING = 'PENDING',
+  PRINTED = 'PRINTED',
+  STAMPED = 'STAMPED',
+  ISSUED = 'ISSUED',
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE 5 — Contracts
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export enum ContractStatus {
+  DRAFT = 'DRAFT',
+  SENT = 'SENT',
+  UNDER_NEGOTIATION = 'UNDER_NEGOTIATION',
+  EXECUTED = 'EXECUTED',
+  TERMINATED = 'TERMINATED',
+  EXPIRED = 'EXPIRED',
+}
+
+export enum ServiceEngagementType {
+  DESIGN_ONLY = 'DESIGN_ONLY',
+  PRINTING_ONLY = 'PRINTING_ONLY',
+  APPROVALS_ONLY = 'APPROVALS_ONLY',
+  TECHNICAL_INSPECTION = 'TECHNICAL_INSPECTION',
+  LABOUR_ONLY = 'LABOUR_ONLY',
+  FULL_CONSTRUCTION = 'FULL_CONSTRUCTION',
 }

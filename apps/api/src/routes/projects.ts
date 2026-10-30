@@ -3,7 +3,7 @@
 // role-scoped inside project.service.
 import { Router } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { actorFromRequest } from '../services/access.service.js';
@@ -26,7 +26,7 @@ import {
 import { getParam } from './request.js';
 
 export const projectsRouter = Router();
-projectsRouter.use(requireAuth);
+projectsRouter.use(requireAuth, requireStaff);
 
 projectsRouter.get(
   '/',

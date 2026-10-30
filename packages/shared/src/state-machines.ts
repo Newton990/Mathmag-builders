@@ -169,3 +169,115 @@ export function computeStage1Status(params: {
     isComplete: surveySubmitted && reportApproved && juniorAssigned,
   };
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE 2 — Planning & Technical Design
+// ═══════════════════════════════════════════════════════════════════════════════
+
+import {
+  DesignTaskStatus,
+  DesignApprovalStatus,
+  CoordinationIssueStatus,
+  EstimateStatus,
+} from './enums.js';
+
+const DESIGN_TASK_TRANSITIONS: Record<DesignTaskStatus, DesignTaskStatus[]> = {
+  [DesignTaskStatus.DRAFT]: [DesignTaskStatus.ASSIGNED],
+  [DesignTaskStatus.ASSIGNED]: [DesignTaskStatus.IN_PROGRESS],
+  [DesignTaskStatus.IN_PROGRESS]: [DesignTaskStatus.SUBMITTED_FOR_REVIEW],
+  [DesignTaskStatus.SUBMITTED_FOR_REVIEW]: [
+    DesignTaskStatus.RETURNED_WITH_COMMENTS,
+    DesignTaskStatus.TECHNICALLY_APPROVED,
+  ],
+  [DesignTaskStatus.RETURNED_WITH_COMMENTS]: [DesignTaskStatus.IN_PROGRESS],
+  [DesignTaskStatus.TECHNICALLY_APPROVED]: [DesignTaskStatus.RELEASED],
+  [DesignTaskStatus.RELEASED]: [DesignTaskStatus.SUPERSEDED],
+  [DesignTaskStatus.SUPERSEDED]: [],
+};
+
+export function canTransitionDesignTask(
+  from: DesignTaskStatus,
+  to: DesignTaskStatus,
+): TransitionResult {
+  const allowed = (DESIGN_TASK_TRANSITIONS[from] ?? []).includes(to);
+  return allowed
+    ? { allowed: true }
+    : {
+        allowed: false,
+        reason: `Cannot move design task from ${from} to ${to}. Allowed next states: ${
+          (DESIGN_TASK_TRANSITIONS[from] ?? []).join(', ') || 'none'
+        }`,
+      };
+}
+
+const DESIGN_APPROVAL_TRANSITIONS: Record<DesignApprovalStatus, DesignApprovalStatus[]> = {
+  [DesignApprovalStatus.PENDING]: [
+    DesignApprovalStatus.APPROVED,
+    DesignApprovalStatus.REJECTED,
+  ],
+  [DesignApprovalStatus.APPROVED]: [],
+  [DesignApprovalStatus.REJECTED]: [DesignApprovalStatus.PENDING],
+};
+
+export function canTransitionDesignApproval(
+  from: DesignApprovalStatus,
+  to: DesignApprovalStatus,
+): TransitionResult {
+  const allowed = (DESIGN_APPROVAL_TRANSITIONS[from] ?? []).includes(to);
+  return allowed
+    ? { allowed: true }
+    : {
+        allowed: false,
+        reason: `Cannot move design approval from ${from} to ${to}. Allowed next states: ${
+          (DESIGN_APPROVAL_TRANSITIONS[from] ?? []).join(', ') || 'none'
+        }`,
+      };
+}
+
+const COORDINATION_ISSUE_TRANSITIONS: Record<
+  CoordinationIssueStatus,
+  CoordinationIssueStatus[]
+> = {
+  [CoordinationIssueStatus.OPEN]: [CoordinationIssueStatus.ASSIGNED],
+  [CoordinationIssueStatus.ASSIGNED]: [CoordinationIssueStatus.IN_RESOLUTION],
+  [CoordinationIssueStatus.IN_RESOLUTION]: [CoordinationIssueStatus.RESOLVED],
+  [CoordinationIssueStatus.RESOLVED]: [CoordinationIssueStatus.CLOSED],
+  [CoordinationIssueStatus.CLOSED]: [],
+};
+
+export function canTransitionCoordinationIssue(
+  from: CoordinationIssueStatus,
+  to: CoordinationIssueStatus,
+): TransitionResult {
+  const allowed = (COORDINATION_ISSUE_TRANSITIONS[from] ?? []).includes(to);
+  return allowed
+    ? { allowed: true }
+    : {
+        allowed: false,
+        reason: `Cannot move coordination issue from ${from} to ${to}. Allowed next states: ${
+          (COORDINATION_ISSUE_TRANSITIONS[from] ?? []).join(', ') || 'none'
+        }`,
+      };
+}
+
+const ESTIMATE_TRANSITIONS: Record<EstimateStatus, EstimateStatus[]> = {
+  [EstimateStatus.DRAFT]: [EstimateStatus.IN_REVIEW],
+  [EstimateStatus.IN_REVIEW]: [EstimateStatus.APPROVED],
+  [EstimateStatus.APPROVED]: [EstimateStatus.SUPERSEDED],
+  [EstimateStatus.SUPERSEDED]: [],
+};
+
+export function canTransitionEstimate(
+  from: EstimateStatus,
+  to: EstimateStatus,
+): TransitionResult {
+  const allowed = (ESTIMATE_TRANSITIONS[from] ?? []).includes(to);
+  return allowed
+    ? { allowed: true }
+    : {
+        allowed: false,
+        reason: `Cannot move estimate from ${from} to ${to}. Allowed next states: ${
+          (ESTIMATE_TRANSITIONS[from] ?? []).join(', ') || 'none'
+        }`,
+      };
+}
