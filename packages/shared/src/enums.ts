@@ -2,7 +2,7 @@
 // All business-rule enums for MBMS. These are the source of truth for
 // state machines — both API and web import from here.
 
-/** The six staff + client roles in the system. */
+/** All staff and client roles in the system. */
 export enum UserRole {
   CLIENT_RELATIONS_OFFICER = 'CLIENT_RELATIONS_OFFICER',
   VISITING_OFFICER = 'VISITING_OFFICER',
@@ -272,4 +272,65 @@ export enum ServiceEngagementType {
   TECHNICAL_INSPECTION = 'TECHNICAL_INSPECTION',
   LABOUR_ONLY = 'LABOUR_ONLY',
   FULL_CONSTRUCTION = 'FULL_CONSTRUCTION',
+}
+
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE 7 — Central Administration & Governance
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export enum DelegationStatus {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  REVOKED = 'REVOKED',
+  EXPIRED = 'EXPIRED',
+}
+
+export enum ActingAuthorityStatus {
+  PENDING = 'PENDING',
+  ACTIVE = 'ACTIVE',
+  EXPIRED = 'EXPIRED',
+  REVOKED = 'REVOKED',
+}
+
+export enum ExceptionStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  CLOSED = 'CLOSED',
+}
+
+export enum ProtectedAuditStatus {
+  OPEN = 'OPEN',
+  TRIAGED = 'TRIAGED',
+  INVESTIGATING = 'INVESTIGATING',
+  ACTIONS_PENDING = 'ACTIONS_PENDING',
+  CLOSED = 'CLOSED',
+  ESCALATED = 'ESCALATED',
+}
+
+export enum LeaveStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum RequisitionStatus {
+  DRAFT = 'DRAFT',
+  SUBMITTED = 'SUBMITTED',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  PO_CREATED = 'PO_CREATED',
+  CLOSED = 'CLOSED',
+}
+
+export enum POStatus {
+  DRAFT = 'DRAFT',
+  APPROVED = 'APPROVED',
+  SENT = 'SENT',
+  RECEIVED = 'RECEIVED',
+  CLOSED = 'CLOSED',
+  CANCELLED = 'CANCELLED',
 }

@@ -69,6 +69,21 @@ export function StaffProjectPage() {
             <Link to="/staff/projects" className={secondaryButtonClass}>
               Back to projects
             </Link>
+            <Link to={`/staff/projects/${id}/planning`} className={secondaryButtonClass}>
+              Planning →
+            </Link>
+            <Link to={`/staff/projects/${id}/acceptance`} className={secondaryButtonClass}>
+              Acceptance →
+            </Link>
+            <Link to={`/staff/projects/${id}/approvals`} className={secondaryButtonClass}>
+              Approvals →
+            </Link>
+            <Link to={`/staff/projects/${id}/contracts`} className={secondaryButtonClass}>
+              Contracts →
+            </Link>
+            <Link to={`/staff/projects/${id}/construction`} className={secondaryButtonClass}>
+              Construction →
+            </Link>
             <Link to="/staff/reports" className={buttonClass}>
               Reports
             </Link>

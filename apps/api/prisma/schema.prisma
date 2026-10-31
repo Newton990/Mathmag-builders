@@ -325,6 +325,72 @@ enum VariationStatus {
   REJECTED
 }
 
+// Module 7 enums
+
+enum DelegationStatus {
+  ACTIVE
+  SUSPENDED
+  REVOKED
+  EXPIRED
+}
+
+enum ActingAuthorityStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum ExceptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CLOSED
+}
+
+enum ProtectedAuditStatus {
+  OPEN
+  TRIAGED
+  INVESTIGATING
+  ACTIONS_PENDING
+  CLOSED
+  ESCALATED
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum RequisitionStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PO_CREATED
+  CLOSED
+}
+
+enum POStatus {
+  DRAFT
+  APPROVED
+  SENT
+  RECEIVED
+  CLOSED
+  CANCELLED
+}
+
+enum ProcurementStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  ORDERED
+  RECEIVED
+  CLOSED
+}
+
 enum Priority {
   LOW
   NORMAL

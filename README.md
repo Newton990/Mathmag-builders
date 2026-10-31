@@ -145,18 +145,19 @@ Everything else has a sensible default for local development.
 ## Build steps progress
 
 - [x] Step 1: Scaffolding & local environment
-- [ ] Step 2: Database schema (Module 1 entities)
-- [ ] Step 3: Authentication, roles, audit logging
-- [ ] Step 4: Communications inbox & confirmed booking
-- [ ] Step 5: Visiting officer dashboard & visit lifecycle
-- [ ] Step 6: Mobile field form (A–G) + offline PWA
-- [ ] Step 7: Submission, validation & locking
-- [ ] Step 8: Automatic report generation (DOCX + PDF)
-- [ ] Step 9: Lead architect review & junior assignment
-- [ ] Step 10: Client portal & controlled publication
-- [ ] Step 11: Notifications & dashboards
-- [ ] Step 12: End-to-end tests & demo script
-- [ ] Step 13: Security hardening & deployment
+- [x] Step 2: Database schema (all 6 modules)
+- [x] Step 3: Authentication, roles, audit logging
+- [x] Step 4: Communications inbox & confirmed booking
+- [x] Step 5: Visiting officer dashboard & visit lifecycle
+- [x] Step 6: Mobile field form (A–G) + offline PWA
+- [x] Step 7: Submission, validation & locking
+- [x] Step 8: Automatic report generation (DOCX + PDF)
+- [x] Step 9: Lead architect review & junior assignment
+- [x] Step 10: Client portal & controlled publication
+- [x] Step 11: Notifications & dashboards (in-app; email/WhatsApp stubs)
+- [ ] Step 12: Module 2–6 frontend (planning, acceptance, approvals, contracts, construction)
+- [ ] Step 13: End-to-end tests & demo script
+- [ ] Step 14: Security hardening & deployment
 
 ## Important business rules
 

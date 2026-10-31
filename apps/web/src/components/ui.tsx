@@ -28,19 +28,49 @@ export function Badge({
 }
 
 export function statusTone(status: string): keyof typeof TONES {
-  if (['APPROVED', 'PUBLISHED_TO_CLIENT', 'STAGE_1_COMPLETE', 'PAID', 'SUBMITTED', 'VISIT_COMPLETED'].includes(status)) {
+  if (
+    [
+      'APPROVED', 'PUBLISHED_TO_CLIENT', 'STAGE_1_COMPLETE', 'PAID', 'SUBMITTED',
+      'VISIT_COMPLETED', 'TECHNICALLY_APPROVED', 'RELEASED', 'RESOLVED', 'CLEARED',
+      'EXECUTED', 'READY', 'CLIENT_ACCEPTED', 'VERIFIED', 'ISSUED', 'STAMPED', 'ACCEPTED',
+      'MOBILIZED',
+    ].includes(status)
+  ) {
     return 'green';
   }
-  if (['IN_REVIEW', 'UNDER_REVIEW', 'VISIT_UNDERWAY', 'GENERATING', 'REPORT_GENERATING', 'RESCHEDULED'].includes(status)) {
+  if (
+    [
+      'IN_REVIEW', 'UNDER_REVIEW', 'VISIT_UNDERWAY', 'GENERATING', 'REPORT_GENERATING',
+      'RESCHEDULED', 'IN_PROGRESS', 'SUBMITTED_FOR_REVIEW', 'IN_RESOLUTION',
+      'IN_DISCUSSION', 'UNDER_NEGOTIATION', 'PARTIALLY_PAID', 'APPLIED', 'PRINTED',
+      'RETURNED_FOR_CLARIFICATION',
+    ].includes(status)
+  ) {
     return 'amber';
   }
-  if (['RETURNED', 'CORRECTIONS_REQUESTED', 'CANCELLED', 'FAILED'].includes(status)) {
+  if (
+    [
+      'RETURNED', 'CORRECTIONS_REQUESTED', 'CANCELLED', 'FAILED',
+      'RETURNED_WITH_COMMENTS', 'REJECTED', 'TERMINATED', 'EXPIRED',
+      'BLOCKED', 'SUPERSEDED',
+    ].includes(status)
+  ) {
     return 'red';
   }
-  if (['PUBLISHED', 'REPORT_GENERATED', 'JUNIOR_ARCHITECT'].includes(status)) {
+  if (
+    [
+      'PUBLISHED', 'REPORT_GENERATED', 'JUNIOR_ARCHITECT', 'RELEASED',
+      'TWO_D', 'THREE_D', 'QUANTITY_SURVEYING', 'STRUCTURAL',
+    ].includes(status)
+  ) {
     return 'purple';
   }
-  if (['OPEN', 'IN_DISCUSSION', 'DRAFT', 'BOOKED'].includes(status)) {
+  if (
+    [
+      'OPEN', 'DRAFT', 'BOOKED', 'ASSIGNED', 'PENDING',
+      'NOT_STARTED', 'VISIT_AGREED', 'SENT',
+    ].includes(status)
+  ) {
     return 'blue';
   }
   return 'gray';

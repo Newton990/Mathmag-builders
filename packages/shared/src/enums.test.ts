@@ -4,15 +4,26 @@ import { UserRole, BookingStatus, SurveyStatus } from './enums.js';
 import { PhoneNumberSchema } from './types.js';
 
 describe('UserRole enum', () => {
-  it('has all six roles', () => {
+  it('contains all expected roles', () => {
     const roles = Object.values(UserRole);
+    // Module 1 core roles
     expect(roles).toContain('CLIENT_RELATIONS_OFFICER');
     expect(roles).toContain('VISITING_OFFICER');
     expect(roles).toContain('LEAD_ARCHITECT');
     expect(roles).toContain('JUNIOR_ARCHITECT');
     expect(roles).toContain('CLIENT');
     expect(roles).toContain('ADMIN_MANAGEMENT');
-    expect(roles).toHaveLength(6);
+    // Modules 2–6 roles
+    expect(roles).toContain('GENERAL_MANAGER');
+    expect(roles).toContain('DEPARTMENT_HEAD');
+    expect(roles).toContain('PROJECT_MANAGER');
+    expect(roles).toContain('SITE_SUPERVISOR');
+    expect(roles).toContain('STOREKEEPER');
+    expect(roles).toContain('INDEPENDENT_AUDITOR');
+    expect(roles).toContain('QUALIFIED_PROFESSIONAL');
+    expect(roles).toContain('SUBCONTRACTOR');
+    expect(roles).toContain('SUPPLIER');
+    expect(roles).toHaveLength(15);
   });
 });
 
