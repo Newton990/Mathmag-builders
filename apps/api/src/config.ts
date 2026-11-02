@@ -82,7 +82,7 @@ function loadConfig(): AppConfig {
 
   const cfg: AppConfig = {
     NODE_ENV: (get('NODE_ENV', 'development') as AppConfig['NODE_ENV']),
-    API_PORT: getInt('API_PORT', 3001),
+    API_PORT: getInt('API_PORT', Number(process.env.PORT) || 3001),
     DATABASE_URL: get('DATABASE_URL'),
 
     JWT_SECRET: get('JWT_SECRET'),
