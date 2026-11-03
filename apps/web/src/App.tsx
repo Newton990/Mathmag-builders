@@ -17,6 +17,7 @@ import { StaffAcceptancePage } from './pages/staff/StaffAcceptancePage';
 import { StaffApprovalsPage } from './pages/staff/StaffApprovalsPage';
 import { StaffContractsPage } from './pages/staff/StaffContractsPage';
 import { StaffConstructionPage } from './pages/staff/StaffConstructionPage';
+import { StaffGovernancePage } from './pages/staff/StaffGovernancePage';
 import { FieldDashboardPage } from './pages/field/FieldDashboardPage';
 import { FieldVisitPage } from './pages/field/FieldVisitPage';
 import { FieldSurveyPage } from './pages/field/FieldSurveyPage';
@@ -56,6 +57,7 @@ export default function App() {
         <Route path="projects/:id/approvals" element={<StaffApprovalsPage />} />
         <Route path="projects/:id/contracts" element={<StaffContractsPage />} />
         <Route path="projects/:id/construction" element={<StaffConstructionPage />} />
+        <Route path="governance" element={<StaffGovernancePage />} />
         <Route path="reports" element={<StaffReportsPage />} />
         <Route path="reports/:id" element={<StaffReportPage />} />
       </Route>

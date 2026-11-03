@@ -772,3 +772,97 @@ export interface Handover {
   acceptedAt: string | null;
   createdAt: string;
 }
+
+// ─── Module 7: Central Administration & Governance ───────────────────────────
+
+export interface Delegation {
+  id: string;
+  delegatorId: string;
+  delegateId: string;
+  projectId: string | null;
+  scope: Record<string, unknown> | null;
+  valueLimit: number | null;
+  riskCategory: string | null;
+  status: string;
+  expiresAt: string | null;
+  createdAt: string;
+}
+
+export interface ActingAuthority {
+  id: string;
+  principalId: string;
+  actingId: string;
+  projectId: string | null;
+  reason: string;
+  status: string;
+  activatedAt: string | null;
+  activatedById: string | null;
+  expiresAt: string | null;
+  createdAt: string;
+}
+
+export interface GovernanceException {
+  id: string;
+  requestedById: string;
+  projectId: string | null;
+  reason: string;
+  scope: Record<string, unknown> | null;
+  status: string;
+  approvedById: string | null;
+  approvedAt: string | null;
+  createdAt: string;
+}
+
+export interface ProtectedAuditCase {
+  id: string;
+  caseNumber: string;
+  title: string;
+  description: string | null;
+  severity: string | null;
+  projectId: string | null;
+  status: string;
+  triagedById: string | null;
+  triagedAt: string | null;
+  createdAt: string;
+}
+
+export interface LeaveRequest {
+  id: string;
+  userId: string;
+  projectId: string | null;
+  startDate: string;
+  endDate: string;
+  reason: string | null;
+  status: string;
+  approvedById: string | null;
+  approvedAt: string | null;
+  createdAt: string;
+}
+
+export interface PurchaseRequisition {
+  id: string;
+  requisitionNo: string;
+  requestedById: string;
+  projectId: string | null;
+  items: Record<string, unknown> | null;
+  totalAmount: number | null;
+  currency: string;
+  notes: string | null;
+  status: string;
+  approvedById: string | null;
+  approvedAt: string | null;
+  createdAt: string;
+}
+
+export interface PurchaseOrder {
+  id: string;
+  poNumber: string;
+  supplierId: string | null;
+  requisitionId: string | null;
+  projectId: string | null;
+  items: Record<string, unknown> | null;
+  totalAmount: number | null;
+  currency: string;
+  status: string;
+  createdAt: string;
+}

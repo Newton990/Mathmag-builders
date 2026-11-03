@@ -8,6 +8,7 @@ const navItems = [
   { to: '/staff/inbox', label: 'Inbox', end: false },
   { to: '/staff/projects', label: 'Projects', end: false },
   { to: '/staff/reports', label: 'Reports', end: false },
+  { to: '/staff/governance', label: 'Governance', end: false },
 ];
 
 export function StaffLayout() {

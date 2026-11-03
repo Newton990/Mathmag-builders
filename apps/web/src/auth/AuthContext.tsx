@@ -1,4 +1,5 @@
 // src/auth/AuthContext.tsx
+// ⚠️  DEMO MODE — auth is bypassed with a mock user for presentation purposes.
 // Real authentication against the MBMS API, including the MFA second factor.
 import {
   createContext,
@@ -11,6 +12,20 @@ import {
 } from 'react';
 import { api, errorMessage, getAccessToken, setAccessToken } from '../lib/api';
 import type { CurrentUser, UserRole } from '../lib/types';
+
+// ── Demo mode toggle ──────────────────────────────────────────────────────────
+const DEMO_MODE = true;
+
+const DEMO_USER: CurrentUser = {
+  id: 'demo-user-001',
+  name: 'Demo Admin',
+  email: 'demo@mathmag.co.ke',
+  role: 'LEAD_ARCHITECT' as UserRole,
+  isActive: true,
+  lastLoginAt: null,
+  mfaEnabled: false,
+};
+// ─────────────────────────────────────────────────────────────────────────────
 
 interface AuthContextValue {
   user: CurrentUser | null;
@@ -32,18 +47,20 @@ interface LoginResponse {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<CurrentUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<CurrentUser | null>(DEMO_MODE ? DEMO_USER : null);
+  const [loading, setLoading] = useState(!DEMO_MODE);
   const [mfaToken, setMfaToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadUser = useCallback(async () => {
+    if (DEMO_MODE) return DEMO_USER;
     const me = await api.get<CurrentUser>('/auth/me');
     setUser(me);
     return me;
   }, []);
 
   useEffect(() => {
+    if (DEMO_MODE) return; // skip session restore in demo mode
     let cancelled = false;
     async function restore() {
       if (!getAccessToken()) {
@@ -66,10 +83,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [loadUser]);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (_email: string, _password: string) => {
+    if (DEMO_MODE) { setUser(DEMO_USER); return 'DONE' as const; }
     setError(null);
     try {
-      const response = await api.post<LoginResponse>('/auth/login', { email, password });
+      const response = await api.post<LoginResponse>('/auth/login', { email: _email, password: _password });
       if (response.requiresMfa && response.mfaToken) {
         setMfaToken(response.mfaToken);
         return 'MFA' as const;
@@ -110,6 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
+    if (DEMO_MODE) return; // no-op in demo mode
     try {
       await api.post('/auth/logout');
     } catch {

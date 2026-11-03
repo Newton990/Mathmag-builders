@@ -1,23 +1,18 @@
-name = "mathmag-web"
-description = "MBMS Frontend — React + Vite static site on Wasmer Edge"
+[package]
+name = "mbms/web"
 version = "1.0.0"
-runtime = "js"
+description = "Mathmag MBMS — React/Vite Frontend"
 
-[build]
-command = "npm run build --workspace=@mbms/web"
-output = "apps/web/dist"
+[dependencies]
+"wasmer/static-web-server" = "^2"
 
-[env]
-VITE_API_BASE_URL = "https://mathmag-api.wasmer.app/api"
+[fs]
+"/public" = "dist"
 
-[[routes]]
-pattern = "/*"
-handler = "static"
-directory = "apps/web/dist"
+[[command]]
+name = "web"
+module = "wasmer/static-web-server:webserver"
+runner = "https://webc.org/runner/wasi"
 
-[[routes]]
-pattern = "/api/*"
-# Proxy API requests to the backend — update this URL after deploying the API
-# Alternatively, handle /api/* via a separate Wasmer Edge function
-# For now, CORS is handled by the backend edge function
-headers = { "Access-Control-Allow-Origin" = "*" }
+[command.annotations.wasi]
+env = ["PORT=8080", "SERVER_LOG_LEVEL=info"]
