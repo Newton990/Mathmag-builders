@@ -8,6 +8,7 @@
     "api": {
       "root": "apps/api",
       "framework": "express",
+      "entrypoint": "dist/index.js",
       "buildCommand": "npm run build",
       "startCommand": "npx prisma migrate deploy && node dist/index.js"
     }
