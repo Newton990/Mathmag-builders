@@ -10,6 +10,14 @@ const router = Router();
 router.use(requireAuth);
 
 // Mobilization
+router.get(
+  '/projects/:projectId/mobilization',
+  asyncHandler(async (req, res) => {
+    const m = await constructionService.getMobilization(String(req.params.projectId));
+    res.json({ data: m });
+  }),
+);
+
 router.post(
   '/projects/:projectId/mobilization',
   asyncHandler(async (req, res) => {
@@ -55,6 +63,14 @@ router.get(
 );
 
 // GRN
+router.get(
+  '/projects/:projectId/grns',
+  asyncHandler(async (req, res) => {
+    const grns = await constructionService.getGRNs(String(req.params.projectId));
+    res.json({ data: grns });
+  }),
+);
+
 router.post(
   '/projects/:projectId/grns',
   validate(
@@ -82,6 +98,14 @@ router.post(
 );
 
 // Work holds
+router.get(
+  '/projects/:projectId/work-holds',
+  asyncHandler(async (req, res) => {
+    const holds = await constructionService.getWorkHolds(String(req.params.projectId));
+    res.json({ data: holds });
+  }),
+);
+
 router.post(
   '/projects/:projectId/work-holds',
   validate(
@@ -113,6 +137,14 @@ router.post(
 );
 
 // Variations
+router.get(
+  '/projects/:projectId/variations',
+  asyncHandler(async (req, res) => {
+    const variations = await constructionService.getVariations(String(req.params.projectId));
+    res.json({ data: variations });
+  }),
+);
+
 router.post(
   '/projects/:projectId/variations',
   validate(
@@ -139,6 +171,14 @@ router.post(
 );
 
 // Handover
+router.get(
+  '/projects/:projectId/handover',
+  asyncHandler(async (req, res) => {
+    const handover = await constructionService.getHandover(String(req.params.projectId));
+    res.json({ data: handover });
+  }),
+);
+
 router.post(
   '/projects/:projectId/handover',
   validate(

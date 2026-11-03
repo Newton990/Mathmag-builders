@@ -10,11 +10,13 @@ import {
   Card,
   EmptyState,
   ErrorBanner,
+  Field,
   Loading,
   PageHeader,
   SectionTitle,
   StatCard,
   buttonClass,
+  inputClass,
   secondaryButtonClass,
   statusTone,
 } from '../../components/ui';
@@ -22,11 +24,43 @@ import { formatDateTime, formatKes, humanize } from '../../lib/format';
 
 type Tab = 'proposals' | 'payments' | 'releases';
 
+// Inline payment verification form
+function VerifyPaymentForm({ onSubmit, onCancel }: {
+  onSubmit: (ref: string) => Promise<void>;
+  onCancel: () => void;
+}) {
+  const [ref, setRef] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function save() {
+    if (!ref.trim()) { setErr('Transaction reference is required'); return; }
+    setSaving(true); setErr(null);
+    try { await onSubmit(ref); }
+    catch (e) { setErr(errorMessage(e)); }
+    finally { setSaving(false); }
+  }
+
+  return (
+    <div className="mt-2 rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2">
+      <ErrorBanner message={err} />
+      <Field label="Transaction reference *">
+        <input className={inputClass} value={ref} onChange={e => setRef(e.target.value)} placeholder="M-Pesa code, bank ref…" />
+      </Field>
+      <div className="flex gap-2">
+        <button className={buttonClass} onClick={save} disabled={saving}>{saving ? 'Verifying…' : 'Verify Payment'}</button>
+        <button className={secondaryButtonClass} onClick={onCancel}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 export function StaffAcceptancePage() {
   const { id } = useParams();
   const [tab, setTab] = useState<Tab>('proposals');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [verifyingPaymentId, setVerifyingPaymentId] = useState<string | null>(null);
 
   const project = useResource<ProjectDetail>(id ? `/projects/${id}` : null);
   const proposals = useResource<{ data: Proposal[] }>(id ? `/acceptance/projects/${id}/proposals` : null);
@@ -108,16 +142,15 @@ export function StaffAcceptancePage() {
     }
   }
 
-  async function handleVerifyPayment(paymentId: string) {
-    const ref = window.prompt('Enter transaction reference:');
-    if (!ref) return;
+  async function handleVerifyPayment(paymentId: string, transactionRef: string) {
     setSubmitting(true);
     setSubmitError(null);
     try {
       await api.post(`/acceptance/payments/${paymentId}/verify`, {
-        transactionRef: ref,
+        transactionRef,
       });
       refetchPayments();
+      setVerifyingPaymentId(null);
     } catch (err) {
       setSubmitError(errorMessage(err));
     } finally {
@@ -280,31 +313,39 @@ export function StaffAcceptancePage() {
           ) : (
             <ul className="divide-y divide-gray-100">
               {paymentList.map((payment) => (
-                <li key={payment.id} className="flex items-center justify-between gap-4 py-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {payment.milestoneDescription ?? 'Milestone'}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      Due: {formatKes(payment.amountDue)}
-                      {payment.amountPaid != null
-                        ? ` · Paid: ${formatKes(payment.amountPaid)}`
-                        : ''}
-                      {payment.paidAt ? ` on ${formatDateTime(payment.paidAt)}` : ''}
-                    </p>
+                <li key={payment.id} className="py-3">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {payment.milestoneDescription ?? 'Milestone'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Due: {formatKes(payment.amountDue)}
+                        {payment.amountPaid != null
+                          ? ` · Paid: ${formatKes(payment.amountPaid)}`
+                          : ''}
+                        {payment.paidAt ? ` on ${formatDateTime(payment.paidAt)}` : ''}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge tone={statusTone(payment.status)}>{humanize(payment.status)}</Badge>
+                      {payment.status === 'PENDING' && verifyingPaymentId !== payment.id && (
+                        <button
+                          className={buttonClass}
+                          onClick={() => setVerifyingPaymentId(payment.id)}
+                          disabled={submitting}
+                        >
+                          Verify
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge tone={statusTone(payment.status)}>{humanize(payment.status)}</Badge>
-                    {payment.status === 'PENDING' && (
-                      <button
-                        className={buttonClass}
-                        onClick={() => handleVerifyPayment(payment.id)}
-                        disabled={submitting}
-                      >
-                        Verify
-                      </button>
-                    )}
-                  </div>
+                  {verifyingPaymentId === payment.id && (
+                    <VerifyPaymentForm
+                      onSubmit={ref => handleVerifyPayment(payment.id, ref)}
+                      onCancel={() => setVerifyingPaymentId(null)}
+                    />
+                  )}
                 </li>
               ))}
             </ul>

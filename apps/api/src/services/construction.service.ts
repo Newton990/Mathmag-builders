@@ -16,6 +16,10 @@ function generateVariationNo() {
   return `VAR-${year}-${rand}`;
 }
 
+export async function getMobilization(projectId: string) {
+  return prisma.mobilization.findFirst({ where: { projectId }, orderBy: { createdAt: 'desc' } });
+}
+
 export async function createOrGetMobilization(projectId: string, actorId: string) {
   const project = await prisma.project.findUnique({ where: { id: projectId } });
   if (!project) throw httpError('Project not found', 404, 'PROJECT_NOT_FOUND');
@@ -102,6 +106,10 @@ export async function getSiteLogs(projectId: string) {
   });
 }
 
+export async function getGRNs(projectId: string) {
+  return prisma.goodsReceivedNote.findMany({ where: { projectId }, orderBy: { createdAt: 'desc' } });
+}
+
 export async function createGRN(projectId: string, actorId: string, data: any) {
   const grn = await prisma.goodsReceivedNote.create({
     data: {
@@ -147,6 +155,10 @@ export async function acceptGRN(grnId: string, actorId: string) {
   });
 
   return updated;
+}
+
+export async function getWorkHolds(projectId: string) {
+  return prisma.workHold.findMany({ where: { projectId }, orderBy: { createdAt: 'desc' } });
 }
 
 export async function createWorkHold(projectId: string, actorId: string, data: any) {
@@ -195,6 +207,10 @@ export async function liftWorkHold(holdId: string, actorId: string, data: any) {
   });
 
   return updated;
+}
+
+export async function getVariations(projectId: string) {
+  return prisma.variation.findMany({ where: { projectId }, orderBy: { createdAt: 'desc' } });
 }
 
 export async function createVariation(projectId: string, actorId: string, data: any) {
@@ -246,6 +262,10 @@ export async function approveVariation(variationId: string, actorId: string) {
   });
 
   return updated;
+}
+
+export async function getHandover(projectId: string) {
+  return prisma.handover.findFirst({ where: { projectId } });
 }
 
 export async function createOrUpdateHandover(projectId: string, actorId: string, data: any) {
