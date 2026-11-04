@@ -2,8 +2,25 @@
 // Small data-loading hook so every screen shares the same loading/error and
 // retry behaviour instead of re-implementing useEffect plumbing.
 import { useCallback, useEffect, useState } from 'react';
-import { errorMessage } from './api';
+import { ApiError, errorMessage } from './api';
 import { apiRequest } from './api';
+
+// Network/connection errors (no backend reachable) — swallowed silently so
+// the UI shows clean empty states instead of error banners in demo/static mode.
+function isNetworkError(err: unknown): boolean {
+  if (err instanceof ApiError) return false; // real HTTP error — show it
+  if (err instanceof TypeError) return true;  // fetch failed (no server)
+  if (err instanceof Error) {
+    const msg = err.message.toLowerCase();
+    return (
+      msg.includes('failed to fetch') ||
+      msg.includes('network') ||
+      msg.includes('load failed') ||
+      msg.includes('networkerror')
+    );
+  }
+  return false;
+}
 
 export interface Resource<T> {
   data: T | null;
@@ -36,7 +53,13 @@ export function useResource<T>(path: string | null): Resource<T> {
         if (!cancelled) setData(value);
       })
       .catch((err: unknown) => {
-        if (!cancelled) setError(errorMessage(err));
+        if (cancelled) return;
+        if (isNetworkError(err)) {
+          // No backend reachable — show empty state silently (demo/static mode)
+          setData(null);
+        } else {
+          setError(errorMessage(err));
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
