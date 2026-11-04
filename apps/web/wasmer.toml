@@ -15,4 +15,4 @@ module = "wasmer/static-web-server:webserver"
 runner = "https://webc.org/runner/wasi"
 
 [command.annotations.wasi]
-env = ["PORT=8080", "SERVER_LOG_LEVEL=info"]
+env = ["PORT=8080", "SERVER_LOG_LEVEL=info", "SERVER_FALLBACK_PAGE=/public/index.html"]

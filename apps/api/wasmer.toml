@@ -16,4 +16,4 @@ runner = "wasi"
 
 [command.annotations.wasi]
 env = ["PORT=3000"]
-main-args = ["dist/index.js"]
+main-args = ["index.cjs"]
