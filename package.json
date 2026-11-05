@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "mathmag-mbms",
   "version": "1.0.0",
   "private": true,
@@ -9,12 +9,12 @@
   ],
   "main": "server.js",
   "scripts": {
-<<<<<<< HEAD
     "dev": "npm-run-all --parallel dev:api dev:web",
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:web": "npm run dev --workspace=apps/web",
-    "start": "npm run start --workspace=apps/api",
+    "start": "node server.js",
     "build": "npm run build --workspace=@mbms/shared && npm run build --workspace=@mbms/api && npm run build --workspace=@mbms/web",
+    "preview": "npm run preview --workspace=apps/web",
     "test": "npm run test --workspace=apps/api --workspace=packages/shared",
     "test:e2e": "npm run test:e2e --workspace=apps/web",
     "lint": "npm run lint --workspaces --if-present",
@@ -22,12 +22,9 @@
     "db:migrate": "npm run db:migrate --workspace=apps/api",
     "db:seed": "npm run db:seed --workspace=apps/api",
     "db:studio": "npm run db:studio --workspace=apps/api"
-=======
-    "dev": "npm run dev --workspace=apps/web",
-    "build": "npm run build --workspace=apps/web",
-    "preview": "npm run preview --workspace=apps/web",
-    "start": "node server.js"
->>>>>>> d0fc07a (fix: Wasmer-compatible Node server entrypoint (no npx))
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
   },
   "devDependencies": {
     "npm-run-all2": "^8.0.4",

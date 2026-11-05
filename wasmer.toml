@@ -1,4 +1,4 @@
-name = "mathmag-api"
+﻿name = "mathmag-api"
 description = "MBMS Backend API — Wasmer Edge serverless functions"
 version = "1.0.0"
 runtime = "js"
