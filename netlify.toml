@@ -1,0 +1,19 @@
+[build]
+  command = "npm install --include=dev && npm run build --workspace=@mbms/web"
+  publish = "apps/web/dist"
+
+[build.environment]
+  NPM_CONFIG_PRODUCTION = "false"
+  NODE_VERSION = "20"
+
+# If the API is hosted separately, proxy /api/* to it in Netlify UI or add:
+# [[redirects]]
+#   from = "/api/*"
+#   to = "https://<YOUR-API-URL>/api/:splat"
+#   status = 200
+#   force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
