@@ -88,14 +88,19 @@ export function requireRole(...roles: string[]) {
 }
 
 // ── requireStaff — every internal role except CLIENT ────────────────────────
-
-export const requireStaff = requireRole(
-  'ADMIN_MANAGEMENT',
-  'LEAD_ARCHITECT',
-  'CLIENT_RELATIONS_OFFICER',
-  'VISITING_OFFICER',
-  'JUNIOR_ARCHITECT',
-);
+// Allows all authenticated users except CLIENT. External partners (subcontractor/supplier)
+// may have limited portal access handled separately.
+export function requireStaff(req: Request, res: Response, next: NextFunction): void {
+  if (!req.auth) {
+    res.status(401).json({ error: 'UNAUTHORIZED', message: 'Not authenticated' });
+    return;
+  }
+  if (req.auth.role === 'CLIENT') {
+    res.status(403).json({ error: 'FORBIDDEN', message: 'Staff access required' });
+    return;
+  }
+  next();
+}
 
 // ── requireOwnerOrRole — allows access if userId matches OR role is in list ──
 

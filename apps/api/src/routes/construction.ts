@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireRole, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import * as constructionService from '../services/construction.service.js';
 
@@ -20,6 +20,7 @@ router.get(
 
 router.post(
   '/projects/:projectId/mobilization',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'PROJECT_MANAGER'),
   asyncHandler(async (req, res) => {
     const m = await constructionService.createOrGetMobilization(String(req.params.projectId), req.auth!.userId);
     res.json({ data: m });
@@ -28,6 +29,7 @@ router.post(
 
 router.post(
   '/mobilization/:mobilizationId/release',
+  requireRole('GENERAL_MANAGER', 'ADMIN_MANAGEMENT'),
   asyncHandler(async (req, res) => {
     const m = await constructionService.releaseMobilization(String(req.params.mobilizationId), req.auth!.userId);
     res.json({ data: m });
@@ -91,6 +93,7 @@ router.post(
 
 router.post(
   '/grns/:grnId/accept',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'PROJECT_MANAGER', 'STOREKEEPER'),
   asyncHandler(async (req, res) => {
     const grn = await constructionService.acceptGRN(String(req.params.grnId), req.auth!.userId);
     res.json({ data: grn });
@@ -123,6 +126,7 @@ router.post(
 
 router.post(
   '/work-holds/:holdId/lift',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'PROJECT_MANAGER', 'SITE_SUPERVISOR', 'QUALIFIED_PROFESSIONAL'),
   validate(
     z.object({
       body: z.object({
@@ -164,6 +168,7 @@ router.post(
 
 router.post(
   '/variations/:variationId/approve',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD'),
   asyncHandler(async (req, res) => {
     const variation = await constructionService.approveVariation(String(req.params.variationId), req.auth!.userId);
     res.json({ data: variation });
@@ -197,6 +202,7 @@ router.post(
 
 router.post(
   '/projects/:projectId/handover/accept',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'CLIENT'),
   asyncHandler(async (req, res) => {
     const handover = await constructionService.acceptHandover(String(req.params.projectId), req.auth!.userId);
     res.json({ data: handover });

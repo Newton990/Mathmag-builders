@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireRole, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import * as contractsService from '../services/contracts.service.js';
 
@@ -12,6 +12,7 @@ router.use(requireAuth);
 // Create service engagement
 router.post(
   '/projects/:projectId/engagements',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'CLIENT_RELATIONS_OFFICER'),
   validate(
     z.object({
       body: z.object({
@@ -38,6 +39,7 @@ router.get(
 // Create contract
 router.post(
   '/projects/:projectId/contracts',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER'),
   validate(
     z.object({
       body: z.object({
@@ -76,15 +78,17 @@ router.get(
 // Send contract
 router.post(
   '/contracts/:contractId/send',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER'),
   asyncHandler(async (req, res) => {
     const contract = await contractsService.sendContract(String(req.params.contractId), req.auth!.userId);
     res.json({ data: contract });
   }),
 );
 
-// Execute contract
+// Execute contract (authorized signatory/management)
 router.post(
   '/contracts/:contractId/execute',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER'),
   asyncHandler(async (req, res) => {
     const contract = await contractsService.executeContract(String(req.params.contractId), req.auth!.userId);
     res.json({ data: contract });
@@ -94,6 +98,7 @@ router.post(
 // Terminate contract
 router.post(
   '/contracts/:contractId/terminate',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER'),
   asyncHandler(async (req, res) => {
     const contract = await contractsService.terminateContract(String(req.params.contractId), req.auth!.userId);
     res.json({ data: contract });

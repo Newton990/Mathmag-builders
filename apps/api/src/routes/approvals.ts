@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireRole, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import * as approvalsService from '../services/approvals.service.js';
 
@@ -12,6 +12,7 @@ router.use(requireAuth);
 // Create approval case
 router.post(
   '/projects/:projectId/cases',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER'),
   validate(
     z.object({
       body: z.object({
@@ -47,6 +48,7 @@ router.get(
 // Add permit
 router.post(
   '/cases/:caseId/permits',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'QUALIFIED_PROFESSIONAL'),
   validate(
     z.object({
       body: z.object({
@@ -64,6 +66,7 @@ router.post(
 // Update permit status
 router.patch(
   '/permits/:permitId',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER', 'QUALIFIED_PROFESSIONAL'),
   validate(
     z.object({
       body: z.object({
@@ -117,6 +120,7 @@ router.patch(
 // Update case status
 router.patch(
   '/cases/:caseId/status',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER'),
   validate(
     z.object({
       body: z.object({

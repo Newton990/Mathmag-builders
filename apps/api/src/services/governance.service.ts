@@ -3,6 +3,7 @@ import { prisma } from '../db/client.js';
 import { httpError } from '../middleware/errorHandler.js';
 import { writeAudit } from './audit.service.js';
 import { DelegationStatus, ActingAuthorityStatus, ExceptionStatus, ProtectedAuditStatus, LeaveStatus, RequisitionStatus, POStatus } from '@prisma/client';
+import { assertNotSelfAction } from './governance.util.js';
 
 function generateAuditNumber() {
   const year = new Date().getFullYear();
@@ -86,6 +87,7 @@ export async function createException(requestedById: string, data: any) {
 export async function approveException(id: string, actorId: string) {
   const e = await prisma.projectException.findUnique({ where: { id } });
   if (!e) throw httpError('Exception not found', 404, 'EXCEPTION_NOT_FOUND');
+  assertNotSelfAction(actorId, e.requestedById, 'approval');
   const updated = await prisma.projectException.update({
     where: { id },
     data: { status: ExceptionStatus.APPROVED, approvedById: actorId, approvedAt: new Date() },
@@ -138,6 +140,7 @@ export async function createLeave(userId: string, data: any) {
 export async function approveLeave(id: string, actorId: string) {
   const l = await prisma.leaveRequest.findUnique({ where: { id } });
   if (!l) throw httpError('Leave request not found', 404, 'LEAVE_NOT_FOUND');
+  assertNotSelfAction(actorId, l.userId, 'approval');
   const updated = await prisma.leaveRequest.update({
     where: { id },
     data: { status: LeaveStatus.APPROVED, approvedById: actorId, approvedAt: new Date() },
@@ -166,6 +169,7 @@ export async function createRequisition(requestedById: string, data: any) {
 export async function approveRequisition(id: string, actorId: string) {
   const r = await prisma.purchaseRequisition.findUnique({ where: { id } });
   if (!r) throw httpError('Requisition not found', 404, 'REQUISITION_NOT_FOUND');
+  assertNotSelfAction(actorId, r.requestedById, 'approval');
   const updated = await prisma.purchaseRequisition.update({
     where: { id },
     data: { status: RequisitionStatus.APPROVED, approvedById: actorId, approvedAt: new Date() },

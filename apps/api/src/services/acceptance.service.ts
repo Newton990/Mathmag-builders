@@ -200,7 +200,7 @@ export async function verifyAcceptance(acceptanceId: string, actorId: string, da
   return updated;
 }
 
-export async function createPaymentMilestone(projectId: string, data: any) {
+export async function createPaymentMilestone(projectId: string, data: any, actorId?: string) {
   const payment = await prisma.clientPayment.create({
     data: {
       projectId,
@@ -212,7 +212,7 @@ export async function createPaymentMilestone(projectId: string, data: any) {
   });
 
   await writeAudit({
-    actorId: null,
+    actorId: actorId ?? null,
     action: 'PAYMENT_MILESTONE_CREATED',
     entityType: 'ClientPayment',
     entityId: payment.id,

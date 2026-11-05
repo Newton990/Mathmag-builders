@@ -2,16 +2,17 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireRole, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import * as governanceService from '../services/governance.service.js';
 
 const router = Router();
 router.use(requireAuth);
 
-// Delegations
+// Delegations (GM/Admin)
 router.post(
   '/delegations',
+  requireRole('GENERAL_MANAGER', 'ADMIN_MANAGEMENT'),
   validate(
     z.object({
       body: z.object({
@@ -30,14 +31,15 @@ router.post(
   }),
 );
 
-router.get('/delegations', asyncHandler(async (_req, res) => {
+router.get('/delegations', requireStaff, asyncHandler(async (_req, res) => {
   const d = await governanceService.listDelegations();
   res.json({ data: d });
 }));
 
-// Acting authority
+// Acting authority (GM/Admin/HR-equivalent)
 router.post(
   '/acting-authorities',
+  requireRole('GENERAL_MANAGER', 'ADMIN_MANAGEMENT'),
   validate(
     z.object({
       body: z.object({
@@ -56,6 +58,7 @@ router.post(
 
 router.post(
   '/acting-authorities/:id/activate',
+  requireRole('GENERAL_MANAGER', 'ADMIN_MANAGEMENT'),
   asyncHandler(async (req, res) => {
     const a = await governanceService.activateActingAuthority(String(req.params.id), req.auth!.userId);
     res.json({ data: a });
@@ -65,6 +68,7 @@ router.post(
 // Exceptions
 router.post(
   '/exceptions',
+  requireRole('GENERAL_MANAGER', 'ADMIN_MANAGEMENT', 'DEPARTMENT_HEAD'),
   validate(
     z.object({
       body: z.object({
@@ -82,6 +86,7 @@ router.post(
 
 router.post(
   '/exceptions/:id/approve',
+  requireRole('GENERAL_MANAGER', 'ADMIN_MANAGEMENT'),
   asyncHandler(async (req, res) => {
     const e = await governanceService.approveException(String(req.params.id), req.auth!.userId);
     res.json({ data: e });
@@ -109,6 +114,7 @@ router.post(
 
 router.post(
   '/protected-audits/:id/triage',
+  requireRole('INDEPENDENT_AUDITOR', 'ADMIN_MANAGEMENT', 'GENERAL_MANAGER'),
   asyncHandler(async (req, res) => {
     const a = await governanceService.triageProtectedAudit(String(req.params.id), req.auth!.userId);
     res.json({ data: a });
@@ -136,6 +142,7 @@ router.post(
 
 router.post(
   '/leave/:id/approve',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER'),
   asyncHandler(async (req, res) => {
     const l = await governanceService.approveLeave(String(req.params.id), req.auth!.userId);
     res.json({ data: l });
@@ -163,6 +170,7 @@ router.post(
 
 router.post(
   '/requisitions/:id/approve',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER'),
   asyncHandler(async (req, res) => {
     const r = await governanceService.approveRequisition(String(req.params.id), req.auth!.userId);
     res.json({ data: r });

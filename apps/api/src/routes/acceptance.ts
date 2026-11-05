@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireAuth, requireRole, requireStaff } from '../middleware/auth.middleware.js';
 import { validate } from '../middleware/validate.js';
 import * as acceptanceService from '../services/acceptance.service.js';
 
@@ -12,6 +12,7 @@ router.use(requireAuth);
 // Create proposal from planning
 router.post(
   '/projects/:projectId/proposals/from-planning',
+  requireStaff,
   asyncHandler(async (req, res) => {
     const proposal = await acceptanceService.createProposalFromPlanning(String(req.params.projectId), req.auth!.userId);
     res.status(201).json({ data: proposal });
@@ -36,9 +37,10 @@ router.get(
   }),
 );
 
-// Publish proposal
+// Publish proposal (delegated management)
 router.post(
   '/proposals/:proposalId/publish',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'LEAD_ARCHITECT'),
   validate(
     z.object({
       body: z.object({
@@ -90,9 +92,10 @@ router.post(
   }),
 );
 
-// Verify acceptance (management)
+// Verify acceptance (delegated management)
 router.post(
   '/acceptances/:acceptanceId/verify',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER'),
   validate(
     z.object({
       body: z.object({
@@ -107,9 +110,10 @@ router.post(
   }),
 );
 
-// Create payment milestone
+// Create payment milestone (management/finance)
 router.post(
   '/projects/:projectId/payments',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD', 'PROJECT_MANAGER'),
   validate(
     z.object({
       body: z.object({
@@ -125,9 +129,10 @@ router.post(
   }),
 );
 
-// Verify payment (accounts)
+// Verify payment (accounts function)
 router.post(
   '/payments/:paymentId/verify',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER'),
   validate(
     z.object({
       body: z.object({
@@ -144,9 +149,10 @@ router.post(
   }),
 );
 
-// Create payment exception
+// Create payment exception (authorized manager/GM)
 router.post(
   '/projects/:projectId/payment-exceptions',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER'),
   validate(
     z.object({
       body: z.object({
@@ -163,9 +169,10 @@ router.post(
   }),
 );
 
-// Release to Module 4
+// Release to Module 4 (delegated management)
 router.post(
   '/projects/:projectId/module4/release',
+  requireRole('ADMIN_MANAGEMENT', 'GENERAL_MANAGER', 'DEPARTMENT_HEAD'),
   validate(
     z.object({
       body: z.object({

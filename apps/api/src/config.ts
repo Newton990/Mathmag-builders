@@ -1,6 +1,8 @@
 // src/config.ts
 // Loads and validates all required environment variables at startup.
 // Fails fast with a clear message listing every missing variable.
+// Force operational timezone parity across environments (overridable by process env).
+process.env.TZ = process.env.TZ || 'Africa/Nairobi';
 import { createRequire } from 'module';
 
 if (process.env['NODE_ENV'] !== 'test') {
@@ -114,13 +116,15 @@ function loadConfig(): AppConfig {
     SIGNED_URL_TTL_SECONDS: getInt('SIGNED_URL_TTL_SECONDS', 300),
   };
 
-  const strictlyRequired = ['DATABASE_URL', 'JWT_SECRET', 'MFA_ENCRYPTION_KEY'];
+  // Required secrets must come from process.env (platform secrets in production).
+  // Local .env is optional convenience only (dotenv best-effort above).
+  const strictlyRequired = ['DATABASE_URL', 'JWT_SECRET', 'MFA_ENCRYPTION_KEY'] as const;
   const hard = strictlyRequired.filter((k) => !process.env[k]);
 
   if (hard.length > 0) {
     const list = hard.map((k) => `  • ${k}`).join('\n');
     throw new Error(
-      `MBMS API cannot start — missing required environment variables:\n${list}\n\nCopy .env.example to .env and fill in the values.`,
+      `MBMS API cannot start — missing required environment variables (set via process.env / platform secrets):\n${list}\n\nFor local development only, copy .env.example to .env and fill in values.`,
     );
   }
 
