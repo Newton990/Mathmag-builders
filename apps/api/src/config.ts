@@ -5,13 +5,15 @@
 process.env.TZ = process.env.TZ || 'Africa/Nairobi';
 import { createRequire } from 'module';
 
-if (process.env['NODE_ENV'] !== 'test') {
+// Load .env only for local non-production development convenience.
+// In cloud/production, required values must come directly from process.env.
+if (process.env['NODE_ENV'] === 'development') {
   try {
     const require = createRequire(import.meta.url);
-    const dotenv = require('dotenv') as { config: () => void };
-    dotenv.config();
+    const dotenv = require('dotenv') as { config: (opts?: { override?: boolean }) => unknown };
+    dotenv.config({ override: false });
   } catch {
-    // dotenv not available — rely on externally set environment variables
+    // dotenv not available or .env missing — rely on process.env
   }
 }
 
@@ -116,8 +118,8 @@ function loadConfig(): AppConfig {
     SIGNED_URL_TTL_SECONDS: getInt('SIGNED_URL_TTL_SECONDS', 300),
   };
 
-  // Required secrets must come from process.env (platform secrets in production).
-  // Local .env is optional convenience only (dotenv best-effort above).
+  // Required secrets must come directly from process.env (platform secrets).
+  // No local-file fallback for these in production/cloud environments.
   const strictlyRequired = ['DATABASE_URL', 'JWT_SECRET', 'MFA_ENCRYPTION_KEY'] as const;
   const hard = strictlyRequired.filter((k) => !process.env[k]);
 
