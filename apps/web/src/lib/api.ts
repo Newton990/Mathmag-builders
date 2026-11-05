@@ -6,6 +6,11 @@ const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? '/
 let accessToken: string | null = null;
 let refreshInFlight: Promise<boolean> | null = null;
 
+const isDemoMode = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return window.localStorage.getItem('mbms.demo') === 'true' || window.location.search.includes('demo=true');
+};
+
 export function setAccessToken(token: string | null): void {
   accessToken = token;
   if (token) {
@@ -146,6 +151,29 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
 }
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  if (isDemoMode()) {
+    // Return mock data for demo mode
+    if (options.method === 'GET' || !options.method) {
+      // Return empty arrays for list endpoints
+      if (path.includes('/list') || path.match(/\/(projects|inbox|reports|tasks|users|clients|staff|tenders|quotations|purchase-orders|invoices|payments|sites|materials|labor|equipment|documents|governance|notifications|alerts)$/)) {
+        return { items: [], total: 0 } as T;
+      }
+      // Return empty arrays for common patterns
+      if (path.includes('items') || path.includes('data')) {
+        return [] as T;
+      }
+      // Default empty object
+      return {} as T;
+    }
+    if (options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH') {
+      return { success: true } as T;
+    }
+    if (options.method === 'DELETE') {
+      return { success: true } as T;
+    }
+    return {} as T;
+  }
+
   let response = await send(path, options);
 
   if (response.status === 401 && !options.skipRefresh) {
