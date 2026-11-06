@@ -2,7 +2,8 @@
 import { prisma } from '../db/client.js';
 import { httpError } from '../middleware/errorHandler.js';
 import { writeAudit } from './audit.service.js';
-import { MobilizationStatus, SiteLogStatus, GRNStatus, WorkHoldStatus, VariationStatus } from '@prisma/client';
+import { MobilizationStatus, SiteLogStatus, GRNStatus, WorkHoldStatus, VariationStatus, ModuleReleaseStatus } from '@prisma/client';
+import { assertNotSelfAction } from './governance.util.js';
 
 function generateGrnNumber() {
   const year = new Date().getFullYear();
@@ -50,6 +51,29 @@ export async function createOrGetMobilization(projectId: string, actorId: string
 export async function releaseMobilization(mobilizationId: string, actorId: string) {
   const m = await prisma.mobilization.findUnique({ where: { id: mobilizationId } });
   if (!m) throw httpError('Mobilization not found', 404, 'MOBILIZATION_NOT_FOUND');
+
+  // Gate G7: mobilization requires Module 4 release, no open safety/work holds, and permits
+  const module4Release = await prisma.moduleRelease.findFirst({
+    where: { projectId: m.projectId, fromModule: 3, toModule: 4, status: ModuleReleaseStatus.RELEASED },
+  });
+  if (!module4Release) {
+    throw httpError(
+      'Module 4 release required before mobilization',
+      409,
+      'MODULE4_RELEASE_REQUIRED',
+    );
+  }
+
+  const openHolds = await prisma.workHold.findFirst({
+    where: { projectId: m.projectId, status: WorkHoldStatus.OPEN },
+  });
+  if (openHolds) {
+    throw httpError(
+      'Open safety/work hold blocks mobilization',
+      409,
+      'WORK_HOLD_BLOCKS_MOBILIZATION',
+    );
+  }
 
   const updated = await prisma.mobilization.update({
     where: { id: mobilizationId },
@@ -139,7 +163,7 @@ export async function createGRN(projectId: string, actorId: string, data: any) {
 export async function acceptGRN(grnId: string, actorId: string) {
   const grn = await prisma.goodsReceivedNote.findUnique({ where: { id: grnId } });
   if (!grn) throw httpError('GRN not found', 404, 'GRN_NOT_FOUND');
-
+  assertNotSelfAction(actorId, grn.receivedById, 'acceptance');
   const updated = await prisma.goodsReceivedNote.update({
     where: { id: grnId },
     data: { status: GRNStatus.ACCEPTED },
@@ -186,7 +210,7 @@ export async function createWorkHold(projectId: string, actorId: string, data: a
 export async function liftWorkHold(holdId: string, actorId: string, data: any) {
   const hold = await prisma.workHold.findUnique({ where: { id: holdId } });
   if (!hold) throw httpError('Work hold not found', 404, 'WORK_HOLD_NOT_FOUND');
-
+  assertNotSelfAction(actorId, hold.issuedById, 'lift');
   const updated = await prisma.workHold.update({
     where: { id: holdId },
     data: {
@@ -242,7 +266,7 @@ export async function createVariation(projectId: string, actorId: string, data: 
 export async function approveVariation(variationId: string, actorId: string) {
   const variation = await prisma.variation.findUnique({ where: { id: variationId } });
   if (!variation) throw httpError('Variation not found', 404, 'VARIATION_NOT_FOUND');
-
+  assertNotSelfAction(actorId, variation.requestedById, 'approval');
   const updated = await prisma.variation.update({
     where: { id: variationId },
     data: {

@@ -105,15 +105,35 @@ export async function createProtectedAudit(actorId: string, data: any) {
       status: ProtectedAuditStatus.OPEN,
       severity: data.severity,
       ...(data.projectId ? { projectId: data.projectId } : {}),
+      ...(data.allegedPartyId ? { allegedPartyId: data.allegedPartyId } : {}),
     } as any,
   });
-  await writeAudit({ actorId, action: 'PROTECTED_AUDIT_CREATED', entityType: 'ProtectedAuditCase', entityId: a.id, projectId: (data.projectId as any) || undefined, after: { caseNumber: a.caseNumber } });
+  await writeAudit({
+    actorId,
+    action: 'PROTECTED_AUDIT_CREATED',
+    entityType: 'ProtectedAuditCase',
+    entityId: a.id,
+    projectId: (data.projectId as any) || undefined,
+    after: { caseNumber: a.caseNumber, allegedPartyId: data.allegedPartyId ?? null },
+  });
   return a;
 }
 
 export async function triageProtectedAudit(id: string, actorId: string) {
   const a = await prisma.protectedAuditCase.findUnique({ where: { id } });
   if (!a) throw httpError('Audit case not found', 404, 'AUDIT_CASE_NOT_FOUND');
+
+  // Protected audit independence (UAT-25, MAST-UAT-28): the alleged party cannot triage their own case.
+  // GM-linked or department-head-linked cases bypass conflicted management — only independent
+  // auditor or nonconflicted governance may triage.
+  if (a.allegedPartyId && actorId === a.allegedPartyId) {
+    throw httpError(
+      'The alleged party cannot triage their own protected audit case',
+      403,
+      'CONFLICTED_TRIAGE_FORBIDDEN',
+    );
+  }
+
   const updated = await prisma.protectedAuditCase.update({
     where: { id },
     data: { status: ProtectedAuditStatus.TRIAGED, triagedById: actorId, triagedAt: new Date() },

@@ -456,6 +456,10 @@ model User {
   exceptionsDecided     Json?
   protectedAuditCases   Json?
 
+  // Module 6 — Worker reports and procurement compliance
+  workerReports           WorkerReport[]
+  workerReportVerifications WorkerReportVerification[]
+
   // Module 2 relations
   designTasksAssigned   DesignTask[]          @relation("DesignTaskAssignee")
   designTasksCreated    DesignTask[]          @relation("DesignTaskCreator")
@@ -621,6 +625,9 @@ model Project {
   leaveRequests         LeaveRequest[]
   purchaseRequisitions  PurchaseRequisition[]
   purchaseOrders        PurchaseOrder[]
+  beneficiaryChanges    BeneficiaryChange[]
+  invoices              Invoice[]
+  workerReports         WorkerReport[]
 
   @@index([contactId])
   @@index([currentStage])
@@ -1561,6 +1568,8 @@ model GoodsReceivedNote {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
+  invoices      Invoice[]
+
   @@index([projectId, status])
   @@map("goods_received_notes")
 }
@@ -1694,6 +1703,8 @@ model ProtectedAuditCase {
   description String?
   status      ProtectedAuditStatus @default(OPEN)
   severity    String?
+  // Who the case is about — used for conflict routing (e.g., GM-related cases bypass GM)
+  allegedPartyId String?
   triagedById String?
   triagedAt   DateTime?
   escalatedAt DateTime?
@@ -1702,6 +1713,7 @@ model ProtectedAuditCase {
   updatedAt   DateTime             @updatedAt
 
   @@index([projectId, status])
+  @@index([allegedPartyId])
   @@map("protected_audit_cases")
 }
 
@@ -1754,6 +1766,7 @@ model PurchaseOrder {
   requisition   PurchaseRequisition? @relation(fields: [requisitionId], references: [id], onDelete: SetNull)
   poNumber      String               @unique
   supplierId    String?
+  supplier      Supplier?           @relation(fields: [supplierId], references: [id], onDelete: SetNull)
   items         Json?
   totalAmount   Decimal?             @db.Decimal(14, 2)
   currency      String               @default("KES")
@@ -1764,6 +1777,132 @@ model PurchaseOrder {
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
 
+  invoices      Invoice[]
+
   @@index([projectId, status])
   @@map("purchase_orders")
 }
+
+// ════════════════════════════════════════════════════════════════════════════════
+// MODULE 6 — Procurement & Finance Compliance (UAT-14, UAT-15, UAT-17, MAST-UAT-16, MAST-UAT-17)
+// ════════════════════════════════════════════════════════════════════════════════
+
+model Supplier {
+  id                String           @id @default(uuid())
+  name              String
+  contactPerson     String?
+  phone             String?
+  email             String?
+  bankAccount       String?          // Current verified bank/M-Pesa destination
+  mpesaNumber       String?
+  trustedContact    String?          // Out-of-band known contact for verification
+  trustedContactPhone String?
+  isActive          Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  purchaseOrders    PurchaseOrder[]
+  beneficiaryChanges BeneficiaryChange[]
+  invoices          Invoice[]
+
+  @@index([name])
+  @@map("suppliers")
+}
+
+model BeneficiaryChange {
+  id                String           @id @default(uuid())
+  supplierId        String
+  supplier          Supplier         @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  projectId         String?
+  project           Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  oldBankAccount    String?
+  oldMpesaNumber    String?
+  newBankAccount    String?
+  newMpesaNumber    String?
+  status            String           @default("PENDING_VERIFICATION") // PENDING_VERIFICATION | VERIFIED | REJECTED
+  verifiedById      String?
+  verifiedAt        DateTime?
+  verificationContact String?        // Trusted contact used for out-of-band verification
+  paymentHold       Boolean          @default(true) // Automatically hold affected payments
+  reason            String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([supplierId, status])
+  @@index([projectId])
+  @@map("beneficiary_changes")
+}
+
+model Invoice {
+  id                String           @id @default(uuid())
+  projectId         String
+  project           Project          @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  supplierId        String
+  supplier          Supplier         @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  poId              String?
+  po                PurchaseOrder?   @relation(fields: [poId], references: [id], onDelete: SetNull)
+  grnId             String?
+  grn               GoodsReceivedNote? @relation(fields: [grnId], references: [id], onDelete: SetNull)
+  invoiceNumber     String           @unique
+  amount            Decimal          @db.Decimal(14, 2)
+  currency          String           @default("KES")
+  status            String           @default("DRAFT") // DRAFT | MATCHED | PARTIALLY_MATCHED | REJECTED | PAID
+  threeWayMatch     Boolean          @default(false)
+  matchNotes        String?
+  paidAt            DateTime?
+  paidById          String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([projectId, status])
+  @@index([supplierId])
+  @@map("invoices")
+}
+
+// ════════════════════════════════════════════════════════════════════════════════
+// MODULE 6 — Worker Reports & Original Evidence (UAT-12, UAT-13, MAST-UAT-13, MAST-UAT-14)
+// ════════════════════════════════════════════════════════════════════════════════
+
+model WorkerReport {
+  id                String           @id @default(uuid())
+  projectId         String
+  project           Project          @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  workerId          String
+  worker            User             @relation(fields: [workerId], references: [id], onDelete: Restrict)
+  reportNumber      String           @unique
+  title             String
+  description       String?
+  mediaIds          Json?            // Array of media attachment IDs
+  status            String           @default("DRAFT") // DRAFT | SUBMITTED | VERIFIED | RETURNED | REJECTED
+  submittedAt       DateTime?
+  lockedAt          DateTime?        // When submitted, becomes immutable
+  previousVersionId String?
+  previousVersion   WorkerReport?    @relation("WorkerReportVersions", fields: [previousVersionId], references: [id], onDelete: SetNull)
+  versions          WorkerReport[]   @relation("WorkerReportVersions")
+  verifications     WorkerReportVerification[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([projectId, status])
+  @@index([workerId])
+  @@map("worker_reports")
+}
+
+model WorkerReportVerification {
+  id                String           @id @default(uuid())
+  reportId          String
+  report            WorkerReport     @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  supervisorId      String
+  supervisor        User             @relation(fields: [supervisorId], references: [id], onDelete: Restrict)
+  status            String           @default("PENDING") // PENDING | APPROVED | RETURNED
+  comments          String?
+  verifiedAt        DateTime?
+  createdAt         DateTime         @default(now())
+
+  @@index([reportId, status])
+  @@index([supervisorId])
+  @@map("worker_report_verifications")
+}
+
+// Add allegedPartyId to ProtectedAuditCase for protected audit independence (UAT-25, MAST-UAT-28)
+// This is handled via a separate migration adding the column

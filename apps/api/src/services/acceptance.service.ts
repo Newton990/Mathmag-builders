@@ -134,6 +134,19 @@ export async function clientAccept(proposalId: string, actorId: string, data: an
   if (!proposal) throw httpError('Proposal not found', 404, 'PROPOSAL_NOT_FOUND');
   if (proposal.status !== ProposalStatus.PUBLISHED) throw httpError('Proposal must be published before acceptance', 400, 'PROPOSAL_NOT_PUBLISHED');
 
+  // Client acceptance binds to the exact published proposal version — reject stale accepts
+  const latest = await prisma.proposalSnapshot.findFirst({
+    where: { projectId: proposal.projectId },
+    orderBy: { versionNumber: 'desc' },
+  });
+  if (!latest || latest.id !== proposalId) {
+    throw httpError(
+      'This proposal version has been superseded. Accept the latest published version.',
+      409,
+      'PROPOSAL_VERSION_STALE',
+    );
+  }
+
   const acceptance = await prisma.clientAcceptance.create({
     data: {
       proposalId,
@@ -281,11 +294,23 @@ export async function createPaymentException(projectId: string, actorId: string,
 }
 
 export async function releaseToModule4(projectId: string, actorId: string, data: any) {
-  // Check acceptance verified
+  // Check acceptance verified — must be on the latest proposal version
   const acceptedProposal = await prisma.proposalSnapshot.findFirst({
     where: { projectId, status: ProposalStatus.ACCEPTED },
   });
   if (!acceptedProposal) throw httpError('Verified client acceptance required', 400, 'ACCEPTANCE_REQUIRED');
+
+  const latestProposal = await prisma.proposalSnapshot.findFirst({
+    where: { projectId },
+    orderBy: { versionNumber: 'desc' },
+  });
+  if (!latestProposal || latestProposal.id !== acceptedProposal.id) {
+    throw httpError(
+      'Accepted proposal version has been superseded. Re-accept the latest version before release.',
+      409,
+      'ACCEPTANCE_VERSION_STALE',
+    );
+  }
 
   // Check payment
   const payment = await prisma.clientPayment.findFirst({
