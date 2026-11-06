@@ -456,9 +456,15 @@ model User {
   exceptionsDecided     Json?
   protectedAuditCases   Json?
 
-  // Module 6 — Worker reports and procurement compliance
+  // Module 6 — Worker reports, procurement compliance, safety & equipment
   workerReports           WorkerReport[]
   workerReportVerifications WorkerReportVerification[]
+  operatorPermits         OperatorPermit[]
+  assignedAssets          Asset[]              @relation("AssetOperator")
+  dailyInspections        DailyInspection[]
+  inspectionsPerformed    DailyInspection[]    @relation("InspectionInspector")
+  fuelIssues              FuelIssue[]          @relation("FuelIssueOperator")
+  fuelIssuesVerified      FuelIssue[]          @relation("FuelIssueIssuer")
 
   // Module 2 relations
   designTasksAssigned   DesignTask[]          @relation("DesignTaskAssignee")
@@ -628,6 +634,10 @@ model Project {
   beneficiaryChanges    BeneficiaryChange[]
   invoices              Invoice[]
   workerReports         WorkerReport[]
+  operatorPermits       OperatorPermit[]
+  assets                Asset[]
+  dailyInspections      DailyInspection[]
+  fuelIssues            FuelIssue[]
 
   @@index([contactId])
   @@index([currentStage])
@@ -1906,3 +1916,126 @@ model WorkerReportVerification {
 
 // Add allegedPartyId to ProtectedAuditCase for protected audit independence (UAT-25, MAST-UAT-28)
 // This is handled via a separate migration adding the column
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// MODULE 6 — Safety & Equipment Compliance (UAT-20, UAT-21, UAT-22, MAST-UAT-20/21/22)
+// ═════════════════════════════════════════════════════════════════════════════════
+
+enum OperatorPermitStatus {
+  ACTIVE
+  EXPIRED
+  SUSPENDED
+  PENDING
+}
+
+enum AssetStatus {
+  ACTIVE
+  HOLD
+  MAINTENANCE
+  OUT_OF_SERVICE
+}
+
+enum DailyInspectionStatus {
+  PASSED
+  FAILED_CRITICAL
+  FAILED_MINOR
+  PENDING
+}
+
+model OperatorPermit {
+  id                String              @id @default(uuid())
+  operatorId        String
+  operator          User                @relation(fields: [operatorId], references: [id], onDelete: Restrict)
+  qualification     String              // e.g. "Excavator Operation", "Concrete Mixer Operation"
+  permitNumber      String              @unique
+  status            OperatorPermitStatus @default(PENDING)
+  issuedAt          DateTime?
+  expiresAt         DateTime?
+  verifiedById      String?
+  verifiedAt        DateTime?
+  projectId         String?
+  project           Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([operatorId, status])
+  @@index([projectId])
+  @@map("operator_permits")
+}
+
+model Asset {
+  id                String           @id @default(uuid())
+  assetNumber       String           @unique
+  name              String
+  type              String           // e.g. "Excavator", "Concrete Mixer", "Generator"
+  status            AssetStatus      @default(ACTIVE)
+  projectId         String?
+  project           Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  assignedOperatorId String?
+  assignedOperator  User?            @relation("AssetOperator", fields: [assignedOperatorId], references: [id], onDelete: SetNull)
+  lastInspectionId  String?
+  lastInspection    DailyInspection? @relation("AssetLastInspection", fields: [lastInspectionId], references: [id], onDelete: SetNull)
+  dailyInspections  DailyInspection[]
+  fuelIssues        FuelIssue[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([type, status])
+  @@index([projectId])
+  @@index([assignedOperatorId])
+  @@map("assets")
+}
+
+model DailyInspection {
+  id                String              @id @default(uuid())
+  assetId           String
+  asset             Asset               @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  projectId         String
+  project           Project             @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  operatorId        String
+  operator          User                @relation(fields: [operatorId], references: [id], onDelete: Restrict)
+  inspectionDate    DateTime            @default(now())
+  result              DailyInspectionStatus @default(PENDING)
+  criticalDefect      Boolean           @default(false)
+  defectDescription   String?
+  notes               String?
+  inspectedById       String?
+  inspectedBy         User?             @relation("InspectionInspector", fields: [inspectedById], references: [id], onDelete: SetNull)
+  assetsWhereLast     Asset[]           @relation("AssetLastInspection")
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([assetId, inspectionDate])
+  @@index([operatorId])
+  @@map("daily_inspections")
+}
+
+model FuelIssue {
+  id                String   @id @default(uuid())
+  projectId         String
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  assetId           String?
+  asset             Asset?   @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  operatorId        String
+  operator          User     @relation("FuelIssueOperator", fields: [operatorId], references: [id], onDelete: Restrict)
+  fuelType          String   // e.g. "Diesel", "Petrol"
+  liters            Decimal  @db.Decimal(10, 2)
+  meterReading      String?
+  site              String?
+  custody           String?  // Who has custody of the fuel
+  issuedById        String
+  issuedBy          User     @relation("FuelIssueIssuer", fields: [issuedById], references: [id], onDelete: Restrict)
+  status            String   @default("RECORDED") // RECORDED | VERIFIED | REJECTED
+  verifiedById      String?
+  verifiedAt        DateTime?
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([projectId, status])
+  @@index([assetId])
+  @@index([operatorId])
+  @@map("fuel_issues")
+}
+
+// Add safety relations to User and Project

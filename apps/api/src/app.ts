@@ -25,6 +25,7 @@ import { approvalsRouter } from './routes/approvals.js';
 import { contractsRouter } from './routes/contracts.js';
 import { constructionRouter } from './routes/construction.js';
 import { governanceRouter } from './routes/governance.js';
+import { safetyRouter } from './routes/safety.js';
 import { supplierRouter } from './routes/suppliers.js';
 import { invoiceRouter } from './routes/invoices.js';
 import { workerReportRouter } from './routes/worker-reports.js';
@@ -91,6 +92,7 @@ export function createApp(): express.Application {
   app.use('/api/suppliers', supplierRouter);
   app.use('/api/invoices', invoiceRouter);
   app.use('/api/worker-reports', workerReportRouter);
+  app.use('/api/safety', safetyRouter);
 
   // ── 404 handler ───────────────────────────────────────────────────────────
   app.use((_req, res) => {
