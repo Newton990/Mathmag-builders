@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { api, errorMessage, getAccessToken, setAccessToken } from '../lib/api';
+import { api, errorMessage, getAccessToken, isDemoMode, setAccessToken } from '../lib/api';
 import type { CurrentUser, UserRole } from '../lib/types';
 
 interface AuthContextValue {
@@ -58,15 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     async function restore() {
-      // Demo mode: auto-login as Demo Admin
-      if (typeof window !== 'undefined') {
-        const isDemo = window.location.search.includes('demo=true') || window.localStorage.getItem('mbms.demo') === 'true';
-        if (isDemo || true) { // Always enable demo mode
-          window.localStorage.setItem('mbms.demo', 'true');
-          setUser(DEMO_USER);
-          setLoading(false);
-          return;
-        }
+      // Demo mode: auto-login as Demo Admin by default, while allowing live mode via ?live=true.
+      if (typeof window !== 'undefined' && isDemoMode()) {
+        window.localStorage.setItem('mbms.demo', 'true');
+        setUser(DEMO_USER);
+        setLoading(false);
+        return;
       }
       if (!getAccessToken()) {
         setLoading(false);

@@ -6,9 +6,29 @@ const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? '/
 let accessToken: string | null = null;
 let refreshInFlight: Promise<boolean> | null = null;
 
-const isDemoMode = (): boolean => {
+export const isDemoMode = (): boolean => {
   if (typeof window === 'undefined') return false;
-  return window.localStorage.getItem('mbms.demo') === 'true' || window.location.search.includes('demo=true');
+
+  const params = new URLSearchParams(window.location.search);
+  const demoExplicit = params.get('demo') === 'true';
+  const liveExplicit = params.get('live') === 'true';
+  const storedValue = window.localStorage.getItem('mbms.demo');
+
+  if (liveExplicit) {
+    window.localStorage.setItem('mbms.demo', 'false');
+    return false;
+  }
+
+  if (storedValue === 'false' && !demoExplicit) {
+    return false;
+  }
+
+  if (demoExplicit || storedValue === 'true' || !storedValue) {
+    window.localStorage.setItem('mbms.demo', 'true');
+    return true;
+  }
+
+  return true;
 };
 
 export function setAccessToken(token: string | null): void {
