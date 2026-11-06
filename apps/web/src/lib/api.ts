@@ -1,7 +1,7 @@
 // src/lib/api.ts
-// Typed fetch wrapper with access-token refresh for the Vite proxy (/api).
-
-const API_BASE = '/api';
+// Typed fetch wrapper with access-token refresh.
+// In local dev, keep using the Vite proxy; in production, point to the deployed Render API.
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? '/api' : 'https://mathmag-api.onrender.com/api')).replace(/\/+$/, '');
 
 let accessToken: string | null = null;
 let refreshInFlight: Promise<boolean> | null = null;
