@@ -240,6 +240,11 @@ export async function verifyPayment(paymentId: string, actorId: string, data: an
   const payment = await prisma.clientPayment.findUnique({ where: { id: paymentId } });
   if (!payment) throw httpError('Payment not found', 404, 'PAYMENT_NOT_FOUND');
 
+  // UAT-04: Unverified receipts must not clear milestones — require transaction evidence
+  if (!data.transactionRef || data.transactionRef.trim().length === 0) {
+    throw httpError('Transaction reference is required to verify a payment', 400, 'TRANSACTION_REF_REQUIRED');
+  }
+
   const amountPaid = data.amountPaid !== undefined ? data.amountPaid : Number(payment.amountDue);
   const status = amountPaid >= Number(payment.amountDue) ? PaymentMilestoneStatus.PAID : PaymentMilestoneStatus.PARTIALLY_PAID;
 
@@ -253,7 +258,7 @@ export async function verifyPayment(paymentId: string, actorId: string, data: an
       verifiedById: actorId,
       verifiedAt: new Date(),
       notes: data.notes,
-      paidAt: new Date(),
+      paidAt: status === PaymentMilestoneStatus.PAID ? new Date() : null,
     },
   });
 

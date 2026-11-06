@@ -85,6 +85,23 @@ router.post(
   }),
 );
 
+// Sign contract (client acceptance — required before execution, UAT-08)
+router.post(
+  '/contracts/:contractId/sign',
+  requireAuth,
+  validate(
+    z.object({
+      body: z.object({
+        evidenceKey: z.string().min(1),
+      }),
+    }),
+  ),
+  asyncHandler(async (req, res) => {
+    const contract = await contractsService.signContract(String(req.params.contractId), req.auth!.userId, req.body);
+    res.json({ data: contract });
+  }),
+);
+
 // Execute contract (authorized signatory/management)
 router.post(
   '/contracts/:contractId/execute',

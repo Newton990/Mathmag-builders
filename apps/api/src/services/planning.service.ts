@@ -9,7 +9,9 @@ import {
   DesignApprovalType,
   CoordinationIssueStatus,
   EstimateStatus,
+  UserRole,
 } from '@prisma/client';
+import { assertNotSelfAction } from './governance.util.js';
 import {
   canTransitionDesignTask,
   canTransitionDesignApproval,
@@ -402,6 +404,16 @@ export async function getDesignApprovals(projectId: string) {
 export async function approveDesignApproval(approvalId: string, actorId: string, data: any) {
   const approval = await prisma.designApproval.findUnique({ where: { id: approvalId } });
   if (!approval) throw httpError('Design approval not found', 404, 'APPROVAL_NOT_FOUND');
+
+  // UAT-06: Only a qualified professional may stamp professional drawings
+  const actor = await prisma.user.findUnique({ where: { id: actorId } });
+  if (!actor || actor.role !== UserRole.QUALIFIED_PROFESSIONAL) {
+    throw httpError(
+      'Professional drawing approval requires an independent verified qualified professional',
+      403,
+      'QUALIFIED_PROFESSIONAL_REQUIRED',
+    );
+  }
 
   const transition = (canTransitionDesignApproval as any)(approval.status as any, DesignApprovalStatus.APPROVED as any);
   if (!transition.allowed) throw httpError(transition.reason || 'Invalid transition', 400, 'INVALID_TRANSITION');

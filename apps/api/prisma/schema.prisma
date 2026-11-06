@@ -465,6 +465,7 @@ model User {
   inspectionsPerformed    DailyInspection[]    @relation("InspectionInspector")
   fuelIssues              FuelIssue[]          @relation("FuelIssueOperator")
   fuelIssuesVerified      FuelIssue[]          @relation("FuelIssueIssuer")
+  clientSignedContracts   Contract[]           @relation("ClientSigner")
 
   // Module 2 relations
   designTasksAssigned   DesignTask[]          @relation("DesignTaskAssignee")
@@ -1516,6 +1517,13 @@ model Contract {
   terminatedAt    DateTime?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+
+  // Client acceptance/signature evidence (UAT-08, MAST-UAT-10)
+  clientSignedAt     DateTime?
+  clientSignedById   String?
+  clientSignedBy     User?       @relation("ClientSigner", fields: [clientSignedById], references: [id], onDelete: SetNull)
+  clientSignatureEvidenceKey String?
+  clientAccepted     Boolean     @default(false)
 
   @@index([projectId, status])
   @@map("contracts")

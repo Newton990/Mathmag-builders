@@ -113,9 +113,48 @@ export async function sendContract(contractId: string, actorId: string) {
   return updated;
 }
 
+export async function signContract(contractId: string, actorId: string, data: any) {
+  const contract = await prisma.contract.findUnique({ where: { id: contractId } });
+  if (!contract) throw httpError('Contract not found', 404, 'CONTRACT_NOT_FOUND');
+  if (contract.status !== ContractStatus.SENT) {
+    throw httpError('Contract must be sent before client can sign', 400, 'CONTRACT_NOT_SENT');
+  }
+  if (contract.clientAccepted) {
+    throw httpError('Contract already signed by client', 400, 'CONTRACT_ALREADY_SIGNED');
+  }
+
+  const updated = await prisma.contract.update({
+    where: { id: contractId },
+    data: {
+      clientAccepted: true,
+      clientSignedAt: new Date(),
+      clientSignedById: actorId,
+      clientSignatureEvidenceKey: data.evidenceKey,
+    },
+  });
+
+  await writeAudit({
+    actorId,
+    action: 'CONTRACT_CLIENT_SIGNED',
+    entityType: 'Contract',
+    entityId: contractId,
+    projectId: contract.projectId,
+    after: { clientAccepted: true, clientSignedAt: updated.clientSignedAt },
+  });
+
+  return updated;
+}
+
 export async function executeContract(contractId: string, actorId: string) {
   const contract = await prisma.contract.findUnique({ where: { id: contractId } });
   if (!contract) throw httpError('Contract not found', 404, 'CONTRACT_NOT_FOUND');
+  if (!contract.clientAccepted) {
+    throw httpError(
+      'Contract must be signed by client before execution — no binding contract without client signature',
+      400,
+      'CONTRACT_CLIENT_SIGNATURE_REQUIRED',
+    );
+  }
 
   const updated = await prisma.contract.update({
     where: { id: contractId },
@@ -132,7 +171,7 @@ export async function executeContract(contractId: string, actorId: string) {
     entityType: 'Contract',
     entityId: contractId,
     projectId: contract.projectId,
-    after: { status: 'EXECUTED' },
+    after: { status: 'EXECUTED', clientSignedAt: contract.clientSignedAt },
   });
 
   return updated;
