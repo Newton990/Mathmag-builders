@@ -467,6 +467,21 @@ model User {
   fuelIssuesVerified      FuelIssue[]          @relation("FuelIssueIssuer")
   clientSignedContracts   Contract[]           @relation("ClientSigner")
 
+  // Module 7 — Compliance & statutory holds
+  complianceHolds         ComplianceHold[]
+  complianceHoldsCleared  ComplianceHold[]     @relation("ComplianceHoldClearer")
+
+  // Module 6 — Stock & ownership
+  stockMovements          StockMovement[]
+
+  // Module 6 — Retention & warranty
+  retentionsReleased      Retention[]          @relation("RetentionReleaser")
+  warrantyClaimsResolved  WarrantyClaim[]      @relation("WarrantyResolver")
+
+  // Module 6 — Financial close
+  financialCloseReconciled FinancialClose[]   @relation("FinancialCloseReconciler")
+  financialCloseClosed     FinancialClose[]   @relation("FinancialCloseCloser")
+
   // Module 2 relations
   designTasksAssigned   DesignTask[]          @relation("DesignTaskAssignee")
   designTasksCreated    DesignTask[]          @relation("DesignTaskCreator")
@@ -639,6 +654,11 @@ model Project {
   assets                Asset[]
   dailyInspections      DailyInspection[]
   fuelIssues            FuelIssue[]
+  complianceHolds       ComplianceHold[]
+  stockBatches          StockBatch[]
+  retentions            Retention[]
+  warrantyClaims        WarrantyClaim[]
+  financialClose        FinancialClose?
 
   @@index([contactId])
   @@index([currentStage])
@@ -2047,3 +2067,191 @@ model FuelIssue {
 }
 
 // Add safety relations to User and Project
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// MODULE 7 — Compliance & Statutory Holds (UAT-07, UAT-26, MAST-UAT-09)
+// ═════════════════════════════════════════════════════════════════════════════════
+
+enum ComplianceHoldStatus {
+  OPEN
+  CLEARED
+  EXPIRED
+}
+
+model ComplianceHold {
+  id                String              @id @default(uuid())
+  projectId         String
+  project           Project             @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  holdType          String              // e.g. "NCA", "NEMA", "SAFETY", "STATUTORY"
+  authority         String              // e.g. "National Construction Authority"
+  reference         String?             // Permit/certificate reference
+  status            ComplianceHoldStatus @default(OPEN)
+  issuedById        String
+  issuedBy          User                @relation(fields: [issuedById], references: [id], onDelete: Restrict)
+  clearedById       String?
+  clearedBy         User?               @relation("ComplianceHoldClearer", fields: [clearedById], references: [id], onDelete: SetNull)
+  clearedAt         DateTime?
+  clearanceNotes    String?
+  expiresAt         DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([projectId, status])
+  @@index([holdType])
+  @@map("compliance_holds")
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// MODULE 6 — Stock & Ownership Tracking (UAT-17, UAT-18, MAST-UAT-18, MAST-UAT-19)
+// ═════════════════════════════════════════════════════════════════════════════════
+
+enum StockBatchStatus {
+  IN_TRANSIT
+  RECEIVED
+  TRANSFERRED
+  DISPOSED
+}
+
+model StockBatch {
+  id                String           @id @default(uuid())
+  projectId         String
+  project           Project          @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  batchNumber       String           @unique
+  supplierId        String?
+  supplier          Supplier?        @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  grnId             String?
+  grn               GoodsReceivedNote? @relation(fields: [grnId], references: [id], onDelete: SetNull)
+  description       String
+  quantity          Decimal          @db.Decimal(14, 2)
+  unit              String           // e.g. "bags", "pieces", "kg"
+  status            StockBatchStatus @default(IN_TRANSIT)
+  ownerId           String?          // Legal owner (client, Mathmag, subcontractor)
+  ownerType         String?          // e.g. "CLIENT", "MATHMAG", "SUBCONTRACTOR"
+  transferredToId   String?
+  transferredTo     User?            @relation("StockTransferee", fields: [transferredToId], references: [id], onDelete: SetNull)
+  transferredAt     DateTime?
+  clientConsent     Boolean          @default(false) // Required for client-owned stock
+  titleVerified     Boolean          @default(false)   // Required before transfer
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([projectId, status])
+  @@index([batchNumber])
+  @@map("stock_batches")
+}
+
+model StockMovement {
+  id                String   @id @default(uuid())
+  batchId           String
+  batch             StockBatch @relation(fields: [batchId], references: [id], onDelete: Restrict)
+  fromLocation      String?
+  toLocation        String?
+  quantity          Decimal  @db.Decimal(14, 2)
+  movedById         String
+  movedBy           User     @relation(fields: [movedById], references: [id], onDelete: Restrict)
+  movementType      String   // e.g. "RECEIPT", "ISSUE", "TRANSFER", "ADJUSTMENT"
+  reason            String?
+  createdAt         DateTime @default(now())
+
+  @@index([batchId, createdAt])
+  @@map("stock_movements")
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// MODULE 6 — Retention & Warranty (UAT-27, UAT-28, MAST-UAT-27, MAST-UAT-28)
+// ═════════════════════════════════════════════════════════════════════════════════
+
+enum RetentionStatus {
+  HELD
+  RELEASED
+  FORFEITED
+}
+
+model Retention {
+  id                String           @id @default(uuid())
+  projectId         String
+  project           Project          @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  contractId        String?
+  contract          Contract?        @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  amount            Decimal          @db.Decimal(14, 2)
+  currency          String           @default("KES")
+  status            RetentionStatus  @default(HELD)
+  dueDate           DateTime?        // When retention becomes eligible for release
+  releasedAt        DateTime?
+  releasedById      String?
+  releasedBy        User?            @relation("RetentionReleaser", fields: [releasedById], references: [id], onDelete: SetNull)
+  releaseNotes      String?
+  conditionsMet     Boolean          @default(false) // Contract conditions must be checked
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([projectId, status])
+  @@map("retentions")
+}
+
+enum WarrantyClaimStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  CLOSED
+}
+
+model WarrantyClaim {
+  id                String             @id @default(uuid())
+  projectId         String
+  project           Project            @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  contractId        String?
+  contract          Contract?          @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  claimNumber       String             @unique
+  title             String
+  description       String?
+  status            WarrantyClaimStatus @default(OPEN)
+  reportedById      String
+  reportedBy        User                 @relation(fields: [reportedById], references: [id], onDelete: Restrict)
+  resolvedById      String?
+  resolvedBy        User?                @relation("WarrantyResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+  resolvedAt        DateTime?
+  resolutionNotes   String?
+  warrantyExpiry    DateTime?          // When warranty period expires
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([projectId, status])
+  @@index([claimNumber])
+  @@map("warranty_claims")
+}
+
+// ═════════════════════════════════════════════════════════════════════════════════
+// MODULE 6 — Financial Close Tracking (UAT-29, MAST-UAT-29)
+// ═════════════════════════════════════════════════════════════════════════════════
+
+enum FinancialCloseStatus {
+  PENDING
+  RECONCILED
+  CLOSED
+}
+
+model FinancialClose {
+  id                String             @id @default(uuid())
+  projectId         String             @unique
+  project           Project            @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  status            FinancialCloseStatus @default(PENDING)
+  totalInvoiced     Decimal            @db.Decimal(14, 2)
+  totalPaid         Decimal            @db.Decimal(14, 2)
+  totalRetention    Decimal            @db.Decimal(14, 2)
+  outstandingAmount Decimal            @db.Decimal(14, 2)
+  reconciledById    String?
+  reconciledBy      User?              @relation("FinancialCloseReconciler", fields: [reconciledById], references: [id], onDelete: SetNull)
+  reconciledAt      DateTime?
+  closedAt          DateTime?
+  closedById        String?
+  closedBy          User?              @relation("FinancialCloseCloser", fields: [closedById], references: [id], onDelete: SetNull)
+  notes             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@map("financial_closes")
+}
+
+// Add reverse relations to existing models
+// (User relations added below)

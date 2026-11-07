@@ -8,6 +8,7 @@ import {
   AcceptanceStatus,
   PaymentMilestoneStatus,
   ModuleReleaseStatus,
+  UserRole,
 } from '@prisma/client';
 
 export async function createProposalFromPlanning(projectId: string, actorId: string) {
@@ -239,6 +240,12 @@ export async function createPaymentMilestone(projectId: string, data: any, actor
 export async function verifyPayment(paymentId: string, actorId: string, data: any) {
   const payment = await prisma.clientPayment.findUnique({ where: { id: paymentId } });
   if (!payment) throw httpError('Payment not found', 404, 'PAYMENT_NOT_FOUND');
+
+  // UAT-09: Owner/CLIENT cannot perform routine pay authorization
+  const actor = await prisma.user.findUnique({ where: { id: actorId } });
+  if (actor && actor.role === 'CLIENT') {
+    throw httpError('Owner/client cannot perform routine payment authorization', 403, 'OWNER_ROUTINE_PAY_FORBIDDEN');
+  }
 
   // UAT-04: Unverified receipts must not clear milestones — require transaction evidence
   if (!data.transactionRef || data.transactionRef.trim().length === 0) {
