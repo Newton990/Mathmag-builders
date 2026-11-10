@@ -1,0 +1,28 @@
+name = "mathmag-api"
+description = "MBMS Backend API — Wasmer Edge serverless functions"
+version = "1.0.0"
+runtime = "js"
+
+[build]
+command = "npm install --include=dev && npm run build --workspace=@mbms/api"
+output = "apps/api/dist"
+
+[env]
+# Required — set these in Wasmer Edge dashboard or via CLI
+# DATABASE_URL = "postgresql://user:pass@host:5432/db"
+# JWT_SECRET = "your-64-char-secret"
+# MFA_ENCRYPTION_KEY = "your-64-char-hex-key"
+# CORS_ORIGIN = "https://mathmag-web.wasmer.app"
+# NODE_ENV = "production"
+
+[[routes]]
+pattern = "/api/*"
+handler = "apps/api/src/edge.ts"
+
+[[routes]]
+pattern = "/api/health"
+handler = "apps/api/src/edge.ts"
+
+[[routes]]
+pattern = "/api/version"
+handler = "apps/api/src/edge.ts"
