@@ -10,7 +10,7 @@ export default defineConfig({
     // for per-test overrides but the config.ts guard must pass first.
     env: {
       NODE_ENV: 'test',
-      DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+      DATABASE_URL: 'file:./dev.db', // SQLite test database (created locally)
 
       // JWT — single secret for HS256
       JWT_SECRET: 'test-jwt-secret-at-least-64-chars-long-for-vitest-unit-tests-xxxxxxxxxxx',
