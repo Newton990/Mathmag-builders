@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/edge.ts",
     "build": "tsc --project tsconfig.json",
-    "start": "tsx src/edge.ts",
+    "start": "node dist/edge.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts"
