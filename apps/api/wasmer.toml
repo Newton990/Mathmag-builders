@@ -1,0 +1,33 @@
+name = "mathmag-api"
+description = "MBMS Backend API — Express routes adapted for Wasmer Edge"
+version = "1.0.0"
+runtime = "js"
+
+[build]
+command = "npm run build --workspace=apps/api"
+output = "apps/api/dist"
+
+[env]
+# Required — set these in Wasmer Edge dashboard or via CLI
+# DATABASE_URL = "postgresql://user:pass@host:5432/db"
+# JWT_SECRET = "your-64-char-secret"
+# MFA_ENCRYPTION_KEY = "your-64-char-hex-key"
+# API_PORT = "3001"
+# CORS_ORIGIN = "https://your-frontend.wasmer.app"
+# NODE_ENV = "production"
+# MINIO_ENDPOINT = "your-minio-endpoint"
+# MINIO_PORT = "9000"
+# MINIO_USE_SSL = "true"
+# MINIO_ROOT_USER = "minioadmin"
+# MINIO_ROOT_PASSWORD = "your-password"
+# MINIO_BUCKET = "mbms-private"
+
+[[routes]]
+# Catch-all API routes forwarded to the Wasmer edge handler
+pattern = "/api/*"
+handler = "src/edge.ts"
+
+[[routes]]
+# Health check
+pattern = "/api/health"
+handler = "src/edge.ts"

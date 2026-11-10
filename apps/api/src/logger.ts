@@ -1,23 +1,23 @@
-// src/logger.ts — Structured logger using pino.
+// src/logger.ts — Simple structured logger for Wasmer Edge.
 // IMPORTANT: Never log personal data, request bodies, or auth headers.
-import pino from 'pino';
-import { config } from './config.js';
 
-const level = config.LOG_LEVEL ?? 'info';
-
-export const logger = pino({
-  level,
-  ...(config.NODE_ENV === 'development'
-    ? {
-        transport: {
-          target: 'pino-pretty',
-          options: { colorize: true, translateTime: 'SYS:standard', ignore: 'pid,hostname' },
-        },
-      }
-    : {}),
-  // Redact any field that might contain personal data if accidentally logged
-  redact: {
-    paths: ['req.headers.authorization', 'req.headers.cookie', 'body.password', 'body.token'],
-    censor: '[REDACTED]',
+export const logger = {
+  info: (msg: string, meta?: any) => {
+    const entry = { level: 'info', msg, ...(meta ?? {}) };
+    console.log(JSON.stringify(entry));
   },
-});
+  error: (msg: string, meta?: any) => {
+    const entry = { level: 'error', msg, ...(meta ?? {}) };
+    console.error(JSON.stringify(entry));
+  },
+  warn: (msg: string, meta?: any) => {
+    const entry = { level: 'warn', msg, ...(meta ?? {}) };
+    console.warn(JSON.stringify(entry));
+  },
+  debug: (msg: string, meta?: any) => {
+    if (process.env.LOG_LEVEL === 'debug') {
+      const entry = { level: 'debug', msg, ...(meta ?? {}) };
+      console.debug(JSON.stringify(entry));
+    }
+  },
+};

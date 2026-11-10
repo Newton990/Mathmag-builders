@@ -3,6 +3,7 @@
 // Fails fast with a clear message listing every missing variable.
 // Force operational timezone parity across environments (overridable by process env).
 process.env.TZ = process.env.TZ || 'Africa/Nairobi';
+
 import { createRequire } from 'module';
 
 // Load .env only for local non-production development convenience.
@@ -23,7 +24,6 @@ if (process.env['NODE_ENV'] === 'development') {
 export interface AppConfig {
   NODE_ENV: 'development' | 'test' | 'production';
   API_PORT: number;
-  DATABASE_URL: string;
 
   // JWT
   JWT_SECRET: string;                    // Single HS256 secret (access + step-up)
@@ -44,21 +44,19 @@ export interface AppConfig {
   // Logging
   LOG_LEVEL: string;
 
-  // MinIO
-  MINIO_ENDPOINT: string;
-  MINIO_PORT: number;
-  MINIO_USE_SSL: boolean;
-  MINIO_ROOT_USER: string;
-  MINIO_ROOT_PASSWORD: string;
-  MINIO_BUCKET: string;
+  // Storage (S3-compatible external)
+  STORAGE_ENDPOINT: string;
+  STORAGE_PORT: number;
+  STORAGE_USE_SSL: boolean;
+  STORAGE_ACCESS_KEY: string;
+  STORAGE_SECRET_KEY: string;
+  STORAGE_BUCKET: string;
 
   // Argon2
   ARGON2_MEMORY_COST: number;
   ARGON2_TIME_COST: number;
   ARGON2_PARALLELISM: number;
 
-  // Storage
-  PGBOSS_SCHEMA: string;
   MAX_UPLOAD_SIZE_BYTES: number;
   SIGNED_URL_TTL_SECONDS: number;
 }
@@ -87,7 +85,6 @@ function loadConfig(): AppConfig {
   const cfg: AppConfig = {
     NODE_ENV: (get('NODE_ENV', 'development') as AppConfig['NODE_ENV']),
     API_PORT: getInt('API_PORT', Number(process.env.PORT) || 3001),
-    DATABASE_URL: get('DATABASE_URL'),
 
     JWT_SECRET: get('JWT_SECRET'),
     JWT_ACCESS_EXPIRY_SECONDS: getInt('JWT_ACCESS_EXPIRY_SECONDS', 900),
@@ -102,31 +99,29 @@ function loadConfig(): AppConfig {
     CORS_ORIGIN: get('CORS_ORIGIN', 'http://localhost:5173'),
     LOG_LEVEL: get('LOG_LEVEL', 'info'),
 
-    MINIO_ENDPOINT: get('MINIO_ENDPOINT', 'localhost'),
-    MINIO_PORT: getInt('MINIO_PORT', 9000),
-    MINIO_USE_SSL: get('MINIO_USE_SSL', 'false') === 'true',
-    MINIO_ROOT_USER: get('MINIO_ROOT_USER', 'minio'),
-    MINIO_ROOT_PASSWORD: get('MINIO_ROOT_PASSWORD', 'minio123'),
-    MINIO_BUCKET: get('MINIO_BUCKET', 'mbms-private'),
+    STORAGE_ENDPOINT: get('STORAGE_ENDPOINT', 'localhost'),
+    STORAGE_PORT: getInt('STORAGE_PORT', 9000),
+    STORAGE_USE_SSL: get('STORAGE_USE_SSL', 'false') === 'true',
+    STORAGE_ACCESS_KEY: get('STORAGE_ACCESS_KEY', 'minioadmin'),
+    STORAGE_SECRET_KEY: get('STORAGE_SECRET_KEY', 'minio123'),
+    STORAGE_BUCKET: get('STORAGE_BUCKET', 'mbms-private'),
 
     ARGON2_MEMORY_COST: getInt('ARGON2_MEMORY_COST', 65536),
     ARGON2_TIME_COST: getInt('ARGON2_TIME_COST', 3),
     ARGON2_PARALLELISM: getInt('ARGON2_PARALLELISM', 4),
 
-    PGBOSS_SCHEMA: get('PGBOSS_SCHEMA', 'pgboss'),
     MAX_UPLOAD_SIZE_BYTES: getInt('MAX_UPLOAD_SIZE_BYTES', 52428800),
     SIGNED_URL_TTL_SECONDS: getInt('SIGNED_URL_TTL_SECONDS', 300),
   };
 
   // Required secrets must come directly from process.env (platform secrets).
-  // No local-file fallback for these in production/cloud environments.
-  const strictlyRequired = ['DATABASE_URL', 'JWT_SECRET', 'MFA_ENCRYPTION_KEY'] as const;
+  const strictlyRequired = ['JWT_SECRET', 'MFA_ENCRYPTION_KEY'] as const;
   const hard = strictlyRequired.filter((k) => !process.env[k]);
 
   if (hard.length > 0) {
     const list = hard.map((k) => `  • ${k}`).join('\n');
     throw new Error(
-      `MBMS API cannot start — missing required environment variables (set via process.env / platform secrets):\n${list}\n\nFor local development only, copy .env.example to .env and fill in values.`,
+      `MBMS API cannot start — missing required environment variables:\n${list}\n\nSet them in Wasmer Edge dashboard or .env for local dev.`,
     );
   }
 
