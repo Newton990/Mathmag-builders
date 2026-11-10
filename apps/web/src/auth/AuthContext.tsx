@@ -33,13 +33,11 @@ interface LoginResponse {
 
 const DEMO_USER: CurrentUser = {
   id: 'demo-admin',
+  name: 'Demo Admin',
   email: 'demo@mathmag.co.ke',
-  firstName: 'Demo',
-  lastName: 'Admin',
   role: 'LEAD_ARCHITECT',
-  status: 'ACTIVE',
-  phone: null,
-  mustChangePassword: false,
+  isActive: true,
+  mfaEnabled: false,
   lastLoginAt: new Date().toISOString(),
 };
 
@@ -58,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     async function restore() {
-      // Demo mode: auto-login as Demo Admin by default, while allowing live mode via ?live=true.
+      // Demo mode: auto-login as Demo Admin (LEAD_ARCHITECT), no backend needed
       if (typeof window !== 'undefined' && isDemoMode()) {
         window.localStorage.setItem('mbms.demo', 'true');
         setUser(DEMO_USER);

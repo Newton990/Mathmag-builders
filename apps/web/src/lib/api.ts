@@ -8,7 +8,6 @@ let refreshInFlight: Promise<boolean> | null = null;
 
 export const isDemoMode = (): boolean => {
   if (typeof window === 'undefined') return false;
-
   const params = new URLSearchParams(window.location.search);
   const demoExplicit = params.get('demo') === 'true';
   const liveExplicit = params.get('live') === 'true';
@@ -18,16 +17,11 @@ export const isDemoMode = (): boolean => {
     window.localStorage.setItem('mbms.demo', 'false');
     return false;
   }
-
-  if (storedValue === 'false' && !demoExplicit) {
-    return false;
-  }
-
+  if (storedValue === 'false' && !demoExplicit) return false;
   if (demoExplicit || storedValue === 'true' || !storedValue) {
     window.localStorage.setItem('mbms.demo', 'true');
     return true;
   }
-
   return true;
 };
 
@@ -172,25 +166,16 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   if (isDemoMode()) {
-    // Return mock data for demo mode
+    // Demo mode: return mock data for demo, no backend required
     if (options.method === 'GET' || !options.method) {
-      // Return empty arrays for list endpoints
       if (path.includes('/list') || path.match(/\/(projects|inbox|reports|tasks|users|clients|staff|tenders|quotations|purchase-orders|invoices|payments|sites|materials|labor|equipment|documents|governance|notifications|alerts)$/)) {
         return { items: [], total: 0 } as T;
       }
-      // Return empty arrays for common patterns
-      if (path.includes('items') || path.includes('data')) {
-        return [] as T;
-      }
-      // Default empty object
+      if (path.includes('items') || path.includes('data')) return [] as T;
       return {} as T;
     }
-    if (options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH') {
-      return { success: true } as T;
-    }
-    if (options.method === 'DELETE') {
-      return { success: true } as T;
-    }
+    if (options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH') return { success: true } as T;
+    if (options.method === 'DELETE') return { success: true } as T;
     return {} as T;
   }
 

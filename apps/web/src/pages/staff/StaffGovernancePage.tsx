@@ -59,9 +59,9 @@ function DelegationForm({ onSubmit, onCancel }: {
     try {
       await onSubmit({
         delegateId: delegateId.trim(),
-        valueLimit: valueLimit ? Number(valueLimit) : undefined,
-        riskCategory: riskCategory.trim() || undefined,
-        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : undefined,
+        ...(valueLimit ? { valueLimit: Number(valueLimit) } : {}),
+        ...(riskCategory.trim() ? { riskCategory: riskCategory.trim() } : {}),
+        ...(expiresAt ? { expiresAt: new Date(expiresAt).toISOString() } : {}),
       });
     } catch (e) { setErr(errorMessage(e)); }
     finally { setSaving(false); }
@@ -110,7 +110,7 @@ function ActingAuthorityForm({ onSubmit, onCancel }: {
       await onSubmit({
         actingId: actingId.trim(),
         reason: reason.trim(),
-        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : undefined,
+        ...(expiresAt ? { expiresAt: new Date(expiresAt).toISOString() } : {}),
       });
     } catch (e) { setErr(errorMessage(e)); }
     finally { setSaving(false); }
@@ -182,7 +182,7 @@ function ProtectedAuditForm({ onSubmit, onCancel }: {
     if (!title.trim()) { setErr('Title is required'); return; }
     setSaving(true); setErr(null);
     try {
-      await onSubmit({ title: title.trim(), description: description.trim() || undefined, severity });
+      await onSubmit({ title: title.trim(), ...(description.trim() ? { description: description.trim() } : {}), severity });
     } catch (e) { setErr(errorMessage(e)); }
     finally { setSaving(false); }
   }
@@ -230,7 +230,7 @@ function LeaveForm({ onSubmit, onCancel }: {
       await onSubmit({
         startDate: new Date(startDate).toISOString(),
         endDate: new Date(endDate).toISOString(),
-        reason: reason.trim() || undefined,
+        ...(reason.trim() ? { reason: reason.trim() } : {}),
       });
     } catch (e) { setErr(errorMessage(e)); }
     finally { setSaving(false); }
@@ -271,8 +271,8 @@ function RequisitionForm({ onSubmit, onCancel }: {
     setSaving(true); setErr(null);
     try {
       await onSubmit({
-        notes: notes.trim() || undefined,
-        totalAmount: totalAmount ? Number(totalAmount) : undefined,
+        ...(notes.trim() ? { notes: notes.trim() } : {}),
+        ...(totalAmount ? { totalAmount: Number(totalAmount) } : {}),
       });
     } catch (e) { setErr(errorMessage(e)); }
     finally { setSaving(false); }

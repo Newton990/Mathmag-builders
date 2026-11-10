@@ -1,13 +1,17 @@
 [package]
-name = "mbms/web"
+# Replace "mathmag" with your actual Wasmer username before deploying
+name = "mathmag/mbms-web"
 version = "1.0.0"
-description = "Mathmag MBMS — React/Vite Frontend"
+description = "Mathmag MBMS – React/Vite SPA deployed on Wasmer Edge"
 
 [dependencies]
-"wasmer/static-web-server" = "^2"
+"wasmer/static-web-server" = "^1"
 
 [fs]
+# Maps the production build output to /public inside the container
 "/public" = "dist"
+# Maps the static-web-server config file
+"/config" = "settings"
 
 [[command]]
 name = "web"
@@ -15,4 +19,9 @@ module = "wasmer/static-web-server:webserver"
 runner = "https://webc.org/runner/wasi"
 
 [command.annotations.wasi]
-env = ["PORT=8080", "SERVER_LOG_LEVEL=info", "SERVER_FALLBACK_PAGE=/public/index.html"]
+# --config-file tells static-web-server to read our SPA fallback config
+env = [
+  "SERVER_CONFIG_FILE=/config/config.toml",
+  "SERVER_PORT=8080",
+  "SERVER_LOG_LEVEL=info",
+]
