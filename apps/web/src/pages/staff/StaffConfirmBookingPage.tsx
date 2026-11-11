@@ -48,7 +48,7 @@ export function StaffConfirmBookingPage() {
 
   function pickConversation(value: string) {
     setConversationId(value);
-    const conversation = conversations.data?.items.find((item) => item.id === value);
+    const conversation = conversations.data?.items?.find((item) => item.id === value);
     if (!conversation) return;
     setFullName(conversation.contact.fullName);
     setPrimaryPhone(conversation.contact.primaryPhone);
@@ -120,7 +120,7 @@ export function StaffConfirmBookingPage() {
               className={inputClass}
             >
               <option value="">No linked conversation — use manual client details</option>
-              {conversations.data?.items.map((conversation) => (
+              {conversations.data?.items?.map((conversation) => (
                 <option key={conversation.id} value={conversation.id}>
                   {conversation.contact.fullName} · {conversation.contact.primaryPhone} ·{' '}
                   {conversation.status.replace(/_/g, ' ')}
@@ -218,7 +218,7 @@ export function StaffConfirmBookingPage() {
                 className={inputClass}
               >
                 <option value="">Unassigned</option>
-                {officers.data?.items.map((officer) => (
+                {officers.data?.items?.map((officer) => (
                   <option key={officer.id} value={officer.id}>
                     {officer.name} ({officer.email})
                   </option>

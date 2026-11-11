@@ -305,7 +305,7 @@ export function StaffReportPage() {
                     className={inputClass}
                   >
                     <option value="">Select…</option>
-                    {juniors.data?.items.map((junior) => (
+                    {juniors.data?.items?.map((junior) => (
                       <option key={junior.id} value={junior.id}>
                         {junior.name} ({junior.email})
                       </option>

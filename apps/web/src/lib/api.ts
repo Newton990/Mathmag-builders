@@ -168,9 +168,14 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   if (isDemoMode()) {
     // Demo mode: return mock data for demo, no backend required
     if (options.method === 'GET' || !options.method) {
-      if (path.includes('/list') || path.match(/\/(projects|inbox|reports|tasks|users|clients|staff|tenders|quotations|purchase-orders|invoices|payments|sites|materials|labor|equipment|documents|governance|notifications|alerts)$/)) {
-        return { items: [], total: 0 } as T;
-      }
+      // Strip query params before matching so paths like /projects?take=100 match correctly
+      const basePath = path.split('?')[0] ?? path;
+      const isList =
+        basePath.includes('/list') ||
+        !!basePath.match(
+          /\/(conversations|projects|inbox|reports|bookings|surveys|tasks|users|clients|staff|tenders|quotations|purchase-orders|invoices|payments|sites|materials|labor|equipment|documents|governance|notifications|alerts|delegations|exceptions|audits|leave|requisitions|site-logs|grns|work-holds|variations|handovers|mobilizations|engagements|contracts)$/,
+        );
+      if (isList) return { items: [], total: 0 } as T;
       if (path.includes('items') || path.includes('data')) return [] as T;
       return {} as T;
     }

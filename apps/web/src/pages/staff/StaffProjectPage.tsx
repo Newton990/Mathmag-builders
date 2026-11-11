@@ -156,14 +156,14 @@ export function StaffProjectPage() {
 
           <Card>
             <SectionTitle>Site surveys</SectionTitle>
-            {(surveys.data?.items.length ?? 0) === 0 ? (
+            {(surveys.data?.items?.length ?? 0) === 0 ? (
               <EmptyState
                 title="No survey yet"
                 hint="The visiting officer creates a draft after checking in. Submission locks the original."
               />
             ) : (
               <ul className="divide-y divide-gray-100">
-                {surveys.data?.items.map((survey) => (
+                {surveys.data?.items?.map((survey) => (
                   <li key={survey.id} className="flex items-center justify-between gap-3 py-2">
                     <div>
                       <Link to={`/field/surveys/${survey.id}`} className="text-sm font-medium text-gray-900 hover:underline">
@@ -183,14 +183,14 @@ export function StaffProjectPage() {
 
           <Card>
             <SectionTitle>Reports & assignments</SectionTitle>
-            {(reports.data?.items.length ?? 0) === 0 ? (
+            {(reports.data?.items?.length ?? 0) === 0 ? (
               <EmptyState
                 title="No report generated"
                 hint="Generate from a submitted survey. Approval and publication are separate."
               />
             ) : (
               <ul className="divide-y divide-gray-100">
-                {reports.data?.items.map((report) => (
+                {reports.data?.items?.map((report) => (
                   <li key={report.id} className="flex items-center justify-between gap-3 py-2">
                     <div>
                       <Link to={`/staff/reports/${report.id}`} className="text-sm font-medium text-gray-900 hover:underline">
@@ -205,13 +205,13 @@ export function StaffProjectPage() {
                 ))}
               </ul>
             )}
-            {(assignments.data?.items.length ?? 0) > 0 ? (
+            {(assignments.data?.items?.length ?? 0) > 0 ? (
               <div className="mt-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
                   Junior assignments
                 </p>
                 <ul className="space-y-1">
-                  {assignments.data?.items.map((assignment) => (
+                  {assignments.data?.items?.map((assignment) => (
                     <li key={assignment.id} className="text-sm text-gray-700">
                       {assignment.juniorArchitect.name} — {humanize(assignment.priority)}
                       {assignment.dueDate ? ` · due ${formatDateTime(assignment.dueDate)}` : ''}

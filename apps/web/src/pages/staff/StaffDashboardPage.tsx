@@ -34,12 +34,12 @@ export function StaffDashboardPage() {
   const error = conversations.error ?? projects.error ?? reports.error;
 
   const openEnquiries =
-    conversations.data?.items.filter(
+    conversations.data?.items?.filter(
       (item) => item.status !== 'CLOSED' && item.status !== 'LINKED_TO_PROJECT',
     ) ?? [];
   const upcomingVisits =
     projects.data?.items
-      .filter((project) => {
+      ?.filter((project) => {
         const booking = project.visitBooking;
         return (
           booking !== null &&
@@ -50,9 +50,9 @@ export function StaffDashboardPage() {
       })
       .slice(0, 6) ?? [];
   const awaitingReview =
-    reports.data?.items.filter((report) => report.approvalState === 'IN_REVIEW') ?? [];
+    reports.data?.items?.filter((report) => report.approvalState === 'IN_REVIEW') ?? [];
   const readyToPublish =
-    reports.data?.items.filter(
+    reports.data?.items?.filter(
       (report) =>
         report.approvalState === 'APPROVED' && report.generatorStatus === 'GENERATED',
     ) ?? [];
