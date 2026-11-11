@@ -1,23 +1,25 @@
 [package]
-# Replace "mathmag" with your actual Wasmer username before deploying
-name = "mathmag/mbms"
+name = "mathmag/mbms-web"
 version = "1.0.0"
-description = "Mathmag MBMS monorepo – deploy from apps/web with: wasmer deploy (run from apps/web/)"
+description = "Mathmag MBMS – React SPA served via static-web-server"
 
-# ──────────────────────────────────────────────────────────────────────────────
-# DEPLOYMENT INSTRUCTIONS
-# ──────────────────────────────────────────────────────────────────────────────
-# This root wasmer.toml is a placeholder/reference.
-# The actual deployable package lives in apps/web/wasmer.toml.
-#
-# To deploy:
-#   1. npm run build                 (builds apps/web/dist)
-#   2. cd apps/web
-#   3. wasmer login                  (once, with your Wasmer account)
-#   4. wasmer deploy                 (deploys to Wasmer Edge)
-#
-# To test locally before deploying:
-#   cd apps/web
-#   wasmer run . -- --port 9000
-#   open http://localhost:9000
-# ──────────────────────────────────────────────────────────────────────────────
+[dependencies]
+"wasmer/static-web-server" = "^1"
+
+[fs]
+# Anybuild runs `npm run build` → outputs to apps/web/dist
+# static-web-server picks it up from /public inside the container
+"/public" = "apps/web/dist"
+"/config" = "settings"
+
+[[command]]
+name = "server"
+module = "wasmer/static-web-server:webserver"
+runner = "https://webc.org/runner/wasi"
+
+[command.annotations.wasi]
+env = [
+  "SERVER_CONFIG_FILE=/config/config.toml",
+  "SERVER_PORT=8080",
+  "SERVER_LOG_LEVEL=info",
+]

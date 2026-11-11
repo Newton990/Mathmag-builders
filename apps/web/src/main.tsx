@@ -5,16 +5,6 @@ import App from './App';
 import { AuthProvider } from './auth/AuthContext';
 import './index.css';
 
-// Register PWA service worker (Vite PWA plugin handles generation)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then(() => console.log('[PWA] Service worker registered'))
-      .catch((err) => console.warn('[PWA] Service worker registration failed:', err));
-  });
-}
-
 const rootEl = document.getElementById('root');
 if (!rootEl) throw new Error('Root element not found');
 

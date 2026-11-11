@@ -1,0 +1,3 @@
+root = "/public"
+# SPA fallback: React Router handles all routes — unknown paths serve index.html
+page-fallback = "/public/index.html"

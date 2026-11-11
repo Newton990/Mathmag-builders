@@ -7,7 +7,6 @@
     "apps/web",
     "packages/shared"
   ],
-  "main": "server.js",
   "scripts": {
     "dev": "npm run dev --workspace=apps/web -- --host 0.0.0.0",
     "dev:api": "npm run dev --workspace=apps/api",
