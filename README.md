@@ -157,7 +157,55 @@ Everything else has a sensible default for local development.
 - [x] Step 11: Notifications & dashboards (in-app; email/WhatsApp stubs)
 - [x] Step 12: Module 2–6 frontend (planning, acceptance, approvals, contracts, construction)
 - [x] Step 13: End-to-end tests & demo script
-- [ ] Step 14: Security hardening & deployment
+- [x] Step 14: Security hardening & deployment
+
+## Deployment
+
+### Security hardening (Step 14)
+
+The following hardening measures are applied to the production build:
+
+| Measure | Where |
+|---------|-------|
+| `Content-Security-Policy` (default-src 'self', no unsafe-eval) | `server.js`, `settings/config.toml`, `apps/web/public/_headers` |
+| `X-Frame-Options: DENY` | same as above |
+| `X-Content-Type-Options: nosniff` | same as above |
+| `Referrer-Policy: strict-origin-when-cross-origin` | same as above |
+| `Permissions-Policy` (camera/mic/geo/payment blocked) | same as above |
+| Immutable cache for hashed assets, `no-store` for `index.html` | same as above |
+| Build-time demo-mode opt-out (`VITE_DEMO_MODE=false`) | `apps/web/src/lib/api.ts` |
+| Directory-traversal guard | `server.js` |
+| No secrets in frontend bundle | `apps/web/src/vite-env.d.ts` audit |
+
+### Wasmer Edge (primary)
+
+```bash
+# 1. Build the frontend
+npm run build --workspace=apps/web
+
+# 2. Deploy
+wasmer deploy --registry="https://registry.wasmer.io" apps/web/
+```
+
+The `apps/web/wasmer.toml` maps `dist/` → `/public` and reads SPA fallback
+config from `apps/web/settings/config.toml`.
+
+### Node.js fallback server
+
+```bash
+# Serves apps/web/dist/ on port 8080 (or $PORT)
+node server.js
+```
+
+All security headers are injected by `server.js` on every response.
+
+### Environment variables
+
+Copy `.env.example` to `.env` and fill in secrets before running.
+Set `VITE_DEMO_MODE=false` in the production `.env` to disable demo/offline
+mode so the app requires real credentials.
+
+---
 
 ## Important business rules
 

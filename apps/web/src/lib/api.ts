@@ -7,6 +7,12 @@ let accessToken: string | null = null;
 let refreshInFlight: Promise<boolean> | null = null;
 
 export const isDemoMode = (): boolean => {
+  // Build-time opt-out: set VITE_DEMO_MODE=false in production .env to
+  // prevent demo mode from ever activating (URL params and localStorage are
+  // then ignored).  Defaults to 'true' when the env var is absent so that
+  // the app continues to work without a backend in development.
+  if (import.meta.env.VITE_DEMO_MODE === 'false') return false;
+
   if (typeof window === 'undefined') return false;
   const params = new URLSearchParams(window.location.search);
   const demoExplicit = params.get('demo') === 'true';
