@@ -83,11 +83,11 @@
 ## D-05 — Commit strategy
 
 **Date:** 2026-11-12  
-**Status:** Planned  
-**Decision:** (planning) Commit all changes with message per `MASTER_PLAN.md` §13 #7: `"Wasmer Edge: real API handlers with postgres.js, JWT auth, business rules"` (adjust to reflect actual in-memory adapter). Push to `origin main`.
+**Status:** Done  
+**Decision:** Committed and pushed to `origin main` as `6c7c41e` ("Wasmer Edge: all API routes ported to real handlers with JWT auth, Zod validation, business rules"). 7 files changed, 1299 insertions, 86 deletions. Working tree clean.
 **Rationale:** `MASTER_PLAN.md` immediate next action #7.
 **Files affected:** git
-**Next step:** After implementation + builds pass.
+**Next step:** None — code scope complete. Remaining items are deployment (Wasmer CLI, secrets, external PostgreSQL).
 
 ---
 
@@ -95,21 +95,28 @@
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | Verify builds pass (tsc + vite) | Done (both exit 0, 2026-11-12) |
+| 1 | Verify builds pass (tsc + vite) | Done (both exit 0) |
 | 2 | Install Wasmer CLI + deploy (deployment, out of code scope) | Future |
 | 3 | Set Wasmer secrets (deployment) | Future |
 | 4 | Run DB migrations against external PostgreSQL (deployment) | Future |
 | 5 | Port remaining stub routes to real handlers | Done (11 modules implemented) |
 | 6 | Add Zod input validation for all request bodies | Done |
-| 7 | Commit + push to git | In progress |
+| 7 | Commit + push to git | Done (6c7c41e, pushed to origin main) |
 
 ---
 
-## Notes for resumption
+## Summary — code scope COMPLETE
 
-- Read this file + `MASTER_PLAN.md` + `AGENTS.md` first.
-- `edge.ts` uses `@ts-nocheck` — TSC build is on `apps/api/tsconfig.json --noEmit`.
-- Shared package exports: `enums.ts`, `types.ts`, `survey-schemas.ts`, `state-machines.ts` via `src/index.ts`.
-- ENVS required at runtime (not for build): `JWT_SECRET`, `MFA_ENCRYPTION_KEY` (strictly required per `config.ts`); `DATABASE_URL` not strictly required (in-memory default; `postgres` wired when set).
-- Time zone: Africa/Nairobi; currency: KES; phones: +254.
-- All 25 route groups now have real handlers (no 501 stubs remain in `edge.ts`).
+- **Backend (`apps/api`):** `edge.ts` now has real handlers for ALL route groups (no 501 stubs). Auth, bookings, projects, surveys, reports, publications, portal, media were already implemented; planning, acceptance, approvals, contracts, construction, governance, safety, suppliers, invoices, worker-reports, directory were ported in this session. All with JWT auth, role-based access, Zod validation, and status-transition business rules.
+- **Database (`apps/api/src/db.ts`):** In-memory Map stores for all modules (working without external DB); `postgres.js` wired via `initSql()`/`getSql()` when `DATABASE_URL` is set (Wasmer production).
+- **Frontend (`apps/web`):** Vite PWA build passes, `dist/` ready for Wasmer static deploy.
+- **Build loop (`scripts/deploy-wasmer.ps1`):** Rewritten (pure ASCII); `tsc --noEmit` + `vite build` both exit 0.
+- **Deploy:** Push to `origin main` done. Remaining deployment steps (Wasmer CLI, secrets, external PostgreSQL) are infrastructure, not code.
+
+## Resumption instructions for a future model
+
+1. Read `DECISION_LOG.md` → `MASTER_PLAN.md` → `AGENTS.md`.
+2. Confirm builds: `npx tsc --project apps/api/tsconfig.json --noEmit` and `npm run build --workspace=@mbms/web`.
+3. Code scope is complete; only deployment remains (Wasmer CLI login, set 5 secrets, deploy api + web/dist, point CORS_ORIGIN/VITE_API_BASE_URL).
+4. `DECISION_LOG.md` holds every decision taken for cross-model continuity.
+
