@@ -1175,7 +1175,7 @@ export default async function handler(
   request: Request,
   env: Env,
 ): Promise<Response> {
-  const url = new URL(request.url);
+  const url = new URL(request.url, `http://${request.headers.host}`);
   const path = url.pathname;
   const method = request.method;
   const origin = request.headers.get('origin');
