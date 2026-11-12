@@ -181,7 +181,7 @@ export function StaffAcceptancePage() {
   ];
 
   return (
-    <div>
+    <div data-testid="acceptance-page">
       <PageHeader
         title={`${data.reference} — Acceptance`}
         subtitle="Module 3: Client acceptance & budget"

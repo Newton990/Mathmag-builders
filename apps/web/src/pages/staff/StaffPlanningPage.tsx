@@ -371,7 +371,7 @@ export function StaffPlanningPage() {
     }`;
 
   return (
-    <div>
+    <div data-testid="planning-page">
       <PageHeader
         title={proj ? `Planning — ${proj.reference}` : 'Planning'}
         subtitle="Module 2 · Technical Design Pipeline"

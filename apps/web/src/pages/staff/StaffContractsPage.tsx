@@ -198,7 +198,7 @@ export function StaffContractsPage() {
     }`;
 
   return (
-    <div>
+    <div data-testid="contracts-page">
       <PageHeader
         title={`${data.reference} — Contracts`}
         subtitle="Module 5: Service engagements & contracts"

@@ -171,7 +171,7 @@ export function StaffApprovalsPage() {
   }
 
   return (
-    <div>
+    <div data-testid="approvals-page">
       <PageHeader
         title={`${data.reference} — Approvals`}
         subtitle="Module 4: Statutory approvals & permits"

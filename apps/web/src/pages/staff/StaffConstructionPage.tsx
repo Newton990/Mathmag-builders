@@ -349,7 +349,7 @@ export function StaffConstructionPage() {
     }`;
 
   return (
-    <div>
+    <div data-testid="construction-page">
       <PageHeader
         title={`${data.reference} — Construction`}
         subtitle="Module 6: Site management & handover"

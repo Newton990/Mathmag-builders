@@ -442,7 +442,7 @@ export function StaffGovernancePage() {
   const pendingLeave       = leave.data?.data?.filter(l => l.status === 'PENDING').length ?? 0;
 
   return (
-    <div>
+    <div data-testid="governance-page">
       <PageHeader
         title="Governance & Administration"
         subtitle="Module 7 · Delegations, exceptions, audits, leave & procurement"

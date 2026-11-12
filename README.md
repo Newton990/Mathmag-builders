@@ -155,8 +155,8 @@ Everything else has a sensible default for local development.
 - [x] Step 9: Lead architect review & junior assignment
 - [x] Step 10: Client portal & controlled publication
 - [x] Step 11: Notifications & dashboards (in-app; email/WhatsApp stubs)
-- [ ] Step 12: Module 2–6 frontend (planning, acceptance, approvals, contracts, construction)
-- [ ] Step 13: End-to-end tests & demo script
+- [x] Step 12: Module 2–6 frontend (planning, acceptance, approvals, contracts, construction)
+- [x] Step 13: End-to-end tests & demo script
 - [ ] Step 14: Security hardening & deployment
 
 ## Important business rules
