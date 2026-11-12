@@ -128,22 +128,22 @@ npm run build --workspace=@mbms/web
 | `/api/bookings/:id/fee` | POST | Yes | CLIENT_RELATIONS_OFFICER, ADMIN_MANAGEMENT | ✅ Payment status |
 | `/api/projects` | GET | Yes | — | ✅ List with contact |
 | `/api/projects/:id` | GET | Yes | — | ✅ Get by ID |
-| `/api/surveys/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/reports/*` | Any | Yes | — | ⚠️ Review stub |
-| `/api/publications/*` | Any | Yes | LEAD_ARCHITECT, ADMIN_MANAGEMENT | ⚠️ Create stub |
-| `/api/portal/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/media/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/planning/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/acceptance/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/approvals/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/contracts/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/construction/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/governance/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/safety/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/suppliers/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/invoices/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/worker-reports/*` | Any | Yes | — | ⚠️ Stub (501) |
-| `/api/directory/*` | Any | Yes | — | ⚠️ Stub (501) |
+| `/api/surveys/*` | Any | Yes | — | ✅ Working |
+| `/api/reports/*` | Any | Yes | — | ✅ Working |
+| `/api/publications/*` | Any | Yes | LEAD_ARCHITECT, ADMIN_MANAGEMENT | ✅ Working |
+| `/api/portal/*` | Any | Yes | — | ✅ Working |
+| `/api/media/*` | Any | Yes | — | ✅ Working |
+| `/api/planning/*` | Any | Yes | — | ✅ Working |
+| `/api/acceptance/*` | Any | Yes | — | ✅ Working |
+| `/api/approvals/*` | Any | Yes | — | ✅ Working |
+| `/api/contracts/*` | Any | Yes | — | ✅ Working |
+| `/api/construction/*` | Any | Yes | — | ✅ Working |
+| `/api/governance/*` | Any | Yes | — | ✅ Working |
+| `/api/safety/*` | Any | Yes | — | ✅ Working |
+| `/api/suppliers/*` | Any | Yes | — | ✅ Working |
+| `/api/invoices/*` | Any | Yes | — | ✅ Working |
+| `/api/worker-reports/*` | Any | Yes | — | ✅ Working |
+| `/api/directory/*` | Any | Yes | — | ✅ Working |
 
 ---
 
@@ -296,21 +296,21 @@ From `Mathmag_Builders_Full_7_Modules_Download_Fixed-5.zip` → `docs/specs/`:
 | 04 | `04-file-inventory` | Complete file inventory | 2026-11-10 | Complete |
 | 05 | `05-wasmer-stripping-and-build-loop` | Stripped non-Wasmer code, build loop | 2026-11-11 | Complete |
 | 06 | `06-api-route-porting` | API routes ported to real handlers | 2026-11-11 | Complete |
+| 07 | `07-all-routes-ported` | All remaining stub routes ported to real handlers + Zod validation | 2026-11-12 | Complete |
 
 ---
 
 ## 13. IMMEDIATE NEXT ACTIONS
 
-1. **Verify builds pass** (already done — both exit 0)
-2. **Install Wasmer CLI** and deploy backend + frontend
-3. **Set Wasmer secrets** (DATABASE_URL, JWT_SECRET, MFA_ENCRYPTION_KEY, CORS_ORIGIN, NODE_ENV)
-4. **Run database migrations** against external PostgreSQL
-5. **Port remaining routes** from stubs to real handlers (surveys, reports, publications, etc.)
-6. **Add Zod input validation** for all request bodies
-7. **Commit changes** to git:
+1. **Verify builds pass** (done — both exit 0, 2026-11-12)
+2. **All API routes ported from stubs to real handlers** (done — 11 modules implemented with Zod validation + role-based access)
+3. **Install Wasmer CLI** and deploy backend + frontend
+4. **Set Wasmer secrets** (DATABASE_URL, JWT_SECRET, MFA_ENCRYPTION_KEY, CORS_ORIGIN, NODE_ENV)
+5. **Run database migrations** against external PostgreSQL (when using DATABASE_URL; in-memory works without it)
+6. **Commit changes** to git:
    ```powershell
    git add .
-   git commit -m "Wasmer Edge: real API handlers with postgres.js, JWT auth, business rules"
+   git commit -m "Wasmer Edge: all API routes ported to real handlers with JWT auth, Zod validation, business rules"
    git push origin main
    ```
 
