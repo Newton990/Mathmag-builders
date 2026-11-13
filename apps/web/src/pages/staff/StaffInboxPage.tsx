@@ -39,7 +39,11 @@ export function StaffInboxPage() {
         title="Enquiries inbox"
         subtitle="Leads and conversations. Projects only exist after confirming an agreed visit date."
         actions={
-          <Link to="/staff/bookings/confirm" className={buttonClass}>
+          <Link
+            to="/staff/bookings/confirm"
+            className={buttonClass}
+            data-help="Convert a client enquiry into a confirmed site visit booking. This creates the official project record."
+          >
             Confirm site visit
           </Link>
         }
@@ -54,11 +58,14 @@ export function StaffInboxPage() {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search name, phone or subject"
             className="w-full max-w-sm rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            data-help="Search for a client by name, phone number, or enquiry subject."
+            data-help-example="Mary Wanjiru or +254 712 345 678"
           />
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
             className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            data-help="Filter enquiries by their current status in the pipeline."
           >
             {statuses.map((value) => (
               <option key={value} value={value}>
@@ -66,7 +73,12 @@ export function StaffInboxPage() {
               </option>
             ))}
           </select>
-          <button type="button" onClick={resource.reload} className="text-sm text-brand-700">
+          <button
+            type="button"
+            onClick={resource.reload}
+            className="text-sm text-brand-700"
+            data-help="Reload the inbox to fetch the latest enquiries from the server."
+          >
             Refresh
           </button>
         </div>

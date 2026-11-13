@@ -57,6 +57,21 @@ export function StaffDashboardPage() {
         report.approvalState === 'APPROVED' && report.generatorStatus === 'GENERATED',
     ) ?? [];
 
+  const activeSummary = [
+    {
+      label: 'Live pipeline',
+      value: `${openEnquiries.length + upcomingVisits.length + readyToPublish.length}`,
+    },
+    {
+      label: 'Needs action',
+      value: `${openEnquiries.length}`,
+    },
+    {
+      label: 'Approved',
+      value: `${readyToPublish.length}`,
+    },
+  ];
+
   return (
     <div data-testid="staff-dashboard">
       <PageHeader
@@ -64,15 +79,43 @@ export function StaffDashboardPage() {
         subtitle="Module 1 — enquiries, agreed visits, field surveys and report governance."
         actions={
           <>
-            <Link to="/staff/inbox" className={linkClass}>
+            <Link
+              to="/staff/inbox"
+              className="inline-flex items-center rounded-lg bg-brand-700 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-900"
+            >
               Open inbox
             </Link>
-            <Link to="/staff/projects" className={linkClass}>
+            <Link
+              to="/staff/projects"
+              className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            >
               All projects
             </Link>
           </>
         }
       />
+
+      <div className="mb-6 rounded-2xl border border-brand-100 bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 p-5 text-white shadow-lg shadow-brand-900/10">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.24em] text-brand-100/80">
+              Live overview
+            </p>
+            <h3 className="mt-2 text-xl font-bold">Project activity is flowing through the delivery pipeline.</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {activeSummary.map((item) => (
+              <div
+                key={item.label}
+                className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-left backdrop-blur-sm"
+              >
+                <p className="text-[10px] uppercase tracking-wide text-brand-100/80">{item.label}</p>
+                <p className="mt-1 text-lg font-bold">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <ErrorBanner message={error} />
 

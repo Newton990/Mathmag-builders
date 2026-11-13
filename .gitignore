@@ -17,3 +17,6 @@ prisma/migrations/dev.db
 *.db-journal
 logs/
 *.log
+
+apps/web/screenshots/
+apps/web/demo-tour.mjs

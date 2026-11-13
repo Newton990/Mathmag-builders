@@ -21,6 +21,8 @@ interface AuthContextValue {
   verifyMfa: (code: string) => Promise<void>;
   cancelMfa: () => void;
   logout: () => Promise<void>;
+  /** Demo-only: instantly log in as a canned user for the given role. */
+  loginAsDemo: (role: UserRole) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -39,6 +41,56 @@ const DEMO_USER: CurrentUser = {
   isActive: true,
   mfaEnabled: false,
   lastLoginAt: new Date().toISOString(),
+};
+
+/** Canned demo users — one per role group, used by the portal login cards. */
+const DEMO_USERS: Partial<Record<UserRole, CurrentUser>> = {
+  LEAD_ARCHITECT: DEMO_USER,
+  JUNIOR_ARCHITECT: {
+    id: 'demo-junior',
+    name: 'Demo Junior Architect',
+    email: 'junior@mathmag.co.ke',
+    role: 'JUNIOR_ARCHITECT',
+    isActive: true,
+    mfaEnabled: false,
+    lastLoginAt: new Date().toISOString(),
+  },
+  CLIENT_RELATIONS_OFFICER: {
+    id: 'demo-cro',
+    name: 'Demo CRO',
+    email: 'cro@mathmag.co.ke',
+    role: 'CLIENT_RELATIONS_OFFICER',
+    isActive: true,
+    mfaEnabled: false,
+    lastLoginAt: new Date().toISOString(),
+  },
+  ADMIN_MANAGEMENT: {
+    id: 'demo-mgmt',
+    name: 'Demo Management',
+    email: 'mgmt@mathmag.co.ke',
+    role: 'ADMIN_MANAGEMENT',
+    isActive: true,
+    mfaEnabled: false,
+    lastLoginAt: new Date().toISOString(),
+  },
+  VISITING_OFFICER: {
+    id: 'demo-field',
+    name: 'Demo Field Officer',
+    email: 'field@mathmag.co.ke',
+    role: 'VISITING_OFFICER',
+    isActive: true,
+    mfaEnabled: false,
+    lastLoginAt: new Date().toISOString(),
+  },
+  CLIENT: {
+    id: 'demo-client',
+    name: 'Demo Client',
+    email: 'client@demo.co.ke',
+    role: 'CLIENT',
+    isActive: true,
+    mfaEnabled: false,
+    lastLoginAt: new Date().toISOString(),
+  },
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -126,6 +178,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
   }, []);
 
+  const loginAsDemo = useCallback(async (role: UserRole) => {
+    // Activate demo mode so the whole app stays in demo state.
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('mbms.demo', 'true');
+    }
+    const demoUser = DEMO_USERS[role] ?? DEMO_USER;
+    setUser({ ...demoUser, role });
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout');
@@ -138,8 +199,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, loading, mfaToken, error, login, verifyMfa, cancelMfa, logout }),
-    [user, loading, mfaToken, error, login, verifyMfa, cancelMfa, logout],
+    () => ({ user, loading, mfaToken, error, login, verifyMfa, cancelMfa, logout, loginAsDemo }),
+    [user, loading, mfaToken, error, login, verifyMfa, cancelMfa, logout, loginAsDemo],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -154,6 +215,7 @@ export function useAuth(): AuthContextValue {
 export function homeForRole(role: UserRole): string {
   if (role === 'CLIENT') return '/portal';
   if (role === 'VISITING_OFFICER') return '/field';
+  // All staff roles: LEAD_ARCHITECT, JUNIOR_ARCHITECT, CLIENT_RELATIONS_OFFICER, ADMIN_MANAGEMENT
   return '/staff';
 }
 

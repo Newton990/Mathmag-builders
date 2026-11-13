@@ -78,7 +78,9 @@ export function statusTone(status: string): keyof typeof TONES {
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-xl border border-gray-200 bg-white p-5 ${className}`}>
+    <div
+      className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60 transition-shadow hover:shadow-md hover:shadow-slate-200/80 ${className}`}
+    >
       {children}
     </div>
   );
@@ -94,9 +96,9 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm shadow-slate-200/60">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">{title}</h2>
         {subtitle ? <p className="mt-1 text-sm text-gray-500">{subtitle}</p> : null}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
@@ -124,9 +126,9 @@ export function ErrorBanner({ message }: { message: string | null }) {
 
 export function EmptyState({ title, hint }: { title: string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center">
-      <p className="font-medium text-gray-700">{title}</p>
-      {hint ? <p className="mt-1 text-sm text-gray-500">{hint}</p> : null}
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center">
+      <p className="font-medium text-slate-700">{title}</p>
+      {hint ? <p className="mt-1 text-sm text-slate-500">{hint}</p> : null}
     </div>
   );
 }
@@ -153,10 +155,10 @@ export const inputClass =
   'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100';
 
 export const buttonClass =
-  'inline-flex items-center justify-center rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-900 disabled:cursor-not-allowed disabled:opacity-50';
+  'inline-flex items-center justify-center rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-brand-900/20 transition-colors hover:bg-brand-900 disabled:cursor-not-allowed disabled:opacity-50';
 
 export const secondaryButtonClass =
-  'inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50';
+  'inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50';
 
 export const dangerButtonClass =
   'inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50';
@@ -175,10 +177,12 @@ export function StatCard({
   tone?: keyof typeof TONES;
 }) {
   return (
-    <div className={`rounded-xl border p-4 ${TONES[tone] ?? TONES['gray']}`}>
-      <p className="text-xs font-medium uppercase tracking-wide opacity-80">{label}</p>
-      <p className="mt-1 text-2xl font-bold">{value}</p>
-      {hint ? <p className="mt-1 text-xs opacity-80">{hint}</p> : null}
+    <div
+      className={`rounded-2xl border p-4 shadow-sm shadow-slate-200/50 ${TONES[tone] ?? TONES['gray']}`}
+    >
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] opacity-80">{label}</p>
+      <p className="mt-2 text-3xl font-bold leading-none">{value}</p>
+      {hint ? <p className="mt-2 text-xs opacity-80">{hint}</p> : null}
     </div>
   );
 }
