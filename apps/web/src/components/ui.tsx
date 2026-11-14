@@ -106,6 +106,99 @@ export function PageHeader({
   );
 }
 
+export function BeginnerGuide({
+  role = 'general',
+}: {
+  role?: 'general' | 'staff' | 'field' | 'client';
+}) {
+  const guides: Record<NonNullable<typeof role>, Array<{ title: string; description: string }>> = {
+    general: [
+      {
+        title: '1. Pick your role',
+        description: 'Choose Staff, Field Officer, or Client to land in the right workspace for your work.',
+      },
+      {
+        title: '2. Sign in securely',
+        description: 'Use your email and password. Staff and field accounts use MFA for an extra verification step.',
+      },
+      {
+        title: '3. Follow the workflow',
+        description: 'Use the dashboard steps in sequence: queue → site visit → survey → review → publish or track progress.',
+      },
+    ],
+    staff: [
+      {
+        title: '1. Review the inbox',
+        description: 'Start with enquiries and conversations. Confirm the project, schedule the visit, and move it forward.',
+      },
+      {
+        title: '2. Manage delivery stages',
+        description: 'Check project status, review visit bookings, verify surveys, and approve reports before publication.',
+      },
+      {
+        title: '3. Publish and track',
+        description: 'Use the report and project actions to publish approved content to the client portal and document what changed.',
+      },
+    ],
+    field: [
+      {
+        title: '1. Check assigned visits',
+        description: 'Open your visit list and review the site details, date, contact, and location before leaving the office.',
+      },
+      {
+        title: '2. Check in and survey',
+        description: 'Use the visit page to check in, complete the visit workflow, and capture the required site survey information.',
+      },
+      {
+        title: '3. Submit your findings',
+        description: 'Once the survey is complete, submit it so staff can review the report and decide the next project stage.',
+      },
+    ],
+    client: [
+      {
+        title: '1. View your projects',
+        description: 'Your portal shows only published project information that the project team has explicitly shared with you.',
+      },
+      {
+        title: '2. Open project details',
+        description: 'Review project progress, visit schedules, and any report that has been published for your approval or viewing.',
+      },
+      {
+        title: '3. Stay informed',
+        description: 'Use the portal as your project progress view. The system keeps client information separate from internal staff workflows.',
+      },
+    ],
+  };
+
+  const steps = guides[role];
+
+  return (
+    <div className="mb-6 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 via-sky-50 to-white p-5 shadow-sm shadow-brand-100/60">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-700">Beginner guide</p>
+          <h3 className="mt-1 text-lg font-bold text-slate-900">How to use MBMS</h3>
+        </div>
+        <span className="inline-flex items-center rounded-full border border-brand-200 bg-white px-3 py-1 text-xs font-medium text-brand-700">
+          Simple 3-step flow
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        {steps.map((step, index) => (
+          <div key={step.title} className="rounded-xl border border-brand-100 bg-white/80 p-4 shadow-sm">
+            <div className="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-700 text-sm font-bold text-white">
+              {index + 1}
+            </div>
+            <p className="text-sm font-semibold text-slate-900">{step.title}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{step.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Loading({ label = 'Loading…' }: { label?: string }) {
   return (
     <div className="flex items-center gap-2 py-10 text-sm text-gray-500" role="status">

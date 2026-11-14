@@ -11,6 +11,7 @@ import type {
 } from '../../lib/types';
 import {
   Badge,
+  BeginnerGuide,
   Card,
   EmptyState,
   ErrorBanner,
@@ -94,6 +95,8 @@ export function StaffDashboardPage() {
           </>
         }
       />
+
+      <BeginnerGuide role="staff" />
 
       <div className="mb-6 rounded-2xl border border-brand-100 bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 p-5 text-white shadow-lg shadow-brand-900/10">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

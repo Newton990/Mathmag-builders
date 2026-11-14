@@ -4,6 +4,7 @@ import { useResource } from '../../lib/useResource';
 import type { Booking, ListResponse } from '../../lib/types';
 import {
   Badge,
+  BeginnerGuide,
   Card,
   EmptyState,
   ErrorBanner,
@@ -34,6 +35,8 @@ export function FieldDashboardPage() {
           </button>
         }
       />
+
+      <BeginnerGuide role="field" />
 
       <ErrorBanner message={resource.error} />
 

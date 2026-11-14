@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: mbms-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: .
+    buildCommand: npm install && npm run build --workspace=@mbms/api
+    startCommand: npm run start --workspace=@mbms/api
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: 3001
+      - key: LOG_LEVEL
+        value: info
+      - key: CORS_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: MFA_ENCRYPTION_KEY
+        sync: false
+      - key: STORAGE_ENDPOINT
+        value: localhost
+      - key: STORAGE_PORT
+        value: 9000
+      - key: STORAGE_USE_SSL
+        value: false
+      - key: STORAGE_ACCESS_KEY
+        value: minioadmin
+      - key: STORAGE_SECRET_KEY
+        value: minio123
+      - key: STORAGE_BUCKET
+        value: mbms-private

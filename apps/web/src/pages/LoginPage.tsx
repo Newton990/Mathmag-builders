@@ -5,7 +5,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { homeForRole, useAuth } from '../auth/AuthContext';
-import { ErrorBanner, buttonClass, inputClass } from '../components/ui';
+import { BeginnerGuide, ErrorBanner, buttonClass, inputClass } from '../components/ui';
 
 // ─── Portal definitions ───────────────────────────────────────────────────────
 // Each card maps to a group of roles that land on the same dashboard.
@@ -55,13 +55,17 @@ type PortalId = (typeof PORTALS)[number]['id'];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export function LoginPage() {
-  const { user, mfaToken, login, verifyMfa, cancelMfa, error, loginAsDemo } = useAuth();
+  const { user, mfaToken, login, signup, verifyMfa, cancelMfa, error, loginAsDemo } = useAuth();
   const navigate = useNavigate();
 
   const [selected, setSelected] = useState<PortalId | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
+  const [signupName, setSignupName] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [showSignup, setShowSignup] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Redirect authenticated users to their home dashboard immediately.
@@ -105,6 +109,20 @@ export function LoginPage() {
     }
   }
 
+  async function handleSignup(event: FormEvent<HTMLFormElement>) {
+    if (!portal) return;
+    event.preventDefault();
+    setSubmitting(true);
+    try {
+      await signup(signupName.trim(), signupEmail.trim(), signupPassword, portal.demoRole);
+      setShowSignup(false);
+    } catch {
+      // Error is surfaced via the auth context.
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-brand-900 to-brand-700 p-4">
       {/* Header */}
@@ -127,6 +145,10 @@ export function LoginPage() {
             </span>
           ))}
         </div>
+      </div>
+
+      <div className="mb-8 w-full max-w-5xl">
+        <BeginnerGuide role="general" />
       </div>
 
       {/* ── Step 1: Portal selection ──────────────────────────────────────── */}
@@ -261,6 +283,37 @@ export function LoginPage() {
                 >
                   {submitting ? 'Signing in…' : `Sign in to ${portal.label}`}
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowSignup((current) => !current)}
+                  className="w-full text-center text-sm font-medium text-brand-700 hover:text-brand-900"
+                  title="Create a beginner account for this portal and start with guided example data"
+                  aria-label="Create a beginner account for this portal"
+                >
+                  {showSignup ? 'Cancel account setup' : 'Create account for this portal'}
+                </button>
+
+                {showSignup && (
+                  <form className="space-y-3 rounded-xl border border-brand-100 bg-brand-50 p-3" onSubmit={handleSignup}>
+                    <p className="text-xs font-medium text-brand-700">New user onboarding</p>
+                    <div>
+                      <label htmlFor="signup-name" className="mb-1 block text-xs font-medium text-gray-700">Full name</label>
+                      <input id="signup-name" value={signupName} onChange={(e) => setSignupName(e.target.value)} className={inputClass} placeholder="Jane Demo" required />
+                    </div>
+                    <div>
+                      <label htmlFor="signup-email" className="mb-1 block text-xs font-medium text-gray-700">Work email</label>
+                      <input id="signup-email" type="email" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} className={inputClass} placeholder={portal.placeholder} required />
+                    </div>
+                    <div>
+                      <label htmlFor="signup-password" className="mb-1 block text-xs font-medium text-gray-700">Password</label>
+                      <input id="signup-password" type="password" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} className={inputClass} placeholder="At least 8 characters" minLength={8} required />
+                    </div>
+                    <button type="submit" disabled={submitting} className={`${buttonClass} w-full`}>
+                      {submitting ? 'Creating account…' : 'Create account and view demo dashboard'}
+                    </button>
+                  </form>
+                )}
 
                 {/* Demo shortcut */}
                 <div className="relative">

@@ -4,6 +4,7 @@ import { useResource } from '../../lib/useResource';
 import type { ListResponse, PortalProject } from '../../lib/types';
 import {
   Badge,
+  BeginnerGuide,
   Card,
   EmptyState,
   ErrorBanner,
@@ -24,6 +25,8 @@ export function ClientPortalPage() {
         title="My projects"
         subtitle="Only content the Lead Architect has explicitly published is visible here."
       />
+
+      <BeginnerGuide role="client" />
 
       <ErrorBanner message={resource.error} />
 

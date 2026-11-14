@@ -3,6 +3,340 @@
 // In local dev, keep using the Vite proxy; in production, point to the deployed Render API.
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? '/api' : 'https://mathmag-api.onrender.com/api')).replace(/\/+$/, '');
 
+const DEMO_ROLE = (): string => {
+  if (typeof window === 'undefined') return 'LEAD_ARCHITECT';
+  const stored = window.localStorage.getItem('mbms.demoRole');
+  if (
+    stored === 'CLIENT_RELATIONS_OFFICER' ||
+    stored === 'VISITING_OFFICER' ||
+    stored === 'LEAD_ARCHITECT' ||
+    stored === 'JUNIOR_ARCHITECT' ||
+    stored === 'CLIENT' ||
+    stored === 'ADMIN_MANAGEMENT'
+  ) {
+    return stored;
+  }
+  return 'LEAD_ARCHITECT';
+};
+
+const demoDate = (offsetDays: number) => new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000).toISOString();
+
+const demoContact = (fullName: string, organisation: string | null, phone: string, email: string) => ({
+  id: `${fullName.toLowerCase().replace(/\s+/g, '-')}-contact`,
+  fullName,
+  organisation,
+  primaryPhone: phone,
+  alternatePhone: null,
+  email,
+  sourceChannel: 'WHATSAPP',
+  consentMarketing: true,
+  consentDataProc: true,
+  notes: 'Demo use only — sample client record.',
+});
+
+const demoProjects = [
+  {
+    id: 'proj-1001',
+    reference: 'MBMS-1001',
+    projectType: 'Residential Villa',
+    siteCounty: 'Nairobi',
+    siteSubCounty: 'Westlands',
+    siteArea: 'Karura',
+    siteDirections: 'Off Kiambu Road, next to the Karura market',
+    siteDescription: '3-bedroom duplex with internal courtyard and utility wing.',
+    currentStage: 'PUBLISHED_TO_CLIENT',
+    createdAt: demoDate(-28),
+    updatedAt: demoDate(-2),
+    contact: demoContact('Aisha Wanjiku', 'Wanjiku Family', '+254712345678', 'aisha@demo.co.ke'),
+    visitBooking: {
+      id: 'booking-1001',
+      projectId: 'proj-1001',
+      scheduledAt: demoDate(2),
+      status: 'VISIT_COMPLETED',
+      paymentStatus: 'PAID',
+      visitFeeKes: '18000',
+      specialInstructions: 'Please bring the site plan and access gate code.',
+      checkInAt: demoDate(-3),
+      checkInGps: { latitude: -1.266, longitude: 36.803, accuracy: 9.4 },
+      checkOutAt: demoDate(-3),
+      checkOutGps: { latitude: -1.267, longitude: 36.804, accuracy: 8.7 },
+      assignedOfficerId: 'officer-01',
+      assignedOfficer: { id: 'officer-01', name: 'Daniel Ouma', role: 'VISITING_OFFICER' },
+      project: null,
+      surveys: [],
+      history: [],
+    },
+  },
+  {
+    id: 'proj-1002',
+    reference: 'MBMS-1002',
+    projectType: 'Commercial office fit-out',
+    siteCounty: 'Nakuru',
+    siteSubCounty: 'Nakuru Town',
+    siteArea: 'Free Area',
+    siteDirections: 'Opposite the main bus park, unit 4A',
+    siteDescription: 'Office fit-out including partition walls, electrical reticulation, and reception works.',
+    currentStage: 'APPROVED',
+    createdAt: demoDate(-41),
+    updatedAt: demoDate(-6),
+    contact: demoContact('Moses Karanja', 'Karanja Holdings', '+254723456789', 'moses@demo.co.ke'),
+    visitBooking: {
+      id: 'booking-1002',
+      projectId: 'proj-1002',
+      scheduledAt: demoDate(5),
+      status: 'BOOKED',
+      paymentStatus: 'PENDING',
+      visitFeeKes: '22000',
+      specialInstructions: 'Confirm parking arrangement before arrival.',
+      checkInAt: null,
+      checkInGps: null,
+      checkOutAt: null,
+      checkOutGps: null,
+      assignedOfficerId: 'officer-02',
+      assignedOfficer: { id: 'officer-02', name: 'Mary Njeri', role: 'VISITING_OFFICER' },
+      project: null,
+      surveys: [],
+      history: [],
+    },
+  },
+  {
+    id: 'proj-1003',
+    reference: 'MBMS-1003',
+    projectType: 'School extension',
+    siteCounty: 'Mombasa',
+    siteSubCounty: 'Kisauni',
+    siteArea: 'Mtopanga',
+    siteDirections: 'Near the main road junction beside the church compound',
+    siteDescription: '1-storey classroom block with roof drainage and a security gate.',
+    currentStage: 'REPORT_GENERATING',
+    createdAt: demoDate(-15),
+    updatedAt: demoDate(-1),
+    contact: demoContact('Salma Omar', 'Bright Path Academy', '+254733445566', 'salma@demo.co.ke'),
+    visitBooking: {
+      id: 'booking-1003',
+      projectId: 'proj-1003',
+      scheduledAt: demoDate(1),
+      status: 'RESCHEDULED',
+      paymentStatus: 'PAID',
+      visitFeeKes: '16000',
+      specialInstructions: 'Arrive after 9:00am; gate opens late.',
+      checkInAt: null,
+      checkInGps: null,
+      checkOutAt: null,
+      checkOutGps: null,
+      assignedOfficerId: 'officer-03',
+      assignedOfficer: { id: 'officer-03', name: 'Joseph Kariuki', role: 'VISITING_OFFICER' },
+      project: null,
+      surveys: [],
+      history: [],
+    },
+  },
+].map((project) => ({
+  ...project,
+  visitBooking: project.visitBooking ? { ...project.visitBooking, project: { ...project } } : null,
+}));
+
+const demoConversations = [
+  {
+    id: 'conv-101',
+    status: 'VISIT_AGREED',
+    channel: 'WHATSAPP',
+    subject: 'Villa site walkthrough and design validation',
+    lastActivityAt: demoDate(-1),
+    followUpAt: demoDate(1),
+    createdAt: demoDate(-9),
+    contact: demoContact('Aisha Wanjiku', 'Wanjiku Family', '+254712345678', 'aisha@demo.co.ke'),
+    assignedStaff: { id: 'staff-1', name: 'Njeri Wambui', role: 'CLIENT_RELATIONS_OFFICER' },
+    linkedProject: { id: 'proj-1001', reference: 'MBMS-1001', currentStage: 'PUBLISHED_TO_CLIENT' },
+    _count: { messages: 7 },
+  },
+  {
+    id: 'conv-102',
+    status: 'IN_DISCUSSION',
+    channel: 'PHONE',
+    subject: 'Office fit-out approval timeline',
+    lastActivityAt: demoDate(-3),
+    followUpAt: demoDate(3),
+    createdAt: demoDate(-12),
+    contact: demoContact('Moses Karanja', 'Karanja Holdings', '+254723456789', 'moses@demo.co.ke'),
+    assignedStaff: { id: 'staff-2', name: 'Amos Otieno', role: 'LEAD_ARCHITECT' },
+    linkedProject: { id: 'proj-1002', reference: 'MBMS-1002', currentStage: 'APPROVED' },
+    _count: { messages: 4 },
+  },
+  {
+    id: 'conv-103',
+    status: 'OPEN',
+    channel: 'EMAIL',
+    subject: 'School extension scope confirmation',
+    lastActivityAt: demoDate(-5),
+    followUpAt: demoDate(2),
+    createdAt: demoDate(-15),
+    contact: demoContact('Salma Omar', 'Bright Path Academy', '+254733445566', 'salma@demo.co.ke'),
+    assignedStaff: { id: 'staff-3', name: 'Kibet Langat', role: 'JUNIOR_ARCHITECT' },
+    linkedProject: null,
+    _count: { messages: 2 },
+  },
+];
+
+const demoReports = [
+  {
+    id: 'report-203',
+    versionNumber: 2,
+    approvalState: 'APPROVED',
+    generatorStatus: 'GENERATED',
+    createdAt: demoDate(-4),
+    survey: {
+      booking: {
+        project: demoProjects[0],
+      },
+    },
+  },
+  {
+    id: 'report-204',
+    versionNumber: 1,
+    approvalState: 'IN_REVIEW',
+    generatorStatus: 'GENERATED',
+    createdAt: demoDate(-8),
+    survey: {
+      booking: {
+        project: demoProjects[1],
+      },
+    },
+  },
+  {
+    id: 'report-205',
+    versionNumber: 1,
+    approvalState: 'DRAFT',
+    generatorStatus: 'PENDING',
+    createdAt: demoDate(-10),
+    survey: {
+      booking: {
+        project: demoProjects[2],
+      },
+    },
+  },
+];
+
+const demoBookings = demoProjects.map((project) => ({
+  id: project.visitBooking?.id,
+  projectId: project.id,
+  scheduledAt: project.visitBooking?.scheduledAt ?? demoDate(7),
+  status: project.visitBooking?.status ?? 'BOOKED',
+  paymentStatus: project.visitBooking?.paymentStatus ?? 'PENDING',
+  visitFeeKes: project.visitBooking?.visitFeeKes ?? '15000',
+  specialInstructions: project.visitBooking?.specialInstructions ?? 'Site access to be confirmed.',
+  checkInAt: project.visitBooking?.checkInAt ?? null,
+  checkInGps: project.visitBooking?.checkInGps ?? null,
+  checkOutAt: project.visitBooking?.checkOutAt ?? null,
+  checkOutGps: project.visitBooking?.checkOutGps ?? null,
+  assignedOfficerId: project.visitBooking?.assignedOfficerId ?? 'officer-01',
+  assignedOfficer: project.visitBooking?.assignedOfficer ?? { id: 'officer-01', name: 'Daniel Ouma', role: 'VISITING_OFFICER' },
+  project,
+  surveys: project.visitBooking?.surveys ?? [],
+  history: project.visitBooking?.history ?? [],
+}));
+
+const demoPortalProjects = [
+  {
+    id: 'proj-1001',
+    reference: 'MBMS-1001',
+    siteArea: 'Karura',
+    siteCounty: 'Nairobi',
+    projectType: 'Residential Villa',
+    currentStage: 'PUBLISHED_TO_CLIENT',
+    visitBooking: {
+      id: 'booking-1001',
+      scheduledAt: demoDate(2),
+    },
+    hasPublishedReport: true,
+  },
+  {
+    id: 'proj-1002',
+    reference: 'MBMS-1002',
+    siteArea: 'Free Area',
+    siteCounty: 'Nakuru',
+    projectType: 'Commercial office fit-out',
+    currentStage: 'APPROVED',
+    visitBooking: {
+      id: 'booking-1002',
+      scheduledAt: demoDate(5),
+    },
+    hasPublishedReport: false,
+  },
+];
+
+const demoUserForRole = (): Record<string, unknown> => {
+  const role = DEMO_ROLE();
+  const users: Record<string, Record<string, unknown>> = {
+    LEAD_ARCHITECT: {
+      id: 'demo-admin',
+      name: 'Demo Lead Architect',
+      email: 'lead@mathmag.co.ke',
+      role: 'LEAD_ARCHITECT',
+      isActive: true,
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: true,
+    },
+    VISITING_OFFICER: {
+      id: 'demo-field',
+      name: 'Demo Field Officer',
+      email: 'field@mathmag.co.ke',
+      role: 'VISITING_OFFICER',
+      isActive: true,
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: true,
+    },
+    CLIENT: {
+      id: 'demo-client',
+      name: 'Demo Client',
+      email: 'client@demo.co.ke',
+      role: 'CLIENT',
+      isActive: true,
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+    },
+    ADMIN_MANAGEMENT: {
+      id: 'demo-mgmt',
+      name: 'Demo Management',
+      email: 'management@mathmag.co.ke',
+      role: 'ADMIN_MANAGEMENT',
+      isActive: true,
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: true,
+    },
+    CLIENT_RELATIONS_OFFICER: {
+      id: 'demo-cro',
+      name: 'Demo Client Relations Officer',
+      email: 'cro@mathmag.co.ke',
+      role: 'CLIENT_RELATIONS_OFFICER',
+      isActive: true,
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: true,
+    },
+    JUNIOR_ARCHITECT: {
+      id: 'demo-junior',
+      name: 'Demo Junior Architect',
+      email: 'junior@mathmag.co.ke',
+      role: 'JUNIOR_ARCHITECT',
+      isActive: true,
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: true,
+    },
+  };
+
+  return users[role] ?? users.LEAD_ARCHITECT;
+};
+
+const demoSignupUser = (fullName: string, email: string, role: string): Record<string, unknown> => ({
+  id: `signup-${email.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+  name: fullName || 'New MBMS User',
+  email: email || 'new-user@mathmag.co.ke',
+  role,
+  isActive: true,
+  lastLoginAt: new Date().toISOString(),
+  mfaEnabled: false,
+});
+
 let accessToken: string | null = null;
 let refreshInFlight: Promise<boolean> | null = null;
 
@@ -172,21 +506,94 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   if (isDemoMode()) {
-    // Demo mode: return mock data for demo, no backend required
-    if (options.method === 'GET' || !options.method) {
-      // Strip query params before matching so paths like /projects?take=100 match correctly
-      const basePath = path.split('?')[0] ?? path;
-      const isList =
-        basePath.includes('/list') ||
-        !!basePath.match(
-          /\/(conversations|projects|inbox|reports|bookings|surveys|tasks|users|clients|staff|tenders|quotations|purchase-orders|invoices|payments|sites|materials|labor|equipment|documents|governance|notifications|alerts|delegations|exceptions|audits|leave|requisitions|site-logs|grns|work-holds|variations|handovers|mobilizations|engagements|contracts)$/,
-        );
-      if (isList) return { items: [], total: 0 } as T;
-      if (path.includes('items') || path.includes('data')) return [] as T;
-      return {} as T;
+    const basePath = (path.split('?')[0] ?? path).replace(/\/+$/, '');
+
+    if (basePath === '/auth/login') {
+      const email = typeof options.body === 'object' && options.body && 'email' in options.body ? String((options.body as Record<string, unknown>).email ?? '') : '';
+      if (email) {
+        window.localStorage.setItem('mbms.demoRole', email.includes('client') ? 'CLIENT' : email.includes('field') ? 'VISITING_OFFICER' : email.includes('cro') ? 'CLIENT_RELATIONS_OFFICER' : email.includes('junior') ? 'JUNIOR_ARCHITECT' : email.includes('management') ? 'ADMIN_MANAGEMENT' : 'LEAD_ARCHITECT');
+      }
+      window.localStorage.setItem('mbms.demo', 'true');
+      return {
+        accessToken: 'demo-access-token',
+        refreshToken: 'demo-refresh-token',
+        requiresMfa: false,
+      } as T;
     }
-    if (options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH') return { success: true } as T;
-    if (options.method === 'DELETE') return { success: true } as T;
+
+    if (basePath === '/auth/signup') {
+      const body = (typeof options.body === 'object' && options.body !== null ? options.body : {}) as Record<string, unknown>;
+      const fullName = String(body.fullName ?? 'New MBMS User').trim();
+      const email = String(body.email ?? 'new-user@mathmag.co.ke').trim();
+      const role = String(body.role ?? 'CLIENT');
+      const user = demoSignupUser(fullName, email, role);
+      window.localStorage.setItem('mbms.demo', 'true');
+      window.localStorage.setItem('mbms.demoRole', role);
+      window.localStorage.setItem('mbms.signupName', fullName);
+      setAccessToken('demo-access-token');
+      return {
+        accessToken: 'demo-access-token',
+        refreshToken: 'demo-refresh-token',
+        user,
+      } as T;
+    }
+
+    if (basePath === '/auth/me') {
+      return demoUserForRole() as T;
+    }
+
+    if (basePath === '/auth/logout') {
+      return { success: true } as T;
+    }
+
+    if (basePath === '/conversations') {
+      return { items: demoConversations, total: demoConversations.length } as T;
+    }
+
+    if (basePath === '/projects') {
+      const items = demoProjects.map((project) => ({ ...project, visitBooking: project.visitBooking ?? null }));
+      return { items, total: items.length } as T;
+    }
+
+    if (basePath === '/reports') {
+      return { items: demoReports, total: demoReports.length } as T;
+    }
+
+    if (basePath === '/bookings') {
+      return { items: demoBookings, total: demoBookings.length } as T;
+    }
+
+    if (basePath === '/portal/projects') {
+      return { items: demoPortalProjects, total: demoPortalProjects.length } as T;
+    }
+
+    if (basePath === '/auth/refresh') {
+      return { accessToken: 'demo-access-token', refreshToken: 'demo-refresh-token' } as T;
+    }
+
+    if ((options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH' || options.method === 'DELETE')) {
+      return { success: true } as T;
+    }
+
+    if (basePath.startsWith('/projects/')) {
+      const match = demoProjects.find((project) => project.id === basePath.split('/').at(-1));
+      return (match ?? demoProjects[0]) as T;
+    }
+
+    if (basePath.startsWith('/reports/')) {
+      const match = demoReports.find((report) => report.id === basePath.split('/').at(-1));
+      return (match ?? demoReports[0]) as T;
+    }
+
+    if (basePath.startsWith('/portal/projects/')) {
+      const match = demoPortalProjects.find((project) => project.id === basePath.split('/').at(-1));
+      return (match ?? demoPortalProjects[0]) as T;
+    }
+
+    if (basePath.includes('/list') || path.includes('items') || path.includes('data')) {
+      return { items: demoProjects, total: demoProjects.length } as T;
+    }
+
     return {} as T;
   }
 

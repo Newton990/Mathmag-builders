@@ -18,6 +18,7 @@ interface AuthContextValue {
   mfaToken: string | null;
   error: string | null;
   login: (email: string, password: string) => Promise<'MFA' | 'DONE'>;
+  signup: (fullName: string, email: string, password: string, role: UserRole) => Promise<CurrentUser>;
   verifyMfa: (code: string) => Promise<void>;
   cancelMfa: () => void;
   logout: () => Promise<void>;
@@ -153,6 +154,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [loadUser]);
 
+  const signup = useCallback(async (fullName: string, email: string, password: string, role: UserRole) => {
+    setError(null);
+    try {
+      const response = await api.post<{ accessToken?: string; user?: CurrentUser }>('/auth/signup', {
+        fullName,
+        email,
+        password,
+        role,
+      });
+      if (!response.accessToken) throw new Error('The server did not return an access token');
+      setAccessToken(response.accessToken);
+      const nextUser = response.user ?? {
+        id: `signup-${email}`,
+        name: fullName || 'New MBMS User',
+        email,
+        role,
+        isActive: true,
+        lastLoginAt: new Date().toISOString(),
+        mfaEnabled: false,
+      };
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('mbms.demo', 'true');
+        window.localStorage.setItem('mbms.demoRole', role);
+      }
+      setUser(nextUser);
+      return nextUser;
+    } catch (err) {
+      setError(errorMessage(err));
+      throw err;
+    }
+  }, []);
+
   const verifyMfa = useCallback(
     async (code: string) => {
       if (!mfaToken) throw new Error('No MFA challenge in progress');
@@ -182,6 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Activate demo mode so the whole app stays in demo state.
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('mbms.demo', 'true');
+      window.localStorage.setItem('mbms.demoRole', role);
     }
     const demoUser = DEMO_USERS[role] ?? DEMO_USER;
     setUser({ ...demoUser, role });
@@ -199,8 +233,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, loading, mfaToken, error, login, verifyMfa, cancelMfa, logout, loginAsDemo }),
-    [user, loading, mfaToken, error, login, verifyMfa, cancelMfa, logout, loginAsDemo],
+    () => ({ user, loading, mfaToken, error, login, signup, verifyMfa, cancelMfa, logout, loginAsDemo }),
+    [user, loading, mfaToken, error, login, signup, verifyMfa, cancelMfa, logout, loginAsDemo],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

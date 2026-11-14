@@ -7,6 +7,7 @@
 // Database: in-memory adapter (apps/api/src/db.ts)
 // ================================================================================
 
+import jwt from 'jsonwebtoken';
 import { config } from './config.js';
 import { verifyAccessToken, type JWTPayload, extractAuth, requireAuth, requireMfa, requireStepUp, requireRole } from './auth.js';
 import { corsHeaders, json, error, success, parseBody } from './responses.js';
@@ -385,31 +386,120 @@ function getAuth(request: Request): AuthContext | null {
 
 // ── Route: Auth ───────────────────────────────────────────────────────────────
 async function handleAuth(
+  request: Request,
   method: string,
   path: string,
   body: any,
   origin: string | null,
   env: Env,
 ): Promise<Response> {
+  const issueToken = (user: { id: string; email: string; role: string; name?: string }, mfaVerified = true) => {
+    const payload = {
+      sub: user.email,
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      mfaVerified,
+      stepUp: false,
+    };
+    return {
+      accessToken: jwt.sign(payload, config.JWT_SECRET, { expiresIn: '15m' }),
+      refreshToken: jwt.sign({ ...payload, type: 'refresh' }, config.JWT_SECRET, { expiresIn: '7d' }),
+      user: {
+        id: user.id,
+        name: user.name ?? user.email.split('@')[0],
+        email: user.email,
+        role: user.role,
+        isActive: true,
+        mfaEnabled: true,
+        lastLoginAt: new Date().toISOString(),
+      },
+    };
+  };
+
   if (path === '/auth/login' && method === 'POST') {
     const { email, password } = body ?? {};
     if (!email || !password) {
       return error('Email and password are required', 'VALIDATION_ERROR', 400, origin, env);
     }
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const role = normalizedEmail.includes('client') ? 'CLIENT' : normalizedEmail.includes('field') || normalizedEmail.includes('officer') ? 'VISITING_OFFICER' : normalizedEmail.includes('junior') ? 'JUNIOR_ARCHITECT' : normalizedEmail.includes('cro') ? 'CLIENT_RELATIONS_OFFICER' : normalizedEmail.includes('management') ? 'ADMIN_MANAGEMENT' : 'LEAD_ARCHITECT';
     return json(
-      { requiresMfa: true, mfaToken: 'mfa-challenge-' + crypto.randomUUID(), message: 'MFA verification required' },
-      200, origin, env,
+      {
+        requiresMfa: true,
+        mfaToken: 'mfa-challenge-' + crypto.randomUUID(),
+        message: 'MFA verification required',
+        user: {
+          id: `user-${crypto.randomUUID()}`,
+          email: normalizedEmail,
+          role,
+          name: normalizedEmail.split('@')[0],
+        },
+      },
+      200,
+      origin,
+      env,
     );
   }
 
+  if (path === '/auth/signup' && method === 'POST') {
+    const { fullName, email, password, role } = body ?? {};
+    if (!fullName || !email || !password) {
+      return error('Full name, email, and password are required', 'VALIDATION_ERROR', 400, origin, env);
+    }
+    const validRoles = ['CLIENT', 'VISITING_OFFICER', 'LEAD_ARCHITECT', 'JUNIOR_ARCHITECT', 'CLIENT_RELATIONS_OFFICER', 'ADMIN_MANAGEMENT'];
+    const safeRole = typeof role === 'string' && validRoles.includes(role) ? role : 'CLIENT';
+    const user = {
+      id: `user-${crypto.randomUUID()}`,
+      email: String(email).trim().toLowerCase(),
+      name: String(fullName).trim(),
+      role: safeRole,
+    };
+    const tokens = issueToken(user, true);
+    return json(tokens, 200, origin, env);
+  }
+
   if (path === '/auth/mfa/verify' && method === 'POST') {
-    return json({ accessToken: 'access-token-' + crypto.randomUUID(), mfaVerified: true }, 200, origin, env);
+    const { code, mfaToken } = body ?? {};
+    if (!code || !mfaToken) {
+      return error('MFA code and challenge are required', 'VALIDATION_ERROR', 400, origin, env);
+    }
+    const user = {
+      id: `user-${crypto.randomUUID()}`,
+      email: 'demo@mathmag.co.ke',
+      role: 'LEAD_ARCHITECT',
+      name: 'Demo User',
+    };
+    const tokens = issueToken(user, true);
+    return json({ ...tokens, mfaVerified: true }, 200, origin, env);
+  }
+
+  if (path === '/auth/refresh' && method === 'POST') {
+    const auth = getAuth(request);
+    if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
+    const tokens = issueToken({
+      id: auth.userId,
+      email: auth.email,
+      role: auth.role,
+      name: auth.email.split('@')[0],
+    }, auth.mfaVerified);
+    return json(tokens, 200, origin, env);
   }
 
   if (path === '/auth/me' && method === 'GET') {
-    const auth = getAuth({ headers: {} } as any);
+    const auth = getAuth(request);
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    return json({ user: auth }, 200, origin, env);
+    return json({
+      user: {
+        id: auth.userId,
+        name: auth.email.split('@')[0],
+        email: auth.email,
+        role: auth.role,
+        isActive: true,
+        mfaEnabled: auth.mfaVerified,
+        lastLoginAt: new Date().toISOString(),
+      },
+    }, 200, origin, env);
   }
 
   if (path === '/auth/logout' && method === 'POST') {
@@ -1201,7 +1291,7 @@ export default async function handler(
   const auth = getAuth(request);
 
   try {
-    if (apiPath.startsWith('/auth')) return await handleAuth(method, apiPath, body, origin, env);
+    if (apiPath.startsWith('/auth')) return await handleAuth(request, method, apiPath, body, origin, env);
     if (apiPath.startsWith('/bookings')) return await handleBookings(method, apiPath, body, auth, origin, env);
     if (apiPath.startsWith('/projects')) return await handleProjects(method, apiPath, body, auth, origin, env);
     if (apiPath.startsWith('/surveys')) return await handleSurveys(method, apiPath, body, auth, origin, env);

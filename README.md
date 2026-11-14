@@ -17,7 +17,7 @@ cd mathmag-mbms
 
 # 2. Copy environment config and fill in the values
 cp .env.example .env
-# Edit .env — minimum required: DATABASE_URL, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET
+# Edit .env — minimum required for live use: DATABASE_URL, JWT_SECRET, MFA_ENCRYPTION_KEY
 
 # 3. Install all dependencies (monorepo)
 npm install
@@ -116,13 +116,16 @@ npm run <script> --workspace=packages/shared
 
 ## Environment variables
 
-All variables are documented in `.env.example`. Required variables:
+All variables are documented in `.env.example`. For a real deployment, the required variables are:
 
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_ACCESS_SECRET` | Secret for access tokens (min 64 chars) |
-| `JWT_REFRESH_SECRET` | Secret for refresh tokens (min 64 chars) |
+| `JWT_SECRET` | Shared JWT signing secret, minimum 64 characters |
+| `MFA_ENCRYPTION_KEY` | AES-256 key material for MFA / secure secrets |
+| `CORS_ORIGIN` | Frontend origin, e.g. `https://your-app.vercel.app` |
+| `VITE_DEMO_MODE` | Set to `false` in production to disable the demo sign-in flow |
+| `VITE_API_BASE_URL` | Browser API URL in production, e.g. `https://your-api.onrender.com/api` |
 
 Everything else has a sensible default for local development.
 
@@ -201,9 +204,21 @@ All security headers are injected by `server.js` on every response.
 
 ### Environment variables
 
-Copy `.env.example` to `.env` and fill in secrets before running.
-Set `VITE_DEMO_MODE=false` in the production `.env` to disable demo/offline
-mode so the app requires real credentials.
+Copy `.env.example` to `.env` and fill in the required values before running.
+For Render deployment, set these in the service dashboard:
+
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `MFA_ENCRYPTION_KEY`
+- `CORS_ORIGIN`
+- `LOG_LEVEL` (optional)
+
+For the frontend build, set:
+
+- `VITE_DEMO_MODE=false`
+- `VITE_API_BASE_URL=https://<your-render-api-domain>/api`
+
+This disables the demo-only sign-in experience and points the browser at the live API.
 
 ---
 
