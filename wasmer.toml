@@ -1,25 +1,23 @@
 [package]
-name = "mathmag/mbms-web"
+name = "mathmag/mbms"
 version = "1.0.0"
-description = "Mathmag MBMS – React SPA served via static-web-server"
+description = "Mathmag MBMS unified web application"
+entrypoint = "server"
 
 [dependencies]
-"wasmer/static-web-server" = "^1"
-
-[fs]
-# Anybuild runs `npm run build` → outputs to apps/web/dist
-# static-web-server picks it up from /public inside the container
-"/public" = "apps/web/dist"
-"/config" = "settings"
+"wasmer/node" = "^20"
 
 [[command]]
 name = "server"
-module = "wasmer/static-web-server:webserver"
-runner = "https://webc.org/runner/wasi"
+module = "wasmer/node:node"
+runner = "wasi"
 
 [command.annotations.wasi]
-env = [
-  "SERVER_CONFIG_FILE=/config/config.toml",
-  "SERVER_PORT=8080",
-  "SERVER_LOG_LEVEL=info",
-]
+main-args = ["/app/server.js"]
+env = ["PORT=8080", "MBMS_PUBLIC_DIR=/public"]
+
+[fs]
+"/app/server.js" = "server.js"
+"/app/apps/api/dist" = "apps/api/dist"
+"/app/node_modules" = "apps/api/wasmer-runtime/node_modules"
+"/public" = "public"

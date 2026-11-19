@@ -1,0 +1,9 @@
+kind: wasmer.io/App.v0
+name: mbms
+owner: mathmag
+package: .
+build:
+  commands:
+    - npm ci --include=dev
+    - npm run build
+    - npm ci --prefix apps/api/wasmer-runtime --omit=dev

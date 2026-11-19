@@ -1,7 +1,7 @@
 // src/lib/api.ts
-// Typed fetch wrapper with access-token refresh.
-// In local dev, keep using the Vite proxy; in production, point to the deployed Render API.
-const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? '/api' : 'https://mathmag-api.onrender.com/api')).replace(/\/+$/, '');
+// Typed fetch wrapper with access-token refresh. Same-origin requests work in
+// development through Vite's proxy and in production through the API server.
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/+$/, '');
 
 const DEMO_ROLE = (): string => {
   if (typeof window === 'undefined') return 'LEAD_ARCHITECT';
