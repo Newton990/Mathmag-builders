@@ -5,7 +5,7 @@ A construction-company ERP for Mathmag Builders Limited (Kenya), built with Type
 ## Prerequisites
 
 - [Node.js 20+](https://nodejs.org/) and npm 10+
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for PostgreSQL + MinIO)
+- PostgreSQL 14+ (local or managed)
 - Git
 
 ## First-time setup
@@ -22,24 +22,20 @@ cp .env.example .env
 # 3. Install all dependencies (monorepo)
 npm install
 
-# 4. Start the database and object storage
-docker compose up -d
-
-# Wait for the health checks to pass:
-docker compose ps   # all services should show "healthy"
-
-# 5. Run database migrations
+# 4. Set DATABASE_URL to your PostgreSQL database and provide local JWT/MFA secrets
+# 5. Build and apply the database migration
+npm run build
 npm run db:migrate
-
-# 6. Seed the database (fake data only)
-npm run db:seed
 ```
 
 ## Start development servers
 
 ```bash
-# Start API (port 3001) and web (port 5173) concurrently
-npm run dev
+# Terminal 1: API (port 3001)
+npm run dev:api
+
+# Terminal 2: frontend (port 5173)
+npm run dev:web
 ```
 
 The Vite dev server proxies `/api` requests to the API workspace on port 3001,
@@ -47,7 +43,6 @@ so frontend requests stay same-origin during development.
 
 - API health check: http://localhost:3001/api/health
 - Web app: http://localhost:5173
-- MinIO console: http://localhost:9001 (user/pass from `.env`)
 
 ## Run tests
 
@@ -65,14 +60,8 @@ npm run test:e2e:ui --workspace=apps/web
 ## Database tasks
 
 ```bash
-# Open Prisma Studio (DB GUI)
-npm run db:studio
-
-# Create a new migration after schema changes
-npm run db:migrate --workspace=apps/api
-
-# Reset database (development only — destroys all data)
-cd apps/api && npx prisma migrate reset --force
+# Build the migration runner and apply versioned PostgreSQL migrations
+npm run db:migrate
 ```
 
 ## Project structure
@@ -110,8 +99,8 @@ All variables are documented in `.env.example`. For a real deployment, the requi
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
 | `JWT_SECRET` | Shared JWT signing secret, minimum 64 characters |
-| `MFA_ENCRYPTION_KEY` | AES-256 key material for MFA / secure secrets |
-| `CORS_ORIGIN` | Frontend origin, e.g. `https://your-app.vercel.app` |
+| `MFA_ENCRYPTION_KEY` | AES-256 key material for MFA / secure secrets (64 hex characters) |
+| `CORS_ORIGIN` | Optional frontend origin; unified Wasmer deployments use the same origin |
 | `VITE_DEMO_MODE` | Set to `false` in production to disable the demo sign-in flow |
 | `VITE_API_BASE_URL` | Optional browser API path; defaults to same-origin `/api` |
 
@@ -123,9 +112,9 @@ Everything else has a sensible default for local development.
 |-------|-----------|
 | Language | TypeScript 5 (strict mode) |
 | API | Node.js 20+, TypeScript Fetch API, Zod |
-| Database adapter | `postgres` client and in-memory Maps |
-| Auth | argon2 hashing, httpOnly JWT cookies, RBAC |
-| Background jobs | pg-boss (Postgres-backed, no Redis) |
+| Database | PostgreSQL via `postgres`.js; one JSONB-backed table per API record model |
+| Auth | JWT verification and RBAC |
+| Background jobs | None; PostgreSQL startup migrations are idempotent |
 | Object storage | MinIO (local dev), S3-compatible |
 | Documents | `docx` library (DOCX), Playwright (PDF) |
 | Frontend | React 18, Vite 5, Tailwind CSS 3 |
@@ -206,6 +195,9 @@ For the frontend build, set:
 
 - `VITE_DEMO_MODE=false`
 - `VITE_API_BASE_URL` is optional and defaults to the same-origin `/api`.
+
+The API applies versioned, idempotent PostgreSQL schema migrations at startup.
+`npm run db:migrate` can apply them explicitly after compiling the API.
 
 This disables the demo-only sign-in experience and points the browser at the live API.
 

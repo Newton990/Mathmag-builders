@@ -13,9 +13,7 @@ test-results/
 *.tsbuildinfo
 .DS_Store
 Thumbs.db
-prisma/migrations/dev.db
 *.db
-*.db-journal
 logs/
 *.log
 

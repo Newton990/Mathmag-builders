@@ -110,8 +110,8 @@ mathmag-mbms/
 ## Tech Stack
 - **Language:** TypeScript 5 (strict mode, ESM)
 - **API:** Node.js 20+, Express 4, Prisma/PostgreSQL 16
-- **Auth:** argon2, httpOnly JWT cookies, RBAC, MFA (TOTP)
-- **Background jobs:** pg-boss (Postgres-backed)
+- **Auth:** jose Web Crypto, stateless JWTs, RBAC, MFA (TOTP)
+- **Background jobs:** none; startup migrations and route handlers run without pg-boss
 - **Object storage:** MinIO (S3-compatible)
 - **Documents:** docx (DOCX), Playwright (PDF)
 - **Frontend:** React 18, Vite 5, Tailwind CSS 3, vite-plugin-pwa

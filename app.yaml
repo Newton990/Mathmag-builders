@@ -1,9 +1,7 @@
 kind: wasmer.io/App.v0
 name: mbms
-owner: mathmag
+owner: newton
 package: .
-build:
-  commands:
-    - npm ci --include=dev
-    - npm run build
-    - npm ci --prefix apps/api/wasmer-runtime --omit=dev
+capabilities:
+  database:
+    engine: postgres

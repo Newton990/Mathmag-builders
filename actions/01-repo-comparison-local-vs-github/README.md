@@ -6,7 +6,7 @@ Compare the local repository folder against GitHub `Newton990/Mathmag-builders` 
 ## Method
 Since git was not installed locally, comparison was done by:
 1. Fetching file listings and raw contents from the GitHub REST API (`api.github.com/repos/Newton990/Mathmag-builders/contents/...`)
-2. Reading local files directly from `C:\Users\user\Desktop\Mathmag builders\mathmag-mbms`
+2. Reading local files from the current workspace repository root
 3. Comparing content byte-for-byte for each matching file
 
 ## Files Compared (All Identical ✅)
@@ -31,7 +31,7 @@ Since git was not installed locally, comparison was done by:
 | `src/index.ts` | ✅ Identical |
 | `src/logger.ts` | ✅ Identical |
 | `src/db/client.ts` | ✅ Identical |
-| `prisma/schema.prisma` | ✅ Identical (1366 lines) |
+| `apps/api/src/db.ts` + `apps/api/src/migrate.ts` | PostgreSQL tables and idempotent startup migrations |
 | `src/middleware/auth.middleware.ts` | ✅ Identical |
 | `src/middleware/errorHandler.ts` | ✅ Identical |
 | `src/middleware/validate.ts` | ✅ Identical |

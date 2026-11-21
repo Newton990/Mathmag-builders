@@ -11,22 +11,22 @@ Strip all non-Wasmer-compatible code from the API, run a build loop until both f
 | File/Directory | Reason |
 |----------------|--------|
 | `docker-compose.yml` | No containers on Wasmer |
-| `apps/api/prisma/` | Prisma needs long-running DB connection |
+| `apps/api/prisma/` | Replaced by postgres.js and idempotent SQL migrations |
 | `apps/api/src/db/` | Prisma client |
-| `apps/api/src/app.ts` | Express server |
+| `apps/api/src/app.ts` | Replaced by the unified Fetch API handler |
 | `apps/api/src/index.ts` | Express server entry |
 | `apps/api/src/middleware/` | Express middleware |
-| `apps/api/src/routes/` | Express route routers |
+| `apps/api/src/routes/` | Replaced by dispatch in `apps/api/src/edge.ts` |
 | `apps/api/src/services/` | DB-dependent services |
-| `apps/api/src/auth/` | argon2 + Prisma auth |
+| `apps/api/src/auth/` | Replaced by jose-based `apps/api/src/auth.ts` |
 | `apps/api/src/__tests__/` | Prisma-dependent tests |
 
 ## Files Modified
 
 | File | Change |
 |------|--------|
-| `apps/api/package.json` | Removed 18 incompatible deps, kept `@mbms/shared`, `jsonwebtoken`, `uuid`, `zod` |
-| `apps/api/src/config.ts` | Removed DATABASE_URL (now optional), pg-boss, MinIO config |
+| `apps/api/package.json` | Removed legacy deps; uses `jose`, `postgres`, `@mbms/shared`, and `zod` |
+| `apps/api/src/config.ts` | DATABASE_URL is explicit or assembled from managed DB_* values; pg-boss and MinIO config removed |
 | `apps/api/src/logger.ts` | Replaced pino with simple console logger |
 | `apps/api/src/edge.ts` | Created Wasmer Edge fetch-based handler (replaces Express) |
 

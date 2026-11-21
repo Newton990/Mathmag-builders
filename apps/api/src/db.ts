@@ -1,901 +1,379 @@
-// ================================================================================
-// MBMS — Database Adapter (Wasmer Edge Compatible)
-// Uses postgres.js when DATABASE_URL is set (external PostgreSQL on Wasmer),
-// otherwise falls back to in-memory Maps (local dev / no-DB).
-// ================================================================================
-
 import postgres from 'postgres';
 
-let sql: ReturnType<typeof postgres> | null = null;
+type RecordValue = { id: string; [key: string]: any };
+type TableName =
+  | 'bookings'
+  | 'projects'
+  | 'surveys'
+  | 'report_versions'
+  | 'publications'
+  | 'media'
+  | 'design_packages'
+  | 'design_tasks'
+  | 'acceptance_records'
+  | 'acceptance_verifications'
+  | 'approval_cases'
+  | 'contracts'
+  | 'mobilizations'
+  | 'site_logs'
+  | 'work_holds'
+  | 'delegations'
+  | 'safety_holds'
+  | 'suppliers'
+  | 'invoices'
+  | 'worker_reports'
+  | 'verifications'
+  | 'directory_entries';
 
-export function getSql(): ReturnType<typeof postgres> | null {
+const tables: TableName[] = [
+  'bookings',
+  'projects',
+  'surveys',
+  'report_versions',
+  'publications',
+  'media',
+  'design_packages',
+  'design_tasks',
+  'acceptance_records',
+  'acceptance_verifications',
+  'approval_cases',
+  'contracts',
+  'mobilizations',
+  'site_logs',
+  'work_holds',
+  'delegations',
+  'safety_holds',
+  'suppliers',
+  'invoices',
+  'worker_reports',
+  'verifications',
+  'directory_entries',
+];
+
+const initialSchema = [
+  `CREATE SEQUENCE IF NOT EXISTS project_reference_seq START WITH 1`,
+  ...tables.flatMap((table) => [
+    `CREATE TABLE IF NOT EXISTS ${table} (
+      id text PRIMARY KEY,
+      data jsonb NOT NULL CHECK (jsonb_typeof(data) = 'object'),
+      project_id text GENERATED ALWAYS AS (data->>'projectId') STORED,
+      related_id text GENERATED ALWAYS AS (
+        COALESCE(data->>'packageId', data->>'acceptanceId', data->>'workerReportId', data->>'surveyId')
+      ) STORED,
+      active boolean GENERATED ALWAYS AS (
+        CASE WHEN data ? 'isActive' THEN (data->>'isActive')::boolean ELSE NULL END
+      ) STORED
+    )`,
+    `CREATE INDEX IF NOT EXISTS ${table}_project_id_idx ON ${table} (project_id) WHERE project_id IS NOT NULL`,
+    `CREATE INDEX IF NOT EXISTS ${table}_related_id_idx ON ${table} (related_id) WHERE related_id IS NOT NULL`,
+  ]),
+  `CREATE UNIQUE INDEX IF NOT EXISTS bookings_idempotency_key_idx
+    ON bookings ((data->>'idempotencyKey'))
+    WHERE data ? 'idempotencyKey'`,
+];
+
+let sql: ReturnType<typeof postgres> | null = null;
+let migrationPromise: Promise<void> | null = null;
+
+function getSql(): ReturnType<typeof postgres> {
+  if (!sql) {
+    const url = process.env.DATABASE_URL;
+    if (!url) throw new Error('DATABASE_URL must be set before using PostgreSQL storage.');
+    sql = postgres(url, {
+      max: Number(process.env.DB_POOL_MAX) || 5,
+      connect_timeout: Number(process.env.DB_CONNECT_TIMEOUT_SECONDS) || 10,
+      idle_timeout: 20,
+    });
+  }
   return sql;
 }
 
-export function initSql(): void {
-  const url = process.env.DATABASE_URL;
-  if (url) {
-    sql = postgres(url, { max: 5, connect_timeout: 5 });
+export async function initializeDatabase(): Promise<void> {
+  if (migrationPromise) return migrationPromise;
+
+  migrationPromise = (async () => {
+    const db = getSql();
+    await db`SELECT 1`;
+    await db`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        version integer PRIMARY KEY,
+        applied_at timestamptz NOT NULL DEFAULT now()
+      )
+    `;
+
+    await db.begin(async (transaction) => {
+      await transaction`SELECT pg_advisory_xact_lock(742810341)`;
+      const applied = await transaction`
+        SELECT version FROM schema_migrations WHERE version = 1
+      `;
+      if (applied.length > 0) return;
+
+      for (const statement of initialSchema) {
+        await transaction.unsafe(statement);
+      }
+
+      await transaction`
+        INSERT INTO schema_migrations (version) VALUES (1)
+        ON CONFLICT (version) DO NOTHING
+      `;
+    });
+  })().catch((err) => {
+    migrationPromise = null;
+    throw err;
+  });
+
+  return migrationPromise;
+}
+
+export async function closeDatabase(): Promise<void> {
+  if (!sql) return;
+  const db = sql;
+  sql = null;
+  migrationPromise = null;
+  await db.end({ timeout: 5 });
+}
+
+async function createRecord<T extends RecordValue>(table: TableName, value: T): Promise<T> {
+  const db = getSql();
+  const rows = await db`
+    INSERT INTO ${db(table)} (id, data)
+    VALUES (${value.id}, ${JSON.stringify(value)}::jsonb)
+    ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data
+    RETURNING data
+  `;
+  const row = rows[0];
+  if (!row) throw new Error(`Failed to insert ${table} record ${value.id}.`);
+  return row.data as T;
+}
+
+async function getRecord<T extends RecordValue>(table: TableName, id: string): Promise<T | undefined> {
+  const db = getSql();
+  const rows = await db`SELECT data FROM ${db(table)} WHERE id = ${id}`;
+  return rows[0]?.data as T | undefined;
+}
+
+async function updateRecord<T extends RecordValue>(
+  table: TableName,
+  id: string,
+  updates: Partial<T>,
+  touchUpdatedAt = true,
+): Promise<T | undefined> {
+  const db = getSql();
+  const patch = {
+    ...updates,
+    ...(touchUpdatedAt ? { updatedAt: new Date().toISOString() } : {}),
+    id,
+  };
+  const rows = await db`
+    UPDATE ${db(table)}
+    SET data = data || ${JSON.stringify(patch)}::jsonb
+    WHERE id = ${id}
+    RETURNING data
+  `;
+  return rows[0]?.data as T | undefined;
+}
+
+async function listRecords<T extends RecordValue>(
+  table: TableName,
+  sortKey: string,
+  filter: { projectId?: string | undefined; relatedId?: string | undefined; activeOnly?: boolean } = {},
+): Promise<T[]> {
+  const db = getSql();
+  const order = db`(data->>${sortKey})::timestamptz DESC`;
+  let rows;
+
+  if (filter.projectId !== undefined && filter.relatedId !== undefined && filter.activeOnly) {
+    rows = await db`
+      SELECT data FROM ${db(table)}
+      WHERE project_id = ${filter.projectId} AND related_id = ${filter.relatedId} AND active = true
+      ORDER BY ${order}
+    `;
+  } else if (filter.projectId !== undefined && filter.activeOnly) {
+    rows = await db`
+      SELECT data FROM ${db(table)}
+      WHERE project_id = ${filter.projectId} AND active = true
+      ORDER BY ${order}
+    `;
+  } else if (filter.projectId !== undefined && filter.relatedId !== undefined) {
+    rows = await db`
+      SELECT data FROM ${db(table)}
+      WHERE project_id = ${filter.projectId} AND related_id = ${filter.relatedId}
+      ORDER BY ${order}
+    `;
+  } else if (filter.projectId !== undefined) {
+    rows = await db`
+      SELECT data FROM ${db(table)}
+      WHERE project_id = ${filter.projectId}
+      ORDER BY ${order}
+    `;
+  } else if (filter.relatedId !== undefined) {
+    rows = await db`
+      SELECT data FROM ${db(table)}
+      WHERE related_id = ${filter.relatedId}
+      ORDER BY ${order}
+    `;
+  } else if (filter.activeOnly) {
+    rows = await db`
+      SELECT data FROM ${db(table)}
+      WHERE active = true
+      ORDER BY ${order}
+    `;
+  } else {
+    rows = await db`SELECT data FROM ${db(table)} ORDER BY ${order}`;
   }
-}
-
-initSql();
-
-interface Booking {
-  id: string;
-  projectId: string;
-  scheduledAt: string;
-  status: string;
-  paymentStatus: string;
-  visitFeeKes: number | null;
-  specialInstructions: string | null;
-  checkInAt: string | null;
-  checkInGps: any;
-  checkOutAt: string | null;
-  checkOutGps: any;
-  assignedOfficerId: string | null;
-  bookedById: string;
-  idempotencyKey: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Project {
-  id: string;
-  reference: string;
-  contactId: string;
-  siteCounty: string;
-  siteSubCounty: string | null;
-  siteArea: string;
-  siteDirections: string | null;
-  projectType: string | null;
-  siteDescription: string | null;
-  currentStage: string;
-  createdFromConversationId: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Survey {
-  id: string;
-  bookingId: string;
-  capturedById: string;
-  version: number;
-  status: string;
-  schemaVersion: string;
-  sectionA: any;
-  sectionB: any;
-  sectionC: any;
-  sectionD: any;
-  sectionE: any;
-  sectionF: any;
-  sectionG: any;
-  lockedAt: string | null;
-  submittedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ReportVersion {
-  id: string;
-  surveyId: string;
-  versionNumber: number;
-  generatorStatus: string;
-  generatorError: string | null;
-  approvalState: string;
-  approvedById: string | null;
-  approvedAt: string | null;
-  generatedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Publication {
-  id: string;
-  reportVersionId: string;
-  publishedById: string;
-  publishedAt: string;
-  revokedAt: string | null;
-  revokedById: string | null;
-  revokeReason: string | null;
-  createdAt: string;
-}
-
-interface Media {
-  id: string;
-  surveyId: string;
-  kind: string;
-  category: string;
-  caption: string | null;
-  storageKey: string;
-  mimeType: string;
-  sizeBytes: number | null;
-  checksum: string | null;
-  capturedAt: string | null;
-  uploadedAt: string;
-}
-
-// ── In-memory stores ─────────────────────────────────────────────────────────
-const bookings = new Map<string, Booking>();
-const projects = new Map<string, Project>();
-const surveys = new Map<string, Survey>();
-const reportVersions = new Map<string, ReportVersion>();
-const publications = new Map<string, Publication>();
-const mediaStore = new Map<string, Media>();
-
-// ── Counters ─────────────────────────────────────────────────────────────────
-let projectSequenceCounter = 0;
-
-export function resetStore() {
-  bookings.clear();
-  projects.clear();
-  surveys.clear();
-  reportVersions.clear();
-  publications.clear();
-  mediaStore.clear();
-  projectSequenceCounter = 0;
-  designPackages.clear();
-  designTasks.clear();
-  acceptanceRecords.clear();
-  acceptanceVerifications.clear();
-  approvalCases.clear();
-  contracts.clear();
-  mobilizations.clear();
-  siteLogs.clear();
-  workHolds.clear();
-  delegations.clear();
-  safetyHolds.clear();
-  suppliers.clear();
-  invoices.clear();
-  workerReports.clear();
-  verifications.clear();
-  directoryEntries.clear();
-}
-
-export function getProjectSequenceCounter(): number {
-  return projectSequenceCounter;
-}
-
-export function incrementProjectSequenceCounter(): void {
-  projectSequenceCounter += 1;
-}
-
-// ── Booking CRUD ─────────────────────────────────────────────────────────────
-export function createBooking(booking: Booking): void {
-  bookings.set(booking.id, booking);
-}
-
-export function getBooking(id: string): Booking | undefined {
-  return bookings.get(id);
-}
-
-export function updateBooking(id: string, updates: Partial<Booking>): Booking | undefined {
-  const existing = bookings.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  bookings.set(id, updated);
-  return updated;
-}
-
-export function listBookings(): Booking[] {
-  return Array.from(bookings.values()).sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function findBookingByIdempotencyKey(idempotencyKey: string): Booking | undefined {
-  return Array.from(bookings.values()).find(b => b.idempotencyKey === idempotencyKey);
-}
-
-// ── Project CRUD ─────────────────────────────────────────────────────────────
-export function createProject(project: Project): void {
-  projects.set(project.id, project);
-}
-
-export function getProject(id: string): Project | undefined {
-  return projects.get(id);
-}
-
-export function updateProject(id: string, updates: Partial<Project>): Project | undefined {
-  const existing = projects.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  projects.set(id, updated);
-  return updated;
-}
-
-export function listProjects(): Project[] {
-  return Array.from(projects.values()).sort((a, b) =>
-    new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-  );
-}
-
-// ── Survey CRUD ──────────────────────────────────────────────────────────────
-export function createSurvey(survey: Survey): void {
-  surveys.set(survey.id, survey);
-}
-
-export function getSurvey(id: string): Survey | undefined {
-  return surveys.get(id);
-}
-
-export function updateSurvey(id: string, updates: Partial<Survey>): Survey | undefined {
-  const existing = surveys.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  surveys.set(id, updated);
-  return updated;
-}
-
-export function listSurveys(): Survey[] {
-  return Array.from(surveys.values()).sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-// ── Report CRUD ──────────────────────────────────────────────────────────────
-export function createReportVersion(report: ReportVersion): void {
-  reportVersions.set(report.id, report);
-}
-
-export function getReportVersion(id: string): ReportVersion | undefined {
-  return reportVersions.get(id);
-}
-
-export function updateReportVersion(id: string, updates: Partial<ReportVersion>): ReportVersion | undefined {
-  const existing = reportVersions.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  reportVersions.set(id, updated);
-  return updated;
-}
-
-export function listReportVersions(): ReportVersion[] {
-  return Array.from(reportVersions.values()).sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-// ── Publication CRUD ─────────────────────────────────────────────────────────
-export function createPublication(publication: Publication): void {
-  publications.set(publication.id, publication);
-}
-
-export function getPublication(id: string): Publication | undefined {
-  return publications.get(id);
-}
-
-export function updatePublication(id: string, updates: Partial<Publication>): Publication | undefined {
-  const existing = publications.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates };
-  publications.set(id, updated);
-  return updated;
-}
-
-export function listPublications(): Publication[] {
-  return Array.from(publications.values()).sort((a, b) =>
-    new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
-}
-
-// ── Media CRUD ───────────────────────────────────────────────────────────────
-export function createMedia(media: Media): void {
-  mediaStore.set(media.id, media);
-}
-
-export function getMedia(id: string): Media | undefined {
-  return mediaStore.get(id);
-}
-
-export function listMedia(): Media[] {
-  return Array.from(mediaStore.values()).sort((a, b) =>
-    new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-  );
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// MODULE 2 — Planning & Design Packages
-// ═════════════════════════════════════════════════════════════════════════════
-
-interface DesignPackage {
-  id: string;
-  projectId: string;
-  discipline: string;
-  isReleased: boolean;
-  createdById: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface DesignTask {
-  id: string;
-  packageId: string;
-  title: string;
-  status: string;
-  assignedToId: string | null;
-  dueAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const designPackages = new Map<string, DesignPackage>();
-const designTasks = new Map<string, DesignTask>();
-
-export function createDesignPackage(pkg: DesignPackage): void {
-  designPackages.set(pkg.id, pkg);
-}
-
-export function getDesignPackage(id: string): DesignPackage | undefined {
-  return designPackages.get(id);
-}
-
-export function listDesignPackages(projectId?: string): DesignPackage[] {
-  let items = Array.from(designPackages.values());
-  if (projectId) items = items.filter((p) => p.projectId === projectId);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateDesignPackage(
-  id: string,
-  updates: Partial<DesignPackage>,
-): DesignPackage | undefined {
-  const existing = designPackages.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  designPackages.set(id, updated);
-  return updated;
-}
-
-export function createDesignTask(task: DesignTask): void {
-  designTasks.set(task.id, task);
-}
-
-export function getDesignTask(id: string): DesignTask | undefined {
-  return designTasks.get(id);
-}
-
-export function listDesignTasks(packageId?: string): DesignTask[] {
-  let items = Array.from(designTasks.values());
-  if (packageId) items = items.filter((t) => t.packageId === packageId);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateDesignTask(
-  id: string,
-  updates: Partial<DesignTask>,
-): DesignTask | undefined {
-  const existing = designTasks.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  designTasks.set(id, updated);
-  return updated;
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// MODULE 3 — Client Acceptance
-// ═════════════════════════════════════════════════════════════════════════════
-
-interface AcceptanceRecord {
-  id: string;
-  projectId: string;
-  method: string;
-  status: string;
-  acceptedById: string | null;
-  acceptedAt: string | null;
-  notes: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface AcceptanceVerification {
-  id: string;
-  acceptanceId: string;
-  verifiedById: string;
-  decision: string; // VERIFIED / RETURNED_FOR_CLARIFICATION / REJECTED
-  comments: string | null;
-  verifiedAt: string;
-}
-
-const acceptanceRecords = new Map<string, AcceptanceRecord>();
-const acceptanceVerifications = new Map<string, AcceptanceVerification>();
-
-export function createAcceptanceRecord(record: AcceptanceRecord): void {
-  acceptanceRecords.set(record.id, record);
-}
-
-export function getAcceptanceRecord(id: string): AcceptanceRecord | undefined {
-  return acceptanceRecords.get(id);
-}
-
-export function listAcceptanceRecords(projectId?: string): AcceptanceRecord[] {
-  let items = Array.from(acceptanceRecords.values());
-  if (projectId) items = items.filter((a) => a.projectId === projectId);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateAcceptanceRecord(
-  id: string,
-  updates: Partial<AcceptanceRecord>,
-): AcceptanceRecord | undefined {
-  const existing = acceptanceRecords.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  acceptanceRecords.set(id, updated);
-  return updated;
-}
-
-export function createAcceptanceVerification(
-  verification: AcceptanceVerification,
-): void {
-  acceptanceVerifications.set(verification.id, verification);
-}
-
-export function listAcceptanceVerifications(
-  acceptanceId: string,
-): AcceptanceVerification[] {
-  return Array.from(acceptanceVerifications.values())
-    .filter((v) => v.acceptanceId === acceptanceId)
-    .sort((a, b) =>
-      new Date(b.verifiedAt).getTime() - new Date(a.verifiedAt).getTime()
-    );
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// MODULE 4 — Approvals
-// ═════════════════════════════════════════════════════════════════════════════
-
-interface ApprovalCase {
-  id: string;
-  projectId: string;
-  type: string; // e.g. "PERMIT", "DESIGN", "VARIATION"
-  status: string; // OPEN / IN_PROGRESS / SUBMITTED / RETURNED / CLEARED / REJECTED
-  decidedById: string | null;
-  decidedAt: string | null;
-  decision: string | null; // APPROVED / REJECTED / RETURNED
-  comments: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
 
-const approvalCases = new Map<string, ApprovalCase>();
-
-export function createApprovalCase(caseItem: ApprovalCase): void {
-  approvalCases.set(caseItem.id, caseItem);
-}
-
-export function getApprovalCase(id: string): ApprovalCase | undefined {
-  return approvalCases.get(id);
-}
-
-export function listApprovalCases(projectId?: string): ApprovalCase[] {
-  let items = Array.from(approvalCases.values());
-  if (projectId) items = items.filter((c) => c.projectId === projectId);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateApprovalCase(
-  id: string,
-  updates: Partial<ApprovalCase>,
-): ApprovalCase | undefined {
-  const existing = approvalCases.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  approvalCases.set(id, updated);
-  return updated;
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// MODULE 5 — Contracts
-// ═════════════════════════════════════════════════════════════════════════════
-
-interface Contract {
-  id: string;
-  projectId: string;
-  status: string; // DRAFT / SENT / UNDER_NEGOTIATION / EXECUTED / TERMINATED / EXPIRED
-  engagementType: string;
-  executedById: string | null;
-  executedAt: string | null;
-  createdById: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const contracts = new Map<string, Contract>();
-
-export function createContract(contract: Contract): void {
-  contracts.set(contract.id, contract);
-}
-
-export function getContract(id: string): Contract | undefined {
-  return contracts.get(id);
-}
-
-export function listContracts(projectId?: string): Contract[] {
-  let items = Array.from(contracts.values());
-  if (projectId) items = items.filter((c) => c.projectId === projectId);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateContract(
-  id: string,
-  updates: Partial<Contract>,
-): Contract | undefined {
-  const existing = contracts.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  contracts.set(id, updated);
-  return updated;
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// MODULE 6 — Construction
-// ═════════════════════════════════════════════════════════════════════════════
-
-interface Mobilization {
-  id: string;
-  projectId: string;
-  status: string; // PLANNED / MOBILIZED / DEMOBILIZED
-  mobilizedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface SiteLog {
-  id: string;
-  projectId: string;
-  entry: string;
-  recordedById: string | null;
-  recordedAt: string;
-}
-
-interface WorkHold {
-  id: string;
-  projectId: string;
-  reason: string;
-  isActive: boolean;
-  liftedById: string | null;
-  liftedAt: string | null;
-  liftReason: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const mobilizations = new Map<string, Mobilization>();
-const siteLogs = new Map<string, SiteLog>();
-const workHolds = new Map<string, WorkHold>();
-
-export function createMobilization(m: Mobilization): void {
-  mobilizations.set(m.id, m);
-}
-
-export function getMobilization(id: string): Mobilization | undefined {
-  return mobilizations.get(id);
-}
-
-export function listMobilizations(projectId?: string): Mobilization[] {
-  let items = Array.from(mobilizations.values());
-  if (projectId) items = items.filter((m) => m.projectId === projectId);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateMobilization(
-  id: string,
-  updates: Partial<Mobilization>,
-): Mobilization | undefined {
-  const existing = mobilizations.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  mobilizations.set(id, updated);
-  return updated;
-}
-
-export function createSiteLog(log: SiteLog): void {
-  siteLogs.set(log.id, log);
-}
-
-export function listSiteLogs(projectId?: string): SiteLog[] {
-  let items = Array.from(siteLogs.values());
-  if (projectId) items = items.filter((l) => l.projectId === projectId);
-  return items.sort((a, b) =>
-    new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime()
-  );
-}
-
-export function createWorkHold(hold: WorkHold): void {
-  workHolds.set(hold.id, hold);
-}
-
-export function getWorkHold(id: string): WorkHold | undefined {
-  return workHolds.get(id);
-}
-
-export function listWorkHolds(projectId?: string, activeOnly = false): WorkHold[] {
-  let items = Array.from(workHolds.values());
-  if (projectId) items = items.filter((h) => h.projectId === projectId);
-  if (activeOnly) items = items.filter((h) => h.isActive);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateWorkHold(
-  id: string,
-  updates: Partial<WorkHold>,
-): WorkHold | undefined {
-  const existing = workHolds.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  workHolds.set(id, updated);
-  return updated;
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// MODULE 7 — Central Administration & Governance
-// ═════════════════════════════════════════════════════════════════════════════
-
-interface Delegation {
-  id: string;
-  fromRole: string;
-  toRole: string;
-  scope: string;
-  status: string; // ACTIVE / SUSPENDED / REVOKED / EXPIRED
-  delegatedById: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface SafetyHold {
-  id: string;
-  projectId: string;
-  reason: string;
-  isActive: boolean;
-  liftedById: string | null;
-  liftedAt: string | null;
-  liftReason: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Supplier {
-  id: string;
-  name: string;
-  contact: string | null;
-  bankAccount: string | null;
-  beneficiaryVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Invoice {
-  id: string;
-  projectId: string;
-  supplierId: string | null;
-  amountKes: number;
-  status: string; // PENDING / PARTIALLY_PAID / PAID / WAIVED
-  paidById: string | null;
-  paidAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface WorkerReport {
-  id: string;
-  projectId: string;
-  title: string;
-  content: string;
-  submittedById: string | null;
-  submittedAt: string;
-}
-
-interface Verification {
-  id: string;
-  workerReportId: string;
-  verifiedById: string;
-  decision: string; // VERIFIED / RETURNED / REJECTED
-  comments: string | null;
-  verifiedAt: string;
-}
-
-interface DirectoryEntry {
-  id: string;
-  name: string;
-  role: string;
-  email: string | null;
-  phone: string | null;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const delegations = new Map<string, Delegation>();
-const safetyHolds = new Map<string, SafetyHold>();
-const suppliers = new Map<string, Supplier>();
-const invoices = new Map<string, Invoice>();
-const workerReports = new Map<string, WorkerReport>();
-const verifications = new Map<string, Verification>();
-const directoryEntries = new Map<string, DirectoryEntry>();
-
-// ── Delegations ──────────────────────────────────────────────────────────────
-export function createDelegation(d: Delegation): void {
-  delegations.set(d.id, d);
-}
-
-export function listDelegations(): Delegation[] {
-  return Array.from(delegations.values()).sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateDelegation(
-  id: string,
-  updates: Partial<Delegation>,
-): Delegation | undefined {
-  const existing = delegations.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  delegations.set(id, updated);
-  return updated;
-}
-
-// ── Safety holds ─────────────────────────────────────────────────────────────
-export function createSafetyHold(hold: SafetyHold): void {
-  safetyHolds.set(hold.id, hold);
-}
-
-export function getSafetyHold(id: string): SafetyHold | undefined {
-  return safetyHolds.get(id);
-}
-
-export function listSafetyHolds(projectId?: string, activeOnly = false): SafetyHold[] {
-  let items = Array.from(safetyHolds.values());
-  if (projectId) items = items.filter((h) => h.projectId === projectId);
-  if (activeOnly) items = items.filter((h) => h.isActive);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateSafetyHold(
-  id: string,
-  updates: Partial<SafetyHold>,
-): SafetyHold | undefined {
-  const existing = safetyHolds.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  safetyHolds.set(id, updated);
-  return updated;
-}
-
-// ── Suppliers ────────────────────────────────────────────────────────────────
-export function createSupplier(s: Supplier): void {
-  suppliers.set(s.id, s);
-}
-
-export function getSupplier(id: string): Supplier | undefined {
-  return suppliers.get(id);
-}
-
-export function listSuppliers(): Supplier[] {
-  return Array.from(suppliers.values()).sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateSupplier(
-  id: string,
-  updates: Partial<Supplier>,
-): Supplier | undefined {
-  const existing = suppliers.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  suppliers.set(id, updated);
-  return updated;
-}
-
-// ── Invoices ─────────────────────────────────────────────────────────────────
-export function createInvoice(inv: Invoice): void {
-  invoices.set(inv.id, inv);
-}
-
-export function getInvoice(id: string): Invoice | undefined {
-  return invoices.get(id);
-}
-
-export function listInvoices(projectId?: string): Invoice[] {
-  let items = Array.from(invoices.values());
-  if (projectId) items = items.filter((i) => i.projectId === projectId);
-  return items.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateInvoice(
-  id: string,
-  updates: Partial<Invoice>,
-): Invoice | undefined {
-  const existing = invoices.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  invoices.set(id, updated);
-  return updated;
-}
-
-// ── Worker reports ───────────────────────────────────────────────────────────
-export function createWorkerReport(r: WorkerReport): void {
-  workerReports.set(r.id, r);
-}
-
-export function getWorkerReport(id: string): WorkerReport | undefined {
-  return workerReports.get(id);
-}
-
-export function listWorkerReports(projectId?: string): WorkerReport[] {
-  let items = Array.from(workerReports.values());
-  if (projectId) items = items.filter((r) => r.projectId === projectId);
-  return items.sort((a, b) =>
-    new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-  );
-}
-
-export function updateWorkerReport(
-  id: string,
-  updates: Partial<WorkerReport>,
-): WorkerReport | undefined {
-  const existing = workerReports.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  workerReports.set(id, updated);
-  return updated;
-}
-
-// ── Verifications ────────────────────────────────────────────────────────────
-export function createVerification(v: Verification): void {
-  verifications.set(v.id, v);
-}
-
-export function listVerifications(workerReportId: string): Verification[] {
-  return Array.from(verifications.values())
-    .filter((v) => v.workerReportId === workerReportId)
-    .sort((a, b) =>
-      new Date(b.verifiedAt).getTime() - new Date(a.verifiedAt).getTime()
-    );
-}
-
-// ── Directory ────────────────────────────────────────────────────────────────
-export function createDirectoryEntry(entry: DirectoryEntry): void {
-  directoryEntries.set(entry.id, entry);
-}
-
-export function getDirectoryEntry(id: string): DirectoryEntry | undefined {
-  return directoryEntries.get(id);
-}
-
-export function listDirectoryEntries(): DirectoryEntry[] {
-  return Array.from(directoryEntries.values()).sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-}
-
-export function updateDirectoryEntry(
-  id: string,
-  updates: Partial<DirectoryEntry>,
-): DirectoryEntry | undefined {
-  const existing = directoryEntries.get(id);
-  if (!existing) return undefined;
-  const updated = { ...existing, ...updates, updatedAt: new Date().toISOString() };
-  directoryEntries.set(id, updated);
-  return updated;
-}
+  return rows.map((row) => row.data as T);
+}
+
+export async function nextProjectSequence(): Promise<number> {
+  const db = getSql();
+  const rows = await db`SELECT nextval('project_reference_seq') AS value`;
+  const row = rows[0];
+  if (!row) throw new Error('Failed to allocate a project reference sequence.');
+  return Number(row.value);
+}
+
+export async function resetStore(): Promise<void> {
+  const db = getSql();
+  await db.begin(async (transaction) => {
+    for (const table of tables) {
+      await transaction.unsafe(`TRUNCATE TABLE ${table} CASCADE`);
+    }
+    await transaction`ALTER SEQUENCE project_reference_seq RESTART WITH 1`;
+  });
+}
+
+export async function createProjectAndBooking(
+  project: RecordValue,
+  booking: RecordValue,
+): Promise<boolean> {
+  const db = getSql();
+  return db.begin(async (transaction) => {
+    const idempotencyKey = String(booking.idempotencyKey);
+    await transaction`SELECT pg_advisory_xact_lock(hashtext(${idempotencyKey}))`;
+    const existing = await transaction`
+      SELECT id FROM bookings WHERE data->>'idempotencyKey' = ${idempotencyKey}
+    `;
+    if (existing.length > 0) return false;
+
+    await transaction`
+      INSERT INTO projects (id, data)
+      VALUES (${project.id}, ${JSON.stringify(project)}::jsonb)
+    `;
+    await transaction`
+      INSERT INTO bookings (id, data)
+      VALUES (${booking.id}, ${JSON.stringify(booking)}::jsonb)
+    `;
+    return true;
+  });
+}
+
+export const createBooking = (value: RecordValue) => createRecord('bookings', value);
+export const getBooking = (id: string) => getRecord('bookings', id);
+export const updateBooking = (id: string, updates: Partial<RecordValue>) => updateRecord('bookings', id, updates);
+export const listBookings = () => listRecords('bookings', 'createdAt');
+
+export async function findBookingByIdempotencyKey(idempotencyKey: string): Promise<RecordValue | undefined> {
+  const db = getSql();
+  const rows = await db`
+    SELECT data FROM bookings WHERE data->>'idempotencyKey' = ${idempotencyKey}
+  `;
+  return rows[0]?.data as RecordValue | undefined;
+}
+
+export const createProject = (value: RecordValue) => createRecord('projects', value);
+export const getProject = (id: string) => getRecord('projects', id);
+export const updateProject = (id: string, updates: Partial<RecordValue>) => updateRecord('projects', id, updates);
+export const listProjects = () => listRecords('projects', 'updatedAt');
+
+export const createSurvey = (value: RecordValue) => createRecord('surveys', value);
+export const getSurvey = (id: string) => getRecord('surveys', id);
+export const updateSurvey = (id: string, updates: Partial<RecordValue>) => updateRecord('surveys', id, updates);
+export const listSurveys = () => listRecords('surveys', 'createdAt');
+
+export const createReportVersion = (value: RecordValue) => createRecord('report_versions', value);
+export const getReportVersion = (id: string) => getRecord('report_versions', id);
+export const updateReportVersion = (id: string, updates: Partial<RecordValue>) => updateRecord('report_versions', id, updates);
+export const listReportVersions = () => listRecords('report_versions', 'createdAt');
+
+export const createPublication = (value: RecordValue) => createRecord('publications', value);
+export const getPublication = (id: string) => getRecord('publications', id);
+export const updatePublication = (id: string, updates: Partial<RecordValue>) => updateRecord('publications', id, updates, false);
+export const listPublications = () => listRecords('publications', 'publishedAt');
+
+export const createMedia = (value: RecordValue) => createRecord('media', value);
+export const getMedia = (id: string) => getRecord('media', id);
+export const listMedia = () => listRecords('media', 'uploadedAt');
+
+export const createDesignPackage = (value: RecordValue) => createRecord('design_packages', value);
+export const getDesignPackage = (id: string) => getRecord('design_packages', id);
+export const listDesignPackages = (projectId?: string) => listRecords('design_packages', 'createdAt', { projectId });
+export const updateDesignPackage = (id: string, updates: Partial<RecordValue>) => updateRecord('design_packages', id, updates);
+
+export const createDesignTask = (value: RecordValue) => createRecord('design_tasks', value);
+export const getDesignTask = (id: string) => getRecord('design_tasks', id);
+export const listDesignTasks = (packageId?: string) => listRecords('design_tasks', 'createdAt', { relatedId: packageId });
+export const updateDesignTask = (id: string, updates: Partial<RecordValue>) => updateRecord('design_tasks', id, updates);
+
+export const createAcceptanceRecord = (value: RecordValue) => createRecord('acceptance_records', value);
+export const getAcceptanceRecord = (id: string) => getRecord('acceptance_records', id);
+export const listAcceptanceRecords = (projectId?: string) => listRecords('acceptance_records', 'createdAt', { projectId });
+export const updateAcceptanceRecord = (id: string, updates: Partial<RecordValue>) => updateRecord('acceptance_records', id, updates);
+
+export const createAcceptanceVerification = (value: RecordValue) => createRecord('acceptance_verifications', value);
+export const listAcceptanceVerifications = (acceptanceId: string) => listRecords('acceptance_verifications', 'verifiedAt', { relatedId: acceptanceId });
+
+export const createApprovalCase = (value: RecordValue) => createRecord('approval_cases', value);
+export const getApprovalCase = (id: string) => getRecord('approval_cases', id);
+export const listApprovalCases = (projectId?: string) => listRecords('approval_cases', 'createdAt', { projectId });
+export const updateApprovalCase = (id: string, updates: Partial<RecordValue>) => updateRecord('approval_cases', id, updates);
+
+export const createContract = (value: RecordValue) => createRecord('contracts', value);
+export const getContract = (id: string) => getRecord('contracts', id);
+export const listContracts = (projectId?: string) => listRecords('contracts', 'createdAt', { projectId });
+export const updateContract = (id: string, updates: Partial<RecordValue>) => updateRecord('contracts', id, updates);
+
+export const createMobilization = (value: RecordValue) => createRecord('mobilizations', value);
+export const getMobilization = (id: string) => getRecord('mobilizations', id);
+export const listMobilizations = (projectId?: string) => listRecords('mobilizations', 'createdAt', { projectId });
+export const updateMobilization = (id: string, updates: Partial<RecordValue>) => updateRecord('mobilizations', id, updates);
+
+export const createSiteLog = (value: RecordValue) => createRecord('site_logs', value);
+export const listSiteLogs = (projectId?: string) => listRecords('site_logs', 'recordedAt', { projectId });
+
+export const createWorkHold = (value: RecordValue) => createRecord('work_holds', value);
+export const getWorkHold = (id: string) => getRecord('work_holds', id);
+export const listWorkHolds = (projectId?: string, activeOnly = false) => listRecords('work_holds', 'createdAt', { projectId, activeOnly });
+export const updateWorkHold = (id: string, updates: Partial<RecordValue>) => updateRecord('work_holds', id, updates);
+
+export const createDelegation = (value: RecordValue) => createRecord('delegations', value);
+export const listDelegations = () => listRecords('delegations', 'createdAt');
+export const updateDelegation = (id: string, updates: Partial<RecordValue>) => updateRecord('delegations', id, updates);
+
+export const createSafetyHold = (value: RecordValue) => createRecord('safety_holds', value);
+export const getSafetyHold = (id: string) => getRecord('safety_holds', id);
+export const listSafetyHolds = (projectId?: string, activeOnly = false) => listRecords('safety_holds', 'createdAt', { projectId, activeOnly });
+export const updateSafetyHold = (id: string, updates: Partial<RecordValue>) => updateRecord('safety_holds', id, updates);
+
+export const createSupplier = (value: RecordValue) => createRecord('suppliers', value);
+export const getSupplier = (id: string) => getRecord('suppliers', id);
+export const listSuppliers = () => listRecords('suppliers', 'createdAt');
+export const updateSupplier = (id: string, updates: Partial<RecordValue>) => updateRecord('suppliers', id, updates);
+
+export const createInvoice = (value: RecordValue) => createRecord('invoices', value);
+export const getInvoice = (id: string) => getRecord('invoices', id);
+export const listInvoices = (projectId?: string) => listRecords('invoices', 'createdAt', { projectId });
+export const updateInvoice = (id: string, updates: Partial<RecordValue>) => updateRecord('invoices', id, updates);
+
+export const createWorkerReport = (value: RecordValue) => createRecord('worker_reports', value);
+export const getWorkerReport = (id: string) => getRecord('worker_reports', id);
+export const listWorkerReports = (projectId?: string) => listRecords('worker_reports', 'submittedAt', { projectId });
+export const updateWorkerReport = (id: string, updates: Partial<RecordValue>) => updateRecord('worker_reports', id, updates);
+
+export const createVerification = (value: RecordValue) => createRecord('verifications', value);
+export const listVerifications = (workerReportId: string) => listRecords('verifications', 'verifiedAt', { relatedId: workerReportId });
+
+export const createDirectoryEntry = (value: RecordValue) => createRecord('directory_entries', value);
+export const getDirectoryEntry = (id: string) => getRecord('directory_entries', id);
+export const listDirectoryEntries = () => listRecords('directory_entries', 'createdAt');
+export const updateDirectoryEntry = (id: string, updates: Partial<RecordValue>) => updateRecord('directory_entries', id, updates);

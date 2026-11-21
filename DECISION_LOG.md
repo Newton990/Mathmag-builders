@@ -3,7 +3,7 @@
 **Purpose:** Record every decision taken, in progress, or planned so any future model/session can resume work without re-discovering context. This is the working memory for the "loop till done" effort.
 
 **Source of truth for spec:** `docs/specs/` from `Mathmag_Builders_Full_7_Modules_Download_Fixed-5.zip` (V3.0, 25 Oct 2026).  
-**Repo:** `C:\Users\user\Desktop\Mathmag builders\mathmag-mbms`  
+**Repo:** repository root (use repo-relative paths; no machine-local absolute paths)  
 **Started:** Thu Nov 12 2026  
 **Primary agent:** current model (future models should read this file + `MASTER_PLAN.md` + `AGENTS.md` first)
 
@@ -89,6 +89,33 @@
 **Files affected:** git
 **Next step:** None — code scope complete. Remaining items are deployment (Wasmer CLI, secrets, external PostgreSQL).
 
+## D-06 — PostgreSQL persistence and unified Wasmer runtime
+
+**Date:** 2026-11-19  
+**Status:** Done  
+**Decision:** Replace the API's process-local Maps with PostgreSQL-backed tables using the existing `postgres` client. Each existing domain record type has a dedicated table with JSONB payloads and indexed project/relationship columns. A versioned, idempotent migration runs before the HTTP server listens. Configure the Wasmer app as `newton/mathmag-builders`.
+**Rationale:** The repository had no Prisma schema or client; `postgres` was already a runtime dependency and avoids adding an ORM/codegen dependency. Production schema changes run at startup, not during the build where production DB credentials/network should not be required.
+**Files affected:** `apps/api/src/db.ts`, `apps/api/src/edge.ts`, `apps/api/src/migrate.ts`, `apps/api/src/config.ts`, `apps/api/package.json`, root `package.json`, `.env.example`, `app.yaml`, `wasmer.toml`, `server.js`
+**Next step:** Superseded by D-07, which provisions Wasmer-managed PostgreSQL.
+
+## D-07 — Wasmer managed PostgreSQL
+
+**Date:** 2026-11-19  
+**Status:** Done  
+**Decision:** Deploy the unified application as `newton/mbms` and provision Wasmer-managed PostgreSQL through `app.yaml`. When `DATABASE_URL` is not explicitly provided, construct it from Wasmer's injected `DB_*` values and require TLS.  
+**Rationale:** Use Wasmer's managed database rather than requiring users to provision an external PostgreSQL provider.  
+**Files affected:** `app.yaml`, `wasmer.toml`, `apps/api/src/config.ts`, `apps/api/src/config.test.ts`, `WASMER_DEPLOY.md`, `.env.example`  
+**Next step:** Configure the auth secrets, deploy, and smoke-test the managed database.
+
+## D-08 — Unified Wasmer cleanup and Web Standard auth
+
+**Date:** 2026-11-21
+**Status:** Done
+**Decision:** Standardize repository guidance and runtime dependencies on the unified `newton/mbms` Node 24 architecture. `AGENTS.md` and `MASTER_PLAN.md` now describe root `server.js`, root `public/` assets, `apps/api/src/edge.ts`, `postgres.js`, and idempotent startup migrations. Replace `jsonwebtoken` and `uuid` with `jose` and `crypto.randomUUID()`. Remove duplicate legacy environment files and confirmed stale Prisma/Express, SQLite/Argon2, pg-boss, timestamp, and hardcoded Windows-path artifacts.
+**Rationale:** D-06 and D-07 establish PostgreSQL persistence and Wasmer-managed database provisioning; stale instructions and Node-specific dependencies can cause incorrect builds or runtime failures. Web Standard crypto and JOSE avoid Edge/runtime compatibility issues.
+**Files affected:** `AGENTS.md`, `MASTER_PLAN.md`, `DECISION_LOG.md`, `apps/api/package.json`, `apps/api/src/auth.ts`, `apps/api/src/edge.ts`, `.env.example`, `.gitignore`, package scripts and lockfiles, and obsolete helper/artifact files.
+**Next step:** Run installation, typecheck, build, tests, and verify Wasmer deployment readiness.
+
 ---
 
 ## Planned work queue (from MASTER_PLAN.md §13)
@@ -98,7 +125,7 @@
 | 1 | Verify builds pass (tsc + vite) | Done (both exit 0) |
 | 2 | Install Wasmer CLI + deploy (deployment, out of code scope) | Future |
 | 3 | Set Wasmer secrets (deployment) | Future |
-| 4 | Run DB migrations against external PostgreSQL (deployment) | Future |
+| 4 | Run DB migrations against Wasmer managed PostgreSQL (deployment) | Future |
 | 5 | Port remaining stub routes to real handlers | Done (11 modules implemented) |
 | 6 | Add Zod input validation for all request bodies | Done |
 | 7 | Commit + push to git | Done (6c7c41e, pushed to origin main) |
@@ -108,15 +135,15 @@
 ## Summary — code scope COMPLETE
 
 - **Backend (`apps/api`):** `edge.ts` now has real handlers for ALL route groups (no 501 stubs). Auth, bookings, projects, surveys, reports, publications, portal, media were already implemented; planning, acceptance, approvals, contracts, construction, governance, safety, suppliers, invoices, worker-reports, directory were ported in this session. All with JWT auth, role-based access, Zod validation, and status-transition business rules.
-- **Database (`apps/api/src/db.ts`):** In-memory Map stores for all modules (working without external DB); `postgres.js` wired via `initSql()`/`getSql()` when `DATABASE_URL` is set (Wasmer production).
-- **Frontend (`apps/web`):** Vite PWA build passes, `dist/` ready for Wasmer static deploy.
+- **Database (`apps/api/src/db.ts`):** PostgreSQL-backed records; Wasmer's managed `DB_*` values are assembled into a TLS-required `DATABASE_URL` when one is not explicitly provided.
+- **Frontend (`apps/web`):** Vite builds static assets into root `public/`, served by the unified Wasmer Node entrypoint.
 - **Build loop (`scripts/deploy-wasmer.ps1`):** Rewritten (pure ASCII); `tsc --noEmit` + `vite build` both exit 0.
-- **Deploy:** Push to `origin main` done. Remaining deployment steps (Wasmer CLI, secrets, external PostgreSQL) are infrastructure, not code.
+- **Deploy:** Push to `origin main` done. Remaining deployment steps (Wasmer CLI, auth secrets, managed PostgreSQL startup/migration) are infrastructure, not code.
 
 ## Resumption instructions for a future model
 
 1. Read `DECISION_LOG.md` → `MASTER_PLAN.md` → `AGENTS.md`.
 2. Confirm builds: `npx tsc --project apps/api/tsconfig.json --noEmit` and `npm run build --workspace=@mbms/web`.
-3. Code scope is complete; only deployment remains (Wasmer CLI login, set 5 secrets, deploy api + web/dist, point CORS_ORIGIN/VITE_API_BASE_URL).
+3. Code scope is complete; only deployment remains (Wasmer CLI login, set JWT/MFA auth secrets, deploy `newton/mbms`, and verify managed PostgreSQL migrations).
 4. `DECISION_LOG.md` holds every decision taken for cross-model continuity.
 

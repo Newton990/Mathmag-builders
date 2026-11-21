@@ -24,7 +24,7 @@ Each subfolder is numbered in chronological order and documents a distinct actio
 
 ## Repository State
 
-- **Local path:** `C:\Users\user\Desktop\Mathmag builders\mathmag-mbms`
+- **Local path:** use the current workspace repository root; do not commit machine-local absolute paths
 - **GitHub repo:** `Newton990/Mathmag-builders` (branch: `main`)
 - **Sync status:** Local folder is in sync with GitHub `main` — no file differences found.
 - **Git installed locally:** No (not on PATH) — `git diff` / `git status` not yet available.

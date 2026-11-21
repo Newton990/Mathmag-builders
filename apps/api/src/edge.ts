@@ -4,16 +4,18 @@
 // Production-ready request handler for Wasmer Edge serverless deployment.
 // Uses Fetch API directly — no Express, no long-running processes.
 // Business rules grounded in docs/specs/ (7-module V3.0 spec pack).
-// Database: in-memory adapter (apps/api/src/db.ts)
+// Database: PostgreSQL-backed records (apps/api/src/db.ts)
 // ================================================================================
 
-import jwt from 'jsonwebtoken';
+import { SignJWT } from 'jose';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { verifyAccessToken, type JWTPayload, extractAuth, requireAuth, requireMfa, requireStepUp, requireRole } from './auth.js';
 import { corsHeaders, json, error, success, parseBody } from './responses.js';
 import {
-  createBooking, getBooking, updateBooking, listBookings, findBookingByIdempotencyKey,
-  createProject, getProject, updateProject, listProjects,
+  getBooking, updateBooking, listBookings, findBookingByIdempotencyKey,
+  getProject, updateProject, listProjects,
   createSurvey, getSurvey, updateSurvey, listSurveys,
   createReportVersion, getReportVersion, updateReportVersion, listReportVersions,
   createPublication, getPublication, updatePublication, listPublications,
@@ -40,7 +42,7 @@ import {
   createWorkerReport, getWorkerReport, listWorkerReports, updateWorkerReport,
   createVerification, listVerifications,
   createDirectoryEntry, getDirectoryEntry, listDirectoryEntries, updateDirectoryEntry,
-  resetStore, getProjectSequenceCounter, incrementProjectSequenceCounter,
+  createProjectAndBooking, initializeDatabase, nextProjectSequence,
 } from './db.js';
 import { z } from 'zod';
 
@@ -379,8 +381,8 @@ function handleHealth(origin: string | null, env: Env): Response {
 }
 
 // ── Auth middleware ───────────────────────────────────────────────────────────
-function getAuth(request: Request): AuthContext | null {
-  const auth = extractAuth(request);
+async function getAuth(request: Request): Promise<AuthContext | null> {
+  const auth = await extractAuth(request);
   return auth;
 }
 
@@ -393,7 +395,7 @@ async function handleAuth(
   origin: string | null,
   env: Env,
 ): Promise<Response> {
-  const issueToken = (user: { id: string; email: string; role: string; name?: string }, mfaVerified = true) => {
+  const issueToken = async (user: { id: string; email: string; role: string; name?: string }, mfaVerified = true) => {
     const payload = {
       sub: user.email,
       userId: user.id,
@@ -402,9 +404,20 @@ async function handleAuth(
       mfaVerified,
       stepUp: false,
     };
+    const secret = new TextEncoder().encode(config.JWT_SECRET);
+    const accessToken = await new SignJWT(payload)
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .setIssuedAt()
+      .setExpirationTime(`${config.JWT_ACCESS_EXPIRY_SECONDS}s`)
+      .sign(secret);
+    const refreshToken = await new SignJWT({ ...payload, type: 'refresh' })
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .setIssuedAt()
+      .setExpirationTime(`${config.JWT_REFRESH_EXPIRY_MS / 1000}s`)
+      .sign(secret);
     return {
-      accessToken: jwt.sign(payload, config.JWT_SECRET, { expiresIn: '15m' }),
-      refreshToken: jwt.sign({ ...payload, type: 'refresh' }, config.JWT_SECRET, { expiresIn: '7d' }),
+      accessToken,
+      refreshToken,
       user: {
         id: user.id,
         name: user.name ?? user.email.split('@')[0],
@@ -455,7 +468,7 @@ async function handleAuth(
       name: String(fullName).trim(),
       role: safeRole,
     };
-    const tokens = issueToken(user, true);
+    const tokens = await issueToken(user, true);
     return json(tokens, 200, origin, env);
   }
 
@@ -470,14 +483,14 @@ async function handleAuth(
       role: 'LEAD_ARCHITECT',
       name: 'Demo User',
     };
-    const tokens = issueToken(user, true);
+    const tokens = await issueToken(user, true);
     return json({ ...tokens, mfaVerified: true }, 200, origin, env);
   }
 
   if (path === '/auth/refresh' && method === 'POST') {
-    const auth = getAuth(request);
+    const auth = await getAuth(request);
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const tokens = issueToken({
+    const tokens = await issueToken({
       id: auth.userId,
       email: auth.email,
       role: auth.role,
@@ -487,7 +500,7 @@ async function handleAuth(
   }
 
   if (path === '/auth/me' && method === 'GET') {
-    const auth = getAuth(request);
+    const auth = await getAuth(request);
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
     return json({
       user: {
@@ -520,13 +533,13 @@ async function handleBookings(
 ): Promise<Response> {
   if (path === '/bookings' && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    return success(listBookings(), origin, env);
+    return success(await listBookings(), origin, env);
   }
 
   const bookingIdMatch = path.match(/^\/bookings\/([^/]+)$/);
   if (bookingIdMatch && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const booking = getBooking(bookingIdMatch[1]);
+    const booking = await getBooking(bookingIdMatch[1]);
     if (!booking) return error('Booking not found', 'NOT_FOUND', 404, origin, env);
     return success(booking, origin, env);
   }
@@ -539,17 +552,18 @@ async function handleBookings(
     const visitDate = new Date(scheduledAt);
     if (isNaN(visitDate.getTime()) || visitDate.getTime() < Date.now() - 300000) return error('The agreed site-visit date cannot be in the past', 'INVALID_DATE', 400, origin, env);
     if (!idempotencyKey || idempotencyKey.length < 8) return error('A stable idempotency key (min 8 chars) is required', 'IDEMPOTENCY_KEY_REQUIRED', 400, origin, env);
-    if (findBookingByIdempotencyKey(idempotencyKey)) return success({ message: 'Booking already exists', id: '' }, origin, env);
-    incrementProjectSequenceCounter();
-    const counter = getProjectSequenceCounter();
+    if (await findBookingByIdempotencyKey(idempotencyKey)) return success({ message: 'Booking already exists', id: '' }, origin, env);
+    const counter = await nextProjectSequence();
     const reference = `MB-${visitDate.getUTCFullYear()}-${String(counter).padStart(3, '0')}`;
     const projectId = crypto.randomUUID();
-    createProject({
+    const project = {
       id: projectId, reference, contactId: contactId ?? '', siteCounty: site?.county ?? '', siteSubCounty: site?.subCounty ?? null, siteArea: site?.area ?? '', siteDirections: site?.directions ?? null, projectType: site?.projectType ?? null, siteDescription: site?.description ?? null, currentStage: 'VISIT_BOOKED', createdFromConversationId: conversationId ?? null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-    });
+    };
     const bookingId = crypto.randomUUID();
     const booking: Booking = { id: bookingId, projectId, scheduledAt: visitDate.toISOString(), status: 'BOOKED', paymentStatus: 'PENDING', visitFeeKes: visitFeeKes ?? null, specialInstructions: specialInstructions ?? null, checkInAt: null, checkInGps: null, checkOutAt: null, checkOutGps: null, assignedOfficerId: assignedOfficerId ?? null, bookedById: auth.userId, idempotencyKey, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
-    createBooking(booking);
+    if (!(await createProjectAndBooking(project, booking))) {
+      return success({ message: 'Booking already exists', id: '' }, origin, env);
+    }
     return success({ booking, projectId, reference, created: true }, origin, env, 201);
   }
 
@@ -559,34 +573,34 @@ async function handleBookings(
     requireRole(auth, 'CLIENT_RELATIONS_OFFICER', 'ADMIN_MANAGEMENT');
     const { scheduledAt, reason } = body ?? {};
     if (!reason || reason.trim().length < 5) return error('A reason of at least 5 characters is required', 'REASON_REQUIRED', 400, origin, env);
-    const booking = getBooking(rescheduleMatch[1]);
+    const booking = await getBooking(rescheduleMatch[1]);
     if (!booking) return error('Booking not found', 'NOT_FOUND', 404, origin, env);
     if (booking.status === 'CANCELLED' || booking.status === 'VISIT_COMPLETED') return error('Cannot reschedule a terminal booking', 'BOOKING_TERMINAL', 409, origin, env);
     const newDate = new Date(scheduledAt);
     if (isNaN(newDate.getTime())) return error('Invalid scheduled date', 'INVALID_DATE', 400, origin, env);
-    return success(updateBooking(rescheduleMatch[1], { scheduledAt: newDate.toISOString(), status: 'RESCHEDULED' }), origin, env);
+    return success(await updateBooking(rescheduleMatch[1], { scheduledAt: newDate.toISOString(), status: 'RESCHEDULED' }), origin, env);
   }
 
   const checkInMatch = path.match(/^\/bookings\/([^/]+)\/check-in$/);
   if (checkInMatch && method === 'POST') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const booking = getBooking(checkInMatch[1]);
+    const booking = await getBooking(checkInMatch[1]);
     if (!booking) return error('Booking not found', 'NOT_FOUND', 404, origin, env);
     if (booking.status !== 'BOOKED' && booking.status !== 'RESCHEDULED') return error('Cannot check in from current state', 'INVALID_BOOKING_STATE', 409, origin, env);
     const { gps } = body ?? {};
     if (!gps?.latitude || !gps?.longitude) return error('GPS latitude and longitude are required', 'GPS_REQUIRED', 400, origin, env);
-    return success(updateBooking(checkInMatch[1], { status: 'VISIT_UNDERWAY', checkInAt: new Date().toISOString(), checkInGps: gps }), origin, env);
+    return success(await updateBooking(checkInMatch[1], { status: 'VISIT_UNDERWAY', checkInAt: new Date().toISOString(), checkInGps: gps }), origin, env);
   }
 
   const checkOutMatch = path.match(/^\/bookings\/([^/]+)\/check-out$/);
   if (checkOutMatch && method === 'POST') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const booking = getBooking(checkOutMatch[1]);
+    const booking = await getBooking(checkOutMatch[1]);
     if (!booking) return error('Booking not found', 'NOT_FOUND', 404, origin, env);
     if (booking.status !== 'VISIT_UNDERWAY') return error('Check-in is required before check-out', 'CHECK_IN_REQUIRED', 409, origin, env);
     const { gps } = body ?? {};
     if (!gps?.latitude || !gps?.longitude) return error('GPS latitude and longitude are required', 'GPS_REQUIRED', 400, origin, env);
-    return success(updateBooking(checkOutMatch[1], { status: 'VISIT_COMPLETED', checkOutAt: new Date().toISOString(), checkOutGps: gps }), origin, env);
+    return success(await updateBooking(checkOutMatch[1], { status: 'VISIT_COMPLETED', checkOutAt: new Date().toISOString(), checkOutGps: gps }), origin, env);
   }
 
   const feeMatch = path.match(/^\/bookings\/([^/]+)\/fee$/);
@@ -595,7 +609,7 @@ async function handleBookings(
     requireRole(auth, 'CLIENT_RELATIONS_OFFICER', 'ADMIN_MANAGEMENT');
     const { paymentStatus } = body ?? {};
     if (!paymentStatus) return error('Payment status is required', 'VALIDATION_ERROR', 400, origin, env);
-    return success(updateBooking(feeMatch[1], { paymentStatus }), origin, env);
+    return success(await updateBooking(feeMatch[1], { paymentStatus }), origin, env);
   }
 
   return error('Booking route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -612,12 +626,12 @@ async function handleProjects(
 ): Promise<Response> {
   if (path === '/projects' && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    return success(listProjects(), origin, env);
+    return success(await listProjects(), origin, env);
   }
   const projectIdMatch = path.match(/^\/projects\/([^/]+)$/);
   if (projectIdMatch && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const project = getProject(projectIdMatch[1]);
+    const project = await getProject(projectIdMatch[1]);
     if (!project) return error('Project not found', 'NOT_FOUND', 404, origin, env);
     return success(project, origin, env);
   }
@@ -635,12 +649,12 @@ async function handleSurveys(
 ): Promise<Response> {
   if (path === '/surveys' && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    return success(listSurveys(), origin, env);
+    return success(await listSurveys(), origin, env);
   }
   const surveyIdMatch = path.match(/^\/surveys\/([^/]+)$/);
   if (surveyIdMatch && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const survey = getSurvey(surveyIdMatch[1]);
+    const survey = await getSurvey(surveyIdMatch[1]);
     if (!survey) return error('Survey not found', 'NOT_FOUND', 404, origin, env);
     return success(survey, origin, env);
   }
@@ -654,21 +668,21 @@ async function handleSurveys(
       sectionD: sectionD ?? null, sectionE: sectionE ?? null, sectionF: sectionF ?? null, sectionG: sectionG ?? null,
       lockedAt: null, submittedAt: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     };
-    createSurvey(survey);
+    await createSurvey(survey);
     return success(survey, origin, env, 201);
   }
   const surveyPatchMatch = path.match(/^\/surveys\/([^/]+)$/);
   if (surveyPatchMatch && method === 'PATCH') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
     const { sectionA, sectionB, sectionC, sectionD, sectionE, sectionF, sectionG, status } = body ?? {};
-    const survey = updateSurvey(surveyPatchMatch[1], { sectionA, sectionB, sectionC, sectionD, sectionE, sectionF, sectionG, status });
+    const survey = await updateSurvey(surveyPatchMatch[1], { sectionA, sectionB, sectionC, sectionD, sectionE, sectionF, sectionG, status });
     if (!survey) return error('Survey not found', 'NOT_FOUND', 404, origin, env);
     return success(survey, origin, env);
   }
   const surveySubmitMatch = path.match(/^\/surveys\/([^/]+)\/submit$/);
   if (surveySubmitMatch && method === 'POST') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const survey = updateSurvey(surveySubmitMatch[1], { status: 'SUBMITTED', lockedAt: new Date().toISOString(), submittedAt: new Date().toISOString() });
+    const survey = await updateSurvey(surveySubmitMatch[1], { status: 'SUBMITTED', lockedAt: new Date().toISOString(), submittedAt: new Date().toISOString() });
     if (!survey) return error('Survey not found or already submitted', 'NOT_FOUND', 404, origin, env);
     return success(survey, origin, env);
   }
@@ -686,12 +700,12 @@ async function handleReports(
 ): Promise<Response> {
   if (path === '/reports' && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    return success(listReportVersions(), origin, env);
+    return success(await listReportVersions(), origin, env);
   }
   const reportIdMatch = path.match(/^\/reports\/([^/]+)$/);
   if (reportIdMatch && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const report = getReportVersion(reportIdMatch[1]);
+    const report = await getReportVersion(reportIdMatch[1]);
     if (!report) return error('Report not found', 'NOT_FOUND', 404, origin, env);
     return success(report, origin, env);
   }
@@ -702,7 +716,7 @@ async function handleReports(
     const { decision, comments } = body ?? {};
     if (!decision || !['APPROVED', 'RETURNED'].includes(decision)) return error('Valid decision (APPROVED/RETURNED) is required', 'VALIDATION_ERROR', 400, origin, env);
     if (decision === 'RETURNED' && (!comments || comments.length < 5)) return error('Comments required when returning a report', 'COMMENTS_REQUIRED', 400, origin, env);
-    const report = updateReportVersion(reviewMatch[1], {
+    const report = await updateReportVersion(reviewMatch[1], {
       approvalState: decision === 'APPROVED' ? 'APPROVED' : 'RETURNED',
       approvedById: decision === 'APPROVED' ? auth.userId : null,
       approvedAt: decision === 'APPROVED' ? new Date().toISOString() : null,
@@ -724,21 +738,21 @@ async function handlePublications(
 ): Promise<Response> {
   if (path === '/publications' && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    return success(listPublications(), origin, env);
+    return success(await listPublications(), origin, env);
   }
   if (path === '/publications' && method === 'POST') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
     requireRole(auth, 'LEAD_ARCHITECT', 'ADMIN_MANAGEMENT');
     const { reportVersionId } = body ?? {};
     if (!reportVersionId) return error('Report version ID is required', 'VALIDATION_ERROR', 400, origin, env);
-    const report = getReportVersion(reportVersionId);
+    const report = await getReportVersion(reportVersionId);
     if (!report) return error('Report version not found', 'NOT_FOUND', 404, origin, env);
     if (report.approvalState !== 'APPROVED') return error('Only approved report versions can be published', 'NOT_APPROVED', 403, origin, env);
     const publication: Publication = {
       id: crypto.randomUUID(), reportVersionId, publishedById: auth.userId, publishedAt: new Date().toISOString(),
       revokedAt: null, revokedById: null, revokeReason: null, createdAt: new Date().toISOString(),
     };
-    createPublication(publication);
+    await createPublication(publication);
     return success(publication, origin, env, 201);
   }
   const revokeMatch = path.match(/^\/publications\/([^/]+)\/revoke$/);
@@ -747,7 +761,7 @@ async function handlePublications(
     requireRole(auth, 'LEAD_ARCHITECT', 'ADMIN_MANAGEMENT');
     const { reason } = body ?? {};
     if (!reason || reason.length < 5) return error('Revocation reason (min 5 chars) is required', 'VALIDATION_ERROR', 400, origin, env);
-    const publication = updatePublication(revokeMatch[1], { revokedAt: new Date().toISOString(), revokedById: auth.userId, revokeReason: reason });
+    const publication = await updatePublication(revokeMatch[1], { revokedAt: new Date().toISOString(), revokedById: auth.userId, revokeReason: reason });
     if (!publication) return error('Publication not found or already revoked', 'NOT_FOUND', 404, origin, env);
     return success(publication, origin, env);
   }
@@ -765,12 +779,12 @@ async function handlePortal(
 ): Promise<Response> {
   if (path === '/portal' && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    return success(listProjects(), origin, env);
+    return success(await listProjects(), origin, env);
   }
   const portalIdMatch = path.match(/^\/portal\/([^/]+)$/);
   if (portalIdMatch && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const project = getProject(portalIdMatch[1]);
+    const project = await getProject(portalIdMatch[1]);
     if (!project) return error('Project not found', 'NOT_FOUND', 404, origin, env);
     return success(project, origin, env);
   }
@@ -788,12 +802,12 @@ async function handleMedia(
 ): Promise<Response> {
   if (path === '/media' && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    return success(listMedia(), origin, env);
+    return success(await listMedia(), origin, env);
   }
   const mediaIdMatch = path.match(/^\/media\/([^/]+)$/);
   if (mediaIdMatch && method === 'GET') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-    const media = getMedia(mediaIdMatch[1]);
+    const media = await getMedia(mediaIdMatch[1]);
     if (!media) return error('Media not found', 'NOT_FOUND', 404, origin, env);
     return success(media, origin, env);
   }
@@ -806,7 +820,7 @@ async function handleMedia(
       storageKey, mimeType: mimeType ?? 'application/octet-stream', sizeBytes: sizeBytes ?? null,
       checksum: checksum ?? null, capturedAt: capturedAt ?? null, uploadedAt: new Date().toISOString(),
     };
-    createMedia(media);
+    await createMedia(media);
     return success(media, origin, env, 201);
   }
   return error('Media route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -824,39 +838,39 @@ async function handlePlanning(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/planning' && method === 'GET') {
-    return success(listDesignPackages(), origin, env);
+    return success(await listDesignPackages(), origin, env);
   }
   if (path === '/planning/design-packages' && method === 'POST') {
     const v = validateBody(DesignPackageBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const pkg = createDesignPackage({ id: crypto.randomUUID(), projectId: v.data.projectId, discipline: v.data.discipline, isReleased: false, createdById: auth.userId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const pkg = await createDesignPackage({ id: crypto.randomUUID(), projectId: v.data.projectId, discipline: v.data.discipline, isReleased: false, createdById: auth.userId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(pkg, origin, env, 201);
   }
   const pkgIdMatch = path.match(/^\/planning\/design-packages\/([^/]+)$/);
   if (pkgIdMatch && method === 'GET') {
-    const pkg = getDesignPackage(pkgIdMatch[1]);
+    const pkg = await getDesignPackage(pkgIdMatch[1]);
     if (!pkg) return error('Design package not found', 'NOT_FOUND', 404, origin, env);
     return success(pkg, origin, env);
   }
   if (pkgIdMatch && method === 'PATCH') {
-    const pkg = updateDesignPackage(pkgIdMatch[1], body ?? {});
+    const pkg = await updateDesignPackage(pkgIdMatch[1], body ?? {});
     if (!pkg) return error('Design package not found', 'NOT_FOUND', 404, origin, env);
     return success(pkg, origin, env);
   }
   const tasksMatch = path.match(/^\/planning\/design-packages\/([^/]+)\/tasks$/);
   if (tasksMatch && method === 'GET') {
-    return success(listDesignTasks(tasksMatch[1]), origin, env);
+    return success(await listDesignTasks(tasksMatch[1]), origin, env);
   }
   if (tasksMatch && method === 'POST') {
     if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
     const v = validateBody(DesignTaskBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const task = createDesignTask({ id: crypto.randomUUID(), packageId: tasksMatch[1], title: v.data.title, status: v.data.status ?? 'DRAFT', assignedToId: v.data.assignedToId ?? null, dueAt: v.data.dueAt ?? null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const task = await createDesignTask({ id: crypto.randomUUID(), packageId: tasksMatch[1], title: v.data.title, status: v.data.status ?? 'DRAFT', assignedToId: v.data.assignedToId ?? null, dueAt: v.data.dueAt ?? null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(task, origin, env, 201);
   }
   const taskIdMatch = path.match(/^\/planning\/design-packages\/[^/]+\/tasks\/([^/]+)$/);
   if (taskIdMatch && method === 'PATCH') {
-    const task = updateDesignTask(taskIdMatch[1], body ?? {});
+    const task = await updateDesignTask(taskIdMatch[1], body ?? {});
     if (!task) return error('Design task not found', 'NOT_FOUND', 404, origin, env);
     return success(task, origin, env);
   }
@@ -875,17 +889,17 @@ async function handleAcceptance(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/acceptance' && method === 'GET') {
-    return success(listAcceptanceRecords(), origin, env);
+    return success(await listAcceptanceRecords(), origin, env);
   }
   if (path === '/acceptance' && method === 'POST') {
     const v = validateBody(AcceptanceBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const record = createAcceptanceRecord({ id: crypto.randomUUID(), projectId: v.data.projectId, method: v.data.method, status: 'PENDING', acceptedById: null, acceptedAt: null, notes: v.data.notes ?? null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const record = await createAcceptanceRecord({ id: crypto.randomUUID(), projectId: v.data.projectId, method: v.data.method, status: 'PENDING', acceptedById: null, acceptedAt: null, notes: v.data.notes ?? null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(record, origin, env, 201);
   }
   const accIdMatch = path.match(/^\/acceptance\/([^/]+)$/);
   if (accIdMatch && method === 'GET') {
-    const record = getAcceptanceRecord(accIdMatch[1]);
+    const record = await getAcceptanceRecord(accIdMatch[1]);
     if (!record) return error('Acceptance record not found', 'NOT_FOUND', 404, origin, env);
     return success(record, origin, env);
   }
@@ -894,10 +908,10 @@ async function handleAcceptance(
     requireRole(auth, 'CLIENT_RELATIONS_OFFICER', 'ADMIN_MANAGEMENT', 'LEAD_ARCHITECT');
     const v = validateBody(AcceptanceVerifySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const record = getAcceptanceRecord(verifyMatch[1]);
+    const record = await getAcceptanceRecord(verifyMatch[1]);
     if (!record) return error('Acceptance record not found', 'NOT_FOUND', 404, origin, env);
-    const updated = updateAcceptanceRecord(verifyMatch[1], { status: v.data.decision === 'VERIFIED' ? 'VERIFIED' : v.data.decision === 'REJECTED' ? 'REJECTED' : 'RETURNED_FOR_CLARIFICATION', acceptedById: auth.userId, acceptedAt: new Date().toISOString(), notes: v.data.comments ?? null });
-    createAcceptanceVerification({ id: crypto.randomUUID(), acceptanceId: verifyMatch[1], verifiedById: auth.userId, decision: v.data.decision, comments: v.data.comments ?? null, verifiedAt: new Date().toISOString() });
+    const updated = await updateAcceptanceRecord(verifyMatch[1], { status: v.data.decision === 'VERIFIED' ? 'VERIFIED' : v.data.decision === 'REJECTED' ? 'REJECTED' : 'RETURNED_FOR_CLARIFICATION', acceptedById: auth.userId, acceptedAt: new Date().toISOString(), notes: v.data.comments ?? null });
+    await createAcceptanceVerification({ id: crypto.randomUUID(), acceptanceId: verifyMatch[1], verifiedById: auth.userId, decision: v.data.decision, comments: v.data.comments ?? null, verifiedAt: new Date().toISOString() });
     return success(updated, origin, env);
   }
   return error('Acceptance route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -915,17 +929,17 @@ async function handleApprovals(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/approvals' && method === 'GET') {
-    return success(listApprovalCases(), origin, env);
+    return success(await listApprovalCases(), origin, env);
   }
   if (path === '/approvals' && method === 'POST') {
     const v = validateBody(ApprovalCaseBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const c = createApprovalCase({ id: crypto.randomUUID(), projectId: v.data.projectId, type: v.data.type, status: v.data.status ?? 'OPEN', decidedById: null, decidedAt: null, decision: null, comments: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const c = await createApprovalCase({ id: crypto.randomUUID(), projectId: v.data.projectId, type: v.data.type, status: v.data.status ?? 'OPEN', decidedById: null, decidedAt: null, decision: null, comments: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(c, origin, env, 201);
   }
   const caseIdMatch = path.match(/^\/approvals\/([^/]+)$/);
   if (caseIdMatch && method === 'GET') {
-    const c = getApprovalCase(caseIdMatch[1]);
+    const c = await getApprovalCase(caseIdMatch[1]);
     if (!c) return error('Approval case not found', 'NOT_FOUND', 404, origin, env);
     return success(c, origin, env);
   }
@@ -934,9 +948,9 @@ async function handleApprovals(
     requireRole(auth, 'DEPARTMENT_HEAD', 'LEAD_ARCHITECT', 'ADMIN_MANAGEMENT', 'GENERAL_MANAGER');
     const v = validateBody(ApprovalDecisionSchema, body, origin, env);
     if (!v.ok) return v.response;
-    const c = getApprovalCase(decisionMatch[1]);
+    const c = await getApprovalCase(decisionMatch[1]);
     if (!c) return error('Approval case not found', 'NOT_FOUND', 404, origin, env);
-    const updated = updateApprovalCase(decisionMatch[1], { status: v.data.decision === 'APPROVED' ? 'CLEARED' : v.data.decision === 'REJECTED' ? 'REJECTED' : 'RETURNED', decidedById: auth.userId, decidedAt: new Date().toISOString(), decision: v.data.decision, comments: v.data.comments ?? null });
+    const updated = await updateApprovalCase(decisionMatch[1], { status: v.data.decision === 'APPROVED' ? 'CLEARED' : v.data.decision === 'REJECTED' ? 'REJECTED' : 'RETURNED', decidedById: auth.userId, decidedAt: new Date().toISOString(), decision: v.data.decision, comments: v.data.comments ?? null });
     return success(updated, origin, env);
   }
   return error('Approvals route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -954,26 +968,26 @@ async function handleContracts(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/contracts' && method === 'GET') {
-    return success(listContracts(), origin, env);
+    return success(await listContracts(), origin, env);
   }
   if (path === '/contracts' && method === 'POST') {
     const v = validateBody(ContractBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const c = createContract({ id: crypto.randomUUID(), projectId: v.data.projectId, status: 'DRAFT', engagementType: v.data.engagementType, executedById: null, executedAt: null, createdById: auth.userId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const c = await createContract({ id: crypto.randomUUID(), projectId: v.data.projectId, status: 'DRAFT', engagementType: v.data.engagementType, executedById: null, executedAt: null, createdById: auth.userId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(c, origin, env, 201);
   }
   const contractIdMatch = path.match(/^\/contracts\/([^/]+)$/);
   if (contractIdMatch && method === 'GET') {
-    const c = getContract(contractIdMatch[1]);
+    const c = await getContract(contractIdMatch[1]);
     if (!c) return error('Contract not found', 'NOT_FOUND', 404, origin, env);
     return success(c, origin, env);
   }
   const executeMatch = path.match(/^\/contracts\/([^/]+)\/execute$/);
   if (executeMatch && method === 'PATCH') {
     requireRole(auth, 'ADMIN_MANAGEMENT', 'GENERAL_MANAGER');
-    const c = getContract(executeMatch[1]);
+    const c = await getContract(executeMatch[1]);
     if (!c) return error('Contract not found', 'NOT_FOUND', 404, origin, env);
-    const updated = updateContract(executeMatch[1], { status: 'EXECUTED', executedById: auth.userId, executedAt: new Date().toISOString() });
+    const updated = await updateContract(executeMatch[1], { status: 'EXECUTED', executedById: auth.userId, executedAt: new Date().toISOString() });
     return success(updated, origin, env);
   }
   return error('Contracts route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -991,43 +1005,43 @@ async function handleConstruction(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/construction' && method === 'GET') {
-    return success(listMobilizations(), origin, env);
+    return success(await listMobilizations(), origin, env);
   }
   if (path === '/construction/mobilizations' && method === 'POST') {
     const v = validateBody(MobilizationBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const m = createMobilization({ id: crypto.randomUUID(), projectId: v.data.projectId, status: v.data.status ?? 'PLANNED', mobilizedAt: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const m = await createMobilization({ id: crypto.randomUUID(), projectId: v.data.projectId, status: v.data.status ?? 'PLANNED', mobilizedAt: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(m, origin, env, 201);
   }
   const mobIdMatch = path.match(/^\/construction\/mobilizations\/([^/]+)$/);
   if (mobIdMatch && method === 'GET') {
-    const m = getMobilization(mobIdMatch[1]);
+    const m = await getMobilization(mobIdMatch[1]);
     if (!m) return error('Mobilization not found', 'NOT_FOUND', 404, origin, env);
     return success(m, origin, env);
   }
   if (mobIdMatch && method === 'PATCH') {
-    const m = updateMobilization(mobIdMatch[1], body ?? {});
+    const m = await updateMobilization(mobIdMatch[1], body ?? {});
     if (!m) return error('Mobilization not found', 'NOT_FOUND', 404, origin, env);
     return success(m, origin, env);
   }
   const logsMatch = path.match(/^\/construction\/site-logs$/);
   if (logsMatch && method === 'GET') {
-    return success(listSiteLogs(), origin, env);
+    return success(await listSiteLogs(), origin, env);
   }
   if (logsMatch && method === 'POST') {
     const v = validateBody(SiteLogBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const log = createSiteLog({ id: crypto.randomUUID(), projectId: v.data.projectId, entry: v.data.entry, recordedById: auth.userId, recordedAt: new Date().toISOString() });
+    const log = await createSiteLog({ id: crypto.randomUUID(), projectId: v.data.projectId, entry: v.data.entry, recordedById: auth.userId, recordedAt: new Date().toISOString() });
     return success(log, origin, env, 201);
   }
   const holdsMatch = path.match(/^\/construction\/work-holds$/);
   if (holdsMatch && method === 'GET') {
-    return success(listWorkHolds(), origin, env);
+    return success(await listWorkHolds(), origin, env);
   }
   if (holdsMatch && method === 'POST') {
     const v = validateBody(WorkHoldBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const hold = createWorkHold({ id: crypto.randomUUID(), projectId: v.data.projectId, reason: v.data.reason, isActive: true, liftedById: null, liftedAt: null, liftReason: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const hold = await createWorkHold({ id: crypto.randomUUID(), projectId: v.data.projectId, reason: v.data.reason, isActive: true, liftedById: null, liftedAt: null, liftReason: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(hold, origin, env, 201);
   }
   const holdIdMatch = path.match(/^\/construction\/work-holds\/([^/]+)\/lift$/);
@@ -1035,9 +1049,9 @@ async function handleConstruction(
     requireRole(auth, 'LEAD_ARCHITECT', 'ADMIN_MANAGEMENT', 'GENERAL_MANAGER');
     const v = validateBody(WorkHoldLiftSchema, body, origin, env);
     if (!v.ok) return v.response;
-    const hold = getWorkHold(holdIdMatch[1]);
+    const hold = await getWorkHold(holdIdMatch[1]);
     if (!hold) return error('Work hold not found', 'NOT_FOUND', 404, origin, env);
-    const updated = updateWorkHold(holdIdMatch[1], { isActive: false, liftedById: auth.userId, liftedAt: new Date().toISOString(), liftReason: v.data.liftReason });
+    const updated = await updateWorkHold(holdIdMatch[1], { isActive: false, liftedById: auth.userId, liftedAt: new Date().toISOString(), liftReason: v.data.liftReason });
     return success(updated, origin, env);
   }
   return error('Construction route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -1055,19 +1069,19 @@ async function handleGovernance(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/governance' && method === 'GET') {
-    return success(listDelegations(), origin, env);
+    return success(await listDelegations(), origin, env);
   }
   if (path === '/governance/delegations' && method === 'POST') {
     requireRole(auth, 'ADMIN_MANAGEMENT', 'GENERAL_MANAGER');
     const v = validateBody(DelegationBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const d = createDelegation({ id: crypto.randomUUID(), fromRole: v.data.fromRole, toRole: v.data.toRole, scope: v.data.scope, status: v.data.status ?? 'ACTIVE', delegatedById: auth.userId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const d = await createDelegation({ id: crypto.randomUUID(), fromRole: v.data.fromRole, toRole: v.data.toRole, scope: v.data.scope, status: v.data.status ?? 'ACTIVE', delegatedById: auth.userId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(d, origin, env, 201);
   }
   const delIdMatch = path.match(/^\/governance\/delegations\/([^/]+)$/);
   if (delIdMatch && method === 'PATCH') {
     requireRole(auth, 'ADMIN_MANAGEMENT', 'GENERAL_MANAGER');
-    const d = updateDelegation(delIdMatch[1], body ?? {});
+    const d = await updateDelegation(delIdMatch[1], body ?? {});
     if (!d) return error('Delegation not found', 'NOT_FOUND', 404, origin, env);
     return success(d, origin, env);
   }
@@ -1086,17 +1100,17 @@ async function handleSafety(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/safety' && method === 'GET') {
-    return success(listSafetyHolds(), origin, env);
+    return success(await listSafetyHolds(), origin, env);
   }
   if (path === '/safety/holds' && method === 'POST') {
     const v = validateBody(SafetyHoldBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const h = createSafetyHold({ id: crypto.randomUUID(), projectId: v.data.projectId, reason: v.data.reason, isActive: true, liftedById: null, liftedAt: null, liftReason: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const h = await createSafetyHold({ id: crypto.randomUUID(), projectId: v.data.projectId, reason: v.data.reason, isActive: true, liftedById: null, liftedAt: null, liftReason: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(h, origin, env, 201);
   }
   const holdIdMatch = path.match(/^\/safety\/holds\/([^/]+)$/);
   if (holdIdMatch && method === 'GET') {
-    const h = getSafetyHold(holdIdMatch[1]);
+    const h = await getSafetyHold(holdIdMatch[1]);
     if (!h) return error('Safety hold not found', 'NOT_FOUND', 404, origin, env);
     return success(h, origin, env);
   }
@@ -1105,9 +1119,9 @@ async function handleSafety(
     requireRole(auth, 'LEAD_ARCHITECT', 'ADMIN_MANAGEMENT', 'GENERAL_MANAGER');
     const v = validateBody(SafetyHoldLiftSchema, body, origin, env);
     if (!v.ok) return v.response;
-    const h = getSafetyHold(liftMatch[1]);
+    const h = await getSafetyHold(liftMatch[1]);
     if (!h) return error('Safety hold not found', 'NOT_FOUND', 404, origin, env);
-    const updated = updateSafetyHold(liftMatch[1], { isActive: false, liftedById: auth.userId, liftedAt: new Date().toISOString(), liftReason: v.data.liftReason });
+    const updated = await updateSafetyHold(liftMatch[1], { isActive: false, liftedById: auth.userId, liftedAt: new Date().toISOString(), liftReason: v.data.liftReason });
     return success(updated, origin, env);
   }
   return error('Safety route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -1125,17 +1139,17 @@ async function handleSuppliers(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/suppliers' && method === 'GET') {
-    return success(listSuppliers(), origin, env);
+    return success(await listSuppliers(), origin, env);
   }
   if (path === '/suppliers' && method === 'POST') {
     const v = validateBody(SupplierBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const s = createSupplier({ id: crypto.randomUUID(), name: v.data.name, contact: v.data.contact ?? null, bankAccount: v.data.bankAccount ?? null, beneficiaryVerified: v.data.beneficiaryVerified ?? false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const s = await createSupplier({ id: crypto.randomUUID(), name: v.data.name, contact: v.data.contact ?? null, bankAccount: v.data.bankAccount ?? null, beneficiaryVerified: v.data.beneficiaryVerified ?? false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(s, origin, env, 201);
   }
   const suppIdMatch = path.match(/^\/suppliers\/([^/]+)$/);
   if (suppIdMatch && method === 'GET') {
-    const s = getSupplier(suppIdMatch[1]);
+    const s = await getSupplier(suppIdMatch[1]);
     if (!s) return error('Supplier not found', 'NOT_FOUND', 404, origin, env);
     return success(s, origin, env);
   }
@@ -1144,9 +1158,9 @@ async function handleSuppliers(
     requireRole(auth, 'ACCOUNTS', 'ADMIN_MANAGEMENT');
     const v = validateBody(SupplierBeneficiaryChangeSchema, body, origin, env);
     if (!v.ok) return v.response;
-    const s = getSupplier(beneficiaryMatch[1]);
+    const s = await getSupplier(beneficiaryMatch[1]);
     if (!s) return error('Supplier not found', 'NOT_FOUND', 404, origin, env);
-    const updated = updateSupplier(beneficiaryMatch[1], { bankAccount: v.data.bankAccount, beneficiaryVerified: v.data.verified ?? false });
+    const updated = await updateSupplier(beneficiaryMatch[1], { bankAccount: v.data.bankAccount, beneficiaryVerified: v.data.verified ?? false });
     return success(updated, origin, env);
   }
   return error('Suppliers route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -1164,26 +1178,26 @@ async function handleInvoices(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/invoices' && method === 'GET') {
-    return success(listInvoices(), origin, env);
+    return success(await listInvoices(), origin, env);
   }
   if (path === '/invoices' && method === 'POST') {
     const v = validateBody(InvoiceBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const inv = createInvoice({ id: crypto.randomUUID(), projectId: v.data.projectId, supplierId: v.data.supplierId ?? null, amountKes: v.data.amountKes, status: 'PENDING', paidById: null, paidAt: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const inv = await createInvoice({ id: crypto.randomUUID(), projectId: v.data.projectId, supplierId: v.data.supplierId ?? null, amountKes: v.data.amountKes, status: 'PENDING', paidById: null, paidAt: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(inv, origin, env, 201);
   }
   const invIdMatch = path.match(/^\/invoices\/([^/]+)$/);
   if (invIdMatch && method === 'GET') {
-    const inv = getInvoice(invIdMatch[1]);
+    const inv = await getInvoice(invIdMatch[1]);
     if (!inv) return error('Invoice not found', 'NOT_FOUND', 404, origin, env);
     return success(inv, origin, env);
   }
   const payMatch = path.match(/^\/invoices\/([^/]+)\/pay$/);
   if (payMatch && method === 'PATCH') {
     requireRole(auth, 'ACCOUNTS', 'ADMIN_MANAGEMENT');
-    const inv = getInvoice(payMatch[1]);
+    const inv = await getInvoice(payMatch[1]);
     if (!inv) return error('Invoice not found', 'NOT_FOUND', 404, origin, env);
-    const updated = updateInvoice(payMatch[1], { status: 'PAID', paidById: auth.userId, paidAt: new Date().toISOString() });
+    const updated = await updateInvoice(payMatch[1], { status: 'PAID', paidById: auth.userId, paidAt: new Date().toISOString() });
     return success(updated, origin, env);
   }
   return error('Invoices route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -1201,17 +1215,17 @@ async function handleWorkerReports(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/worker-reports' && method === 'GET') {
-    return success(listWorkerReports(), origin, env);
+    return success(await listWorkerReports(), origin, env);
   }
   if (path === '/worker-reports' && method === 'POST') {
     const v = validateBody(WorkerReportBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const r = createWorkerReport({ id: crypto.randomUUID(), projectId: v.data.projectId, title: v.data.title, content: v.data.content, submittedById: auth.userId, submittedAt: new Date().toISOString() });
+    const r = await createWorkerReport({ id: crypto.randomUUID(), projectId: v.data.projectId, title: v.data.title, content: v.data.content, submittedById: auth.userId, submittedAt: new Date().toISOString() });
     return success(r, origin, env, 201);
   }
   const reportIdMatch = path.match(/^\/worker-reports\/([^/]+)$/);
   if (reportIdMatch && method === 'GET') {
-    const r = getWorkerReport(reportIdMatch[1]);
+    const r = await getWorkerReport(reportIdMatch[1]);
     if (!r) return error('Worker report not found', 'NOT_FOUND', 404, origin, env);
     return success(r, origin, env);
   }
@@ -1220,7 +1234,7 @@ async function handleWorkerReports(
     requireRole(auth, 'LEAD_ARCHITECT', 'ADMIN_MANAGEMENT', 'SITE_SUPERVISOR');
     const v = validateBody(WorkerReportVerifySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const ver = createVerification({ id: crypto.randomUUID(), workerReportId: verifyMatch[1], verifiedById: auth.userId, decision: v.data.decision, comments: v.data.comments ?? null, verifiedAt: new Date().toISOString() });
+    const ver = await createVerification({ id: crypto.randomUUID(), workerReportId: verifyMatch[1], verifiedById: auth.userId, decision: v.data.decision, comments: v.data.comments ?? null, verifiedAt: new Date().toISOString() });
     return success(ver, origin, env, 201);
   }
   return error('Worker reports route not implemented', 'NOT_IMPLEMENTED', 501, origin, env);
@@ -1238,22 +1252,22 @@ async function handleDirectory(
   if (!auth) return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
 
   if (path === '/directory' && method === 'GET') {
-    return success(listDirectoryEntries(), origin, env);
+    return success(await listDirectoryEntries(), origin, env);
   }
   if (path === '/directory' && method === 'POST') {
     const v = validateBody(DirectoryEntryBodySchema, body, origin, env);
     if (!v.ok) return v.response;
-    const entry = createDirectoryEntry({ id: crypto.randomUUID(), name: v.data.name, role: v.data.role, email: v.data.email ?? null, phone: v.data.phone ?? null, isActive: v.data.isActive ?? true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    const entry = await createDirectoryEntry({ id: crypto.randomUUID(), name: v.data.name, role: v.data.role, email: v.data.email ?? null, phone: v.data.phone ?? null, isActive: v.data.isActive ?? true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     return success(entry, origin, env, 201);
   }
   const dirIdMatch = path.match(/^\/directory\/([^/]+)$/);
   if (dirIdMatch && method === 'GET') {
-    const entry = getDirectoryEntry(dirIdMatch[1]);
+    const entry = await getDirectoryEntry(dirIdMatch[1]);
     if (!entry) return error('Directory entry not found', 'NOT_FOUND', 404, origin, env);
     return success(entry, origin, env);
   }
   if (dirIdMatch && method === 'PATCH') {
-    const entry = updateDirectoryEntry(dirIdMatch[1], body ?? {});
+    const entry = await updateDirectoryEntry(dirIdMatch[1], body ?? {});
     if (!entry) return error('Directory entry not found', 'NOT_FOUND', 404, origin, env);
     return success(entry, origin, env);
   }
@@ -1288,7 +1302,7 @@ export default async function handler(
     body = await parseBody(request);
   }
 
-  const auth = getAuth(request);
+  const auth = await getAuth(request);
 
   try {
     if (apiPath.startsWith('/auth')) return await handleAuth(request, method, apiPath, body, origin, env);
@@ -1317,8 +1331,13 @@ export default async function handler(
   }
 }
 
+export async function initializeApi(): Promise<void> {
+  await initializeDatabase();
+}
+
 // ── Direct execution (local dev: node dist/edge.js) ──────────────────────────
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  await initializeApi();
   const { createServer } = await import('node:http');
   const port = Number(process.env.PORT) || config.API_PORT;
   const server = createServer(handler as any);

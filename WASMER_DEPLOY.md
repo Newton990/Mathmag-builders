@@ -19,23 +19,28 @@ Open `http://localhost:8080/` for the UI and
 the shared package and API TypeScript builds before Vite writes the frontend
 production bundle into the root `public/` directory.
 
-The API config requires `DATABASE_URL`, `JWT_SECRET` (at least 64 characters),
-and `MFA_ENCRYPTION_KEY` (64 hexadecimal characters). Configure these as local
-environment variables for the smoke test and as Wasmer secrets for deployment.
-The current Edge handler stores records in its in-memory adapter, so its data
-does not persist across restarts; setting `DATABASE_URL` satisfies startup
-configuration but does not make that adapter persistent.
+The API config requires a PostgreSQL connection plus `JWT_SECRET` (at least 64
+characters) and `MFA_ENCRYPTION_KEY` (64 hexadecimal characters). For local
+development, use `DATABASE_URL` from `.env.example`. The Wasmer app requests a
+managed PostgreSQL database; at runtime its `DB_HOST`, `DB_PORT`, `DB_NAME`,
+`DB_USERNAME`, and `DB_PASSWORD` values are converted to a TLS-required
+`DATABASE_URL` unless you explicitly provide one. Set only the auth secrets in
+Wasmer; no external database provider or database URL secret is needed.
+The API persists each domain model in a PostgreSQL table with a JSONB record
+payload and indexed project/relationship fields. Versioned, idempotent schema
+migrations run before the server starts. Records are no longer held in process
+memory.
 
 ## Deploy
 
-The root `wasmer.toml` runs the Node.js HTTP server and mounts both the
-application files and generated static assets. `app.yaml` runs the root build
-during deployment. Ensure `mathmag` in `app.yaml` and `wasmer.toml` matches
-your Wasmer account namespace, and set the required runtime secrets before
-deploying.
+The root `Anybuild` file configures Wasmer's native Node.js build and runs the
+root `npm start` command. That command starts migrations and the unified HTTP
+server, which serves `public/` and routes `/api/*` requests. `app.yaml`
+provisions managed PostgreSQL for `newton/mbms`. Set the required auth secrets
+before deploying.
 
 ```bash
-wasmer deploy
+wasmer deploy --build-remote
 ```
 
 Frontend API calls default to the same-origin `/api` path. Do not configure a

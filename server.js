@@ -159,7 +159,8 @@ function handleStaticRequest(req, res) {
 }
 
 async function startServer() {
-  const { default: apiHandler } = await import('./apps/api/dist/edge.js');
+  const { default: apiHandler, initializeApi } = await import('./apps/api/dist/edge.js');
+  await initializeApi();
   const port = Number(process.env.PORT) || 8080;
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`).pathname;

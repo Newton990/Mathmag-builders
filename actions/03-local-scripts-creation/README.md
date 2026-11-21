@@ -57,7 +57,7 @@ One-stop script that chains:
 **Usage:** `.\scripts\run-all.ps1`
 
 ## File Locations
-All scripts are in: `C:\Users\user\Desktop\Mathmag builders\mathmag-mbms\scripts/`
+All scripts are in the repo-relative `scripts/` directory.
 
 | File | Type | Size |
 |------|------|------|

@@ -1,9 +1,9 @@
 // ================================================================================
 // MBMS — Authentication (Wasmer Edge)
-// JWT verification using jsonwebtoken. No session storage — stateless.
+// JWT verification using the Web Standard jose library. No session storage.
 // ================================================================================
 
-import jwt from 'jsonwebtoken';
+import { jwtVerify, errors } from 'jose';
 import { config } from './config.js';
 
 export interface JWTPayload {
@@ -25,22 +25,23 @@ export interface AuthContext {
   stepUp: boolean;
 }
 
-export function verifyAccessToken(token: string): JWTPayload {
+export async function verifyAccessToken(token: string): Promise<JWTPayload> {
   try {
-    const payload = jwt.verify(token, config.JWT_SECRET) as JWTPayload;
-    return payload;
-  } catch (err: any) {
-    if (err.name === 'TokenExpiredError') {
+    const secret = new TextEncoder().encode(config.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret, { algorithms: ['HS256'] });
+    return payload as unknown as JWTPayload;
+  } catch (err: unknown) {
+    if (err instanceof errors.JWTExpired) {
       throw new Error('TOKEN_EXPIRED');
     }
-    if (err.name === 'JsonWebTokenError') {
+    if (err && typeof err === 'object' && 'code' in err && String((err as { code?: unknown }).code).startsWith('ERR_JWT')) {
       throw new Error('INVALID_TOKEN');
     }
     throw err;
   }
 }
 
-export function extractAuth(request: Request): AuthContext | null {
+export async function extractAuth(request: Request): Promise<AuthContext | null> {
   const header = request.headers.get('authorization');
   if (!header?.startsWith('Bearer ')) {
     return null;
@@ -48,7 +49,7 @@ export function extractAuth(request: Request): AuthContext | null {
 
   const token = header.slice(7);
   try {
-    const payload = verifyAccessToken(token);
+    const payload = await verifyAccessToken(token);
     return {
       userId: payload.userId,
       email: payload.email,
@@ -61,8 +62,8 @@ export function extractAuth(request: Request): AuthContext | null {
   }
 }
 
-export function requireAuth(request: Request): AuthContext {
-  const auth = extractAuth(request);
+export async function requireAuth(request: Request): Promise<AuthContext> {
+  const auth = await extractAuth(request);
   if (!auth) {
     throw new Error('UNAUTHORIZED');
   }

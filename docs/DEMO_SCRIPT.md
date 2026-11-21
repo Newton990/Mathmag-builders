@@ -24,7 +24,7 @@ Navigate to `/login`.
 - Mention MFA support (second-factor code screen appears after first factor in
   production).
 - In production: JWT access token (httpOnly cookie) + 1-hour expiry, refresh
-  token rotation, argon2 hashing. No PII in logs.
+  token rotation, jose signing. No PII in logs.
 
 > **Business rule:** Every role gets redirected to its home screen after login —
 > staff to `/staff`, visiting officers to `/field`, clients to `/portal`.
@@ -304,7 +304,7 @@ Navigate to `/field` (or use a mobile device / DevTools mobile viewport).
 | **Immutable versions** | Approved/published records cannot be mutated; changes create new versions |
 | **Kenya-specific** | Time zone: Africa/Nairobi · Currency: KES · Phones: +254 |
 | **Document generation** | DOCX (using `docx` library) + PDF (Playwright headless) |
-| **Background jobs** | pg-boss (Postgres-backed) — no Redis dependency |
+| **Background jobs** | Not used; PostgreSQL startup migrations are idempotent |
 
 ---
 
