@@ -93,7 +93,7 @@
 
 **Date:** 2026-11-19  
 **Status:** Done  
-**Decision:** Replace the API's process-local Maps with PostgreSQL-backed tables using the existing `postgres` client. Each existing domain record type has a dedicated table with JSONB payloads and indexed project/relationship columns. A versioned, idempotent migration runs before the HTTP server listens. Configure the Wasmer app as `newton/mathmag-builders`.
+**Decision:** Replace the API's process-local Maps with PostgreSQL-backed tables using the existing `postgres` client. Each existing domain record type has a dedicated table with JSONB payloads and indexed project/relationship columns. A versioned, idempotent migration runs before the HTTP server listens. Configure the unified Wasmer app as `newton/mbms`.
 **Rationale:** The repository had no Prisma schema or client; `postgres` was already a runtime dependency and avoids adding an ORM/codegen dependency. Production schema changes run at startup, not during the build where production DB credentials/network should not be required.
 **Files affected:** `apps/api/src/db.ts`, `apps/api/src/edge.ts`, `apps/api/src/migrate.ts`, `apps/api/src/config.ts`, `apps/api/package.json`, root `package.json`, `.env.example`, `app.yaml`, `wasmer.toml`, `server.js`
 **Next step:** Superseded by D-07, which provisions Wasmer-managed PostgreSQL.
@@ -111,7 +111,7 @@
 
 **Date:** 2026-11-21
 **Status:** Done
-**Decision:** Standardize repository guidance and runtime dependencies on the unified `newton/mbms` Node 24 architecture. `AGENTS.md` and `MASTER_PLAN.md` now describe root `server.js`, root `public/` assets, `apps/api/src/edge.ts`, `postgres.js`, and idempotent startup migrations. Replace `jsonwebtoken` and `uuid` with `jose` and `crypto.randomUUID()`. Remove duplicate legacy environment files and confirmed stale Prisma/Express, SQLite/Argon2, pg-boss, timestamp, and hardcoded Windows-path artifacts.
+**Decision:** Standardize repository guidance and runtime dependencies on the unified `newton/mbms` Node 24 architecture. `AGENTS.md` and `MASTER_PLAN.md` now describe root `server.js`, root `public/` assets, `apps/api/src/edge.ts`, `postgres.js`, and idempotent startup migrations. Replace `jsonwebtoken` and `uuid` with `jose` and `crypto.randomUUID()`. Remove duplicate legacy environment files and confirmed stale Prisma/Express, SQLite/Argon2, pg-boss, timestamp, and hardcoded Windows-path artifacts. Merge runtime dependencies at root, set Anybuild to a prebuilt no-op, and explicitly allow `public/` and compiled `dist/` artifacts in `.wasmerignore`.
 **Rationale:** D-06 and D-07 establish PostgreSQL persistence and Wasmer-managed database provisioning; stale instructions and Node-specific dependencies can cause incorrect builds or runtime failures. Web Standard crypto and JOSE avoid Edge/runtime compatibility issues.
 **Files affected:** `AGENTS.md`, `MASTER_PLAN.md`, `DECISION_LOG.md`, `apps/api/package.json`, `apps/api/src/auth.ts`, `apps/api/src/edge.ts`, `.env.example`, `.gitignore`, package scripts and lockfiles, and obsolete helper/artifact files.
 **Next step:** Run installation, typecheck, build, tests, and verify Wasmer deployment readiness.

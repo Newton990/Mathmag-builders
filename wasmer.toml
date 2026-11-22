@@ -1,0 +1,1 @@
+node_build_command = "node -e \"console.log('Prebuilt')\""

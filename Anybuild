@@ -7,7 +7,7 @@ config = node_config(
     },
     node_package_manager = "npm",
     node_server = "node",
-    node_build_command = "npm run build",
+    node_build_command = "node -e \"console.log('Prebuilt')\"",
     node_version = "24",
 )
 

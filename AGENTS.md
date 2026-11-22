@@ -2,10 +2,13 @@
 
 ## Repository shape (npm workspaces, ESM)
 
-- Monorepo: `apps/api` (`@mbms/api`), `apps/web` (`@mbms/web`), and `packages/shared` (`@mbms/shared`).
-- Unified Node 24 runtime: root `server.js` serves static assets from root `public/` and imports the Fetch API handler from `apps/api/src/edge.ts`.
-- Database: `postgres.js` through `apps/api/src/db.ts`; idempotent startup schema migrations run through `apps/api/src/migrate.ts` before the HTTP server starts.
-- Frontend: React + Vite + Tailwind in `apps/web/`.
+- Monorepo workspaces: `apps/api` (`@mbms/api`), `apps/web` (`@mbms/web`), and `packages/shared` (`@mbms/shared`).
+- Unified Node 24 runtime: root `server.js` serves root `public/` static assets and imports the compiled Fetch API handler at `apps/api/dist/edge.js`.
+- Source API: `apps/api/src/edge.ts`; authentication is in `apps/api/src/auth.ts`.
+- Database: `postgres.js` through `apps/api/src/db.ts`.
+- PostgreSQL schema startup migrations are idempotent and run from `apps/api/src/migrate.ts` before `server.js` listens.
+- Frontend: React + Vite + Tailwind in `apps/web/`; Vite builds to root `public/`.
+- Prebuilt deployment: Wasmer uploads `public/`, `apps/api/dist/`, and runtime dependencies at root. Wasmer's build command must not invoke npm workspaces.
 
 ## Environment rules
 
@@ -40,6 +43,7 @@ npm test
 
 - `app.yaml` defines the `newton/mbms` Wasmer app and managed PostgreSQL capability.
 - Root `public/` is generated and gitignored; it is served by `server.js`.
+- `.wasmerignore` excludes `.git/`, secrets, and `node_modules/` but explicitly allows `public/` and compiled `dist/` output.
 - API routes are handled by `apps/api/src/edge.ts`; there is no Express application or separate Express route tree.
 - PostgreSQL migrations are idempotent and run before the server starts; do not require a database during the build.
 - Auth uses `jose` with Web Standard APIs and `crypto.randomUUID()` for native UUID generation.
@@ -53,7 +57,7 @@ npm test
 - Clients see only explicitly published items belonging to their own projects.
 - Audit history is append-only.
 - Never invent missing project, financial, or identity data.
-- Time zone is Africa/Nairobi.
-- Currency is KES.
+- Time zone: Africa/Nairobi.
+- Currency: KES.
 - Phone numbers use the `+254` format.
 - Preserve exact-version acceptance, conflict-aware approvals, supplier beneficiary verification, safety gates, and the other rules in `docs/specs/00_Master_System_Architecture_and_Governance_v3.txt`.

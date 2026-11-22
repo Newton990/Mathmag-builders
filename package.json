@@ -12,7 +12,7 @@
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:web": "npm run dev --workspace=apps/web -- --host 0.0.0.0",
     "start": "node server.js",
-    "build": "npm run build --workspace=@mbms/shared && npm run build --workspace=@mbms/api && npm run build --workspace=@mbms/web",
+    "build": "npm install --no-audit --no-fund && npm run build --workspace=@mbms/shared && npm run build --workspace=@mbms/api && npm run build --workspace=@mbms/web",
     "preview": "npm run preview --workspace=apps/web",
     "test": "npm run test --workspace=apps/api && npm run test --workspace=packages/shared && npm run test --workspace=apps/web",
     "test:e2e": "npm run test:e2e --workspace=apps/web",
@@ -20,6 +20,11 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\" --ignore-path .gitignore"
   },
   "dependencies": {
+    "@mbms/shared": "*",
+    "dotenv": "^18.0.10",
+    "jose": "^5.9.6",
+    "postgres": "^4.1.1",
+    "zod": "^3.23.8",
     "serve": "^14.2.4"
   },
   "devDependencies": {

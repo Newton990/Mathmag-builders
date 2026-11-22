@@ -16,6 +16,7 @@ This document is the operational source of truth alongside D-06, D-07, and D-08 
 | Database client | `postgres.js` in `apps/api/src/db.ts` |
 | Startup migrations | Idempotent SQL in `apps/api/src/migrate.ts` |
 | Auth | `jose` HS256 tokens with `crypto.randomUUID()` |
+| Deployment packaging | Prebuilt root artifacts; Anybuild no-op build command |
 
 There is no Express server, Prisma schema/client, SQLite database, or separate frontend deployment in the unified runtime.
 
