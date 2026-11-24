@@ -2,9 +2,6 @@ kind: wasmer.io/App.v0
 name: mbms
 owner: newton
 package: .
-capabilities:
-  database:
-    engine: postgres
 app_id: da_R36ILtlUL5Xk
 annotations:
   anybuild.run/config:
@@ -31,4 +28,3 @@ annotations:
   anybuild.run/provider: node
   anybuild.run/version: 0.33.3
   wasmer.io/version: 7.5.0
-enableDatabase: true
