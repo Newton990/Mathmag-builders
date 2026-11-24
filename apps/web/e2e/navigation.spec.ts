@@ -1,12 +1,21 @@
 // e2e/navigation.spec.ts
-// Demo-mode navigation tests — no backend required; runs against the static
-// Vite dev server with demo mode active (isDemoMode() returns true because
-// localStorage 'mbms.demo' is unset, so the default is demo mode).
+// Navigation tests — runs against the Vite dev server in demo mode.
+// Onboarding guides are marked complete so no overlays intercept clicks.
 
 import { test, expect } from '@playwright/test';
 
-// Every test navigates directly — no login flow needed in demo mode.
-// The AuthProvider detects demo mode and auto-logs in as 'Demo Admin'.
+test.beforeEach(async ({ page }) => {
+  await page.context().addInitScript(() => {
+    const roles = ['LEAD_ARCHITECT','JUNIOR_ARCHITECT','CLIENT_RELATIONS_OFFICER','ADMIN_MANAGEMENT','VISITING_OFFICER','CLIENT'];
+    for (const role of roles) {
+      window.localStorage.setItem(`mbms.guide.done.${role}`, 'done');
+    }
+  });
+});
+
+// Every test navigates directly — no login flow needed; demo mode
+// auto-logs in as Demo Admin (LEAD_ARCHITECT). Backend returns empty
+// demo data gracefully for unknown project IDs.
 
 test.describe('Staff navigation', () => {
   test('dashboard shows page header and stat cards', async ({ page }) => {
@@ -40,28 +49,38 @@ test.describe('Staff navigation', () => {
 });
 
 test.describe('Module 2 — Planning page', () => {
-  // Uses a fake project UUID; in demo mode the API returns empty data gracefully.
   const projectId = 'demo-project-001';
 
   test('planning page renders stat cards and design pipeline section', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/planning`);
-    await expect(page.getByTestId('planning-page')).toBeVisible();
-    await expect(page.getByRole('heading', { name: /planning/i })).toBeVisible();
-    await expect(page.getByText('Design Pipeline')).toBeVisible();
+    const planning = page.getByTestId('planning-page');
+    await expect(planning).toBeVisible();
+    await expect(planning.getByRole('heading', { name: /planning/i })).toBeVisible();
+    await expect(planning.getByRole('heading', { name: 'Design Pipeline' })).toBeVisible();
   });
 
   test('planning page shows Tasks tab by default', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/planning`);
-    await expect(page.getByTestId('planning-page')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Tasks' })).toBeVisible();
+    const planning = page.getByTestId('planning-page');
+    await expect(planning).toBeVisible();
+    await expect(planning.getByRole('button', { name: 'Tasks' })).toBeVisible();
   });
 
   test('planning page tabs are clickable', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/planning`);
     await expect(page.getByTestId('planning-page')).toBeVisible();
+    // Skip welcome guide overlay if it appears on first visit
+    const skipGuide = page.getByRole('button', { name: 'Skip guide' });
+    if (await skipGuide.isVisible()) {
+      await skipGuide.click();
+    }
     for (const label of ['Tasks', 'Client Approvals', 'Coordination Issues', 'Cost Estimates', 'Design Changes']) {
-      await page.getByRole('button', { name: label }).click();
-      // Each tab switch should not crash the app
+      // Dismiss spotlight tour overlay if it appears between tab clicks
+      const skipTour = page.getByRole('button', { name: 'Skip tour' });
+      if (await skipTour.isVisible()) {
+        await skipTour.click();
+      }
+      await page.getByTestId('planning-page').getByRole('button', { name: label }).click();
       await expect(page.getByTestId('staff-layout')).toBeVisible();
     }
   });
@@ -96,9 +115,10 @@ test.describe('Module 4 — Approvals page', () => {
 
   test('approvals page shows stat cards', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/approvals`);
-    await expect(page.getByText('Cases')).toBeVisible();
-    await expect(page.getByText('Open')).toBeVisible();
-    await expect(page.getByText('Cleared')).toBeVisible();
+    const approvals = page.getByTestId('approvals-page');
+    await expect(approvals.getByText('Cases', { exact: true })).toBeVisible();
+    await expect(approvals.getByText('Open', { exact: true })).toBeVisible();
+    await expect(approvals.getByText('Cleared', { exact: true })).toBeVisible();
   });
 });
 
@@ -113,14 +133,16 @@ test.describe('Module 5 — Contracts page', () => {
 
   test('contracts page shows stat cards', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/contracts`);
-    await expect(page.getByText('Contracts')).toBeVisible();
-    await expect(page.getByText('Active')).toBeVisible();
-    await expect(page.getByText('Total Value')).toBeVisible();
+    const contracts = page.getByTestId('contracts-page');
+    await expect(contracts.locator('p', { hasText: /^Contracts$/ })).toBeVisible();
+    await expect(contracts.locator('p', { hasText: /^Active$/ })).toBeVisible();
+    await expect(contracts.locator('p', { hasText: /^Total Value$/ })).toBeVisible();
   });
 
   test('contracts page tabs switch', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/contracts`);
-    await page.getByRole('button', { name: /engagements/i }).click();
+    const contracts = page.getByTestId('contracts-page');
+    await contracts.getByRole('button', { name: /engagements/i }).click();
     await expect(page.getByRole('button', { name: 'New Engagement' })).toBeVisible();
   });
 });
@@ -136,23 +158,28 @@ test.describe('Module 6 — Construction page', () => {
 
   test('construction page shows all 6 tabs', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/construction`);
-    for (const label of ['Overview', 'Site Logs', 'GRNs', 'Variations', 'Handover']) {
-      await expect(page.getByRole('button', { name: new RegExp(label, 'i') })).toBeVisible();
-    }
+    const construction = page.getByTestId('construction-page');
+    await expect(construction.getByRole('button', { name: /^Overview$/ })).toBeVisible();
+    await expect(construction.getByRole('button', { name: /^Site Logs/ })).toBeVisible();
+    await expect(construction.getByRole('button', { name: /^GRNs/ })).toBeVisible();
+    await expect(construction.getByRole('button', { name: /^Holds/ })).toBeVisible();
+    await expect(construction.getByRole('button', { name: /^Variations/ })).toBeVisible();
+    await expect(construction.getByRole('button', { name: /^Handover$/ })).toBeVisible();
   });
 
   test('construction tabs are clickable', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/construction`);
-    await page.getByRole('button', { name: /site logs/i }).click();
+    const construction = page.getByTestId('construction-page');
+    await construction.getByRole('button', { name: /site logs/i }).click();
     await expect(page.getByRole('button', { name: /add log/i })).toBeVisible();
 
-    await page.getByRole('button', { name: /grns/i }).click();
+    await construction.getByRole('button', { name: /grns/i }).click();
     await expect(page.getByRole('button', { name: /new grn/i })).toBeVisible();
 
-    await page.getByRole('button', { name: /variations/i }).click();
+    await construction.getByRole('button', { name: /variations/i }).click();
     await expect(page.getByRole('button', { name: /new variation/i })).toBeVisible();
 
-    await page.getByRole('button', { name: /handover/i }).click();
+    await construction.getByRole('button', { name: /handover/i }).click();
     await expect(page.getByRole('button', { name: /initiate handover/i })).toBeVisible();
   });
 });
@@ -214,12 +241,15 @@ test.describe('Deep link breadcrumb navigation', () => {
 
   test('planning page has back link to project', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/planning`);
-    await expect(page.getByRole('link', { name: /← project/i })).toBeVisible();
+    const planning = page.getByTestId('planning-page');
+    await expect(planning.getByRole('link', { name: /← project/i })).toBeVisible();
   });
 
   test('acceptance page has navigation links', async ({ page }) => {
     await page.goto(`/staff/projects/${projectId}/acceptance`);
-    await expect(page.getByRole('link', { name: /← project/i }).or(page.getByRole('link', { name: /approvals/i }))).toBeVisible();
+    const acceptance = page.getByTestId('acceptance-page');
+    await expect(acceptance.getByRole('link', { name: /← project/i })).toBeVisible();
+    await expect(acceptance.getByRole('link', { name: /approvals/i })).toBeVisible();
   });
 
   test('contracts page has ← approvals link', async ({ page }) => {

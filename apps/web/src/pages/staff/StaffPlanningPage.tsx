@@ -377,11 +377,9 @@ export function StaffPlanningPage() {
         subtitle="Module 2 · Technical Design Pipeline"
         actions={
           <>
-            {proj && (
-              <Link to={`/staff/projects/${projectId}`} className={linkClass}>
-                ← Project
-              </Link>
-            )}
+            <Link to={`/staff/projects/${projectId}`} className={linkClass}>
+              ← Project
+            </Link>
           </>
         }
       />

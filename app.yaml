@@ -5,3 +5,30 @@ package: .
 capabilities:
   database:
     engine: postgres
+app_id: da_R36ILtlUL5Xk
+annotations:
+  anybuild.run/config:
+    commands:
+      start: node server.js
+    edgejs_enable: true
+    edgejs_precompile: true
+    name: out
+    node_build_command: node -e "console.log('Prebuilt')"
+    node_install_inputs:
+    - package.json
+    - apps/api/package.json
+    - apps/web/package.json
+    - packages/shared/package.json
+    node_install_requires_all_files: true
+    node_package_manager: npm
+    node_package_name: mathmag-mbms
+    node_remove_native_binaries: true
+    node_server: node
+    npm_version: '11'
+    services:
+    - engine: postgres
+      name: database
+  anybuild.run/provider: node
+  anybuild.run/version: 0.33.3
+  wasmer.io/version: 7.5.0
+enableDatabase: true

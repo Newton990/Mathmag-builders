@@ -3,7 +3,7 @@ load("//anybuild/tools:node.bzl", "node_build", "node_config", "node_serve")
 config = node_config(
     schema = 1,
     commands = {
-        "start": "npm start",
+        "start": "node server.js",
     },
     node_package_manager = "npm",
     node_server = "node",
