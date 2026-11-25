@@ -1,4 +1,3 @@
-// @ts-nocheck
 // ================================================================================
 // MBMS — Wasmer Edge Handler
 // Production-ready request handler for Wasmer Edge serverless deployment.
@@ -338,7 +337,7 @@ async function handleBookings(method, path, body, auth, origin, env) {
     if (bookingIdMatch && method === 'GET') {
         if (!auth)
             return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-        const booking = await getBooking(bookingIdMatch[1]);
+        const booking = await getBooking(bookingIdMatch[1] ?? '');
         if (!booking)
             return error('Booking not found', 'NOT_FOUND', 404, origin, env);
         return success(booking, origin, env);
@@ -378,7 +377,7 @@ async function handleBookings(method, path, body, auth, origin, env) {
         const { scheduledAt, reason } = body ?? {};
         if (!reason || reason.trim().length < 5)
             return error('A reason of at least 5 characters is required', 'REASON_REQUIRED', 400, origin, env);
-        const booking = await getBooking(rescheduleMatch[1]);
+        const booking = await getBooking(rescheduleMatch[1] ?? '');
         if (!booking)
             return error('Booking not found', 'NOT_FOUND', 404, origin, env);
         if (booking.status === 'CANCELLED' || booking.status === 'VISIT_COMPLETED')
@@ -386,13 +385,13 @@ async function handleBookings(method, path, body, auth, origin, env) {
         const newDate = new Date(scheduledAt);
         if (isNaN(newDate.getTime()))
             return error('Invalid scheduled date', 'INVALID_DATE', 400, origin, env);
-        return success(await updateBooking(rescheduleMatch[1], { scheduledAt: newDate.toISOString(), status: 'RESCHEDULED' }), origin, env);
+        return success(await updateBooking(rescheduleMatch[1] ?? '', { scheduledAt: newDate.toISOString(), status: 'RESCHEDULED' }), origin, env);
     }
     const checkInMatch = path.match(/^\/bookings\/([^/]+)\/check-in$/);
     if (checkInMatch && method === 'POST') {
         if (!auth)
             return error('Not authenticated', 'UNAUTHORIZED', 401, origin, env);
-        const booking = await getBooking(checkInMatch[1]);
+        const booking = await getBooking(checkInMatch[1] ?? '');
         if (!booking)
             return error('Booking not found', 'NOT_FOUND', 404, origin, env);
         if (booking.status !== 'BOOKED' && booking.status !== 'RESCHEDULED')
@@ -1031,7 +1030,7 @@ async function handleDirectory(method, path, body, auth, origin, env) {
 }
 // ── Main handler ──────────────────────────────────────────────────────────────
 export default async function handler(request, env) {
-    const url = new URL(request.url, `http://${request.headers.host}`);
+    const url = new URL(request.url, `http://${request.headers.get('host') ?? ''}`);
     const path = url.pathname;
     const method = request.method;
     const origin = request.headers.get('origin');

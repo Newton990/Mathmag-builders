@@ -114,11 +114,15 @@ async function createRecord(table, value) {
     return row.data;
 }
 async function getRecord(table, id) {
+    if (!id)
+        return undefined;
     const db = getSql();
     const rows = await db `SELECT data FROM ${db(table)} WHERE id = ${id}`;
     return rows[0]?.data;
 }
 async function updateRecord(table, id, updates, touchUpdatedAt = true) {
+    if (!id)
+        return undefined;
     const db = getSql();
     const patch = {
         ...updates,

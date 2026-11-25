@@ -146,7 +146,8 @@ async function createRecord<T extends RecordValue>(table: TableName, value: T): 
   return row.data as T;
 }
 
-async function getRecord<T extends RecordValue>(table: TableName, id: string): Promise<T | undefined> {
+async function getRecord<T extends RecordValue>(table: TableName, id: string | undefined): Promise<T | undefined> {
+  if (!id) return undefined;
   const db = getSql();
   const rows = await db`SELECT data FROM ${db(table)} WHERE id = ${id}`;
   return rows[0]?.data as T | undefined;
@@ -154,10 +155,11 @@ async function getRecord<T extends RecordValue>(table: TableName, id: string): P
 
 async function updateRecord<T extends RecordValue>(
   table: TableName,
-  id: string,
+  id: string | undefined,
   updates: Partial<T>,
   touchUpdatedAt = true,
 ): Promise<T | undefined> {
+  if (!id) return undefined;
   const db = getSql();
   const patch = {
     ...updates,
@@ -269,8 +271,8 @@ export async function createProjectAndBooking(
 }
 
 export const createBooking = (value: RecordValue) => createRecord('bookings', value);
-export const getBooking = (id: string) => getRecord('bookings', id);
-export const updateBooking = (id: string, updates: Partial<RecordValue>) => updateRecord('bookings', id, updates);
+export const getBooking = (id: string | undefined) => getRecord('bookings', id);
+export const updateBooking = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('bookings', id, updates);
 export const listBookings = () => listRecords('bookings', 'createdAt');
 
 export async function findBookingByIdempotencyKey(idempotencyKey: string): Promise<RecordValue | undefined> {
@@ -282,98 +284,98 @@ export async function findBookingByIdempotencyKey(idempotencyKey: string): Promi
 }
 
 export const createProject = (value: RecordValue) => createRecord('projects', value);
-export const getProject = (id: string) => getRecord('projects', id);
-export const updateProject = (id: string, updates: Partial<RecordValue>) => updateRecord('projects', id, updates);
+export const getProject = (id: string | undefined) => getRecord('projects', id);
+export const updateProject = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('projects', id, updates);
 export const listProjects = () => listRecords('projects', 'updatedAt');
 
 export const createSurvey = (value: RecordValue) => createRecord('surveys', value);
-export const getSurvey = (id: string) => getRecord('surveys', id);
-export const updateSurvey = (id: string, updates: Partial<RecordValue>) => updateRecord('surveys', id, updates);
+export const getSurvey = (id: string | undefined) => getRecord('surveys', id);
+export const updateSurvey = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('surveys', id, updates);
 export const listSurveys = () => listRecords('surveys', 'createdAt');
 
 export const createReportVersion = (value: RecordValue) => createRecord('report_versions', value);
-export const getReportVersion = (id: string) => getRecord('report_versions', id);
-export const updateReportVersion = (id: string, updates: Partial<RecordValue>) => updateRecord('report_versions', id, updates);
+export const getReportVersion = (id: string | undefined) => getRecord('report_versions', id);
+export const updateReportVersion = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('report_versions', id, updates);
 export const listReportVersions = () => listRecords('report_versions', 'createdAt');
 
 export const createPublication = (value: RecordValue) => createRecord('publications', value);
-export const getPublication = (id: string) => getRecord('publications', id);
-export const updatePublication = (id: string, updates: Partial<RecordValue>) => updateRecord('publications', id, updates, false);
+export const getPublication = (id: string | undefined) => getRecord('publications', id);
+export const updatePublication = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('publications', id, updates, false);
 export const listPublications = () => listRecords('publications', 'publishedAt');
 
 export const createMedia = (value: RecordValue) => createRecord('media', value);
-export const getMedia = (id: string) => getRecord('media', id);
+export const getMedia = (id: string | undefined) => getRecord('media', id);
 export const listMedia = () => listRecords('media', 'uploadedAt');
 
 export const createDesignPackage = (value: RecordValue) => createRecord('design_packages', value);
-export const getDesignPackage = (id: string) => getRecord('design_packages', id);
+export const getDesignPackage = (id: string | undefined) => getRecord('design_packages', id);
 export const listDesignPackages = (projectId?: string) => listRecords('design_packages', 'createdAt', { projectId });
-export const updateDesignPackage = (id: string, updates: Partial<RecordValue>) => updateRecord('design_packages', id, updates);
+export const updateDesignPackage = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('design_packages', id, updates);
 
 export const createDesignTask = (value: RecordValue) => createRecord('design_tasks', value);
-export const getDesignTask = (id: string) => getRecord('design_tasks', id);
+export const getDesignTask = (id: string | undefined) => getRecord('design_tasks', id);
 export const listDesignTasks = (packageId?: string) => listRecords('design_tasks', 'createdAt', { relatedId: packageId });
-export const updateDesignTask = (id: string, updates: Partial<RecordValue>) => updateRecord('design_tasks', id, updates);
+export const updateDesignTask = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('design_tasks', id, updates);
 
 export const createAcceptanceRecord = (value: RecordValue) => createRecord('acceptance_records', value);
-export const getAcceptanceRecord = (id: string) => getRecord('acceptance_records', id);
+export const getAcceptanceRecord = (id: string | undefined) => getRecord('acceptance_records', id);
 export const listAcceptanceRecords = (projectId?: string) => listRecords('acceptance_records', 'createdAt', { projectId });
-export const updateAcceptanceRecord = (id: string, updates: Partial<RecordValue>) => updateRecord('acceptance_records', id, updates);
+export const updateAcceptanceRecord = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('acceptance_records', id, updates);
 
 export const createAcceptanceVerification = (value: RecordValue) => createRecord('acceptance_verifications', value);
 export const listAcceptanceVerifications = (acceptanceId: string) => listRecords('acceptance_verifications', 'verifiedAt', { relatedId: acceptanceId });
 
 export const createApprovalCase = (value: RecordValue) => createRecord('approval_cases', value);
-export const getApprovalCase = (id: string) => getRecord('approval_cases', id);
+export const getApprovalCase = (id: string | undefined) => getRecord('approval_cases', id);
 export const listApprovalCases = (projectId?: string) => listRecords('approval_cases', 'createdAt', { projectId });
-export const updateApprovalCase = (id: string, updates: Partial<RecordValue>) => updateRecord('approval_cases', id, updates);
+export const updateApprovalCase = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('approval_cases', id, updates);
 
 export const createContract = (value: RecordValue) => createRecord('contracts', value);
-export const getContract = (id: string) => getRecord('contracts', id);
+export const getContract = (id: string | undefined) => getRecord('contracts', id);
 export const listContracts = (projectId?: string) => listRecords('contracts', 'createdAt', { projectId });
-export const updateContract = (id: string, updates: Partial<RecordValue>) => updateRecord('contracts', id, updates);
+export const updateContract = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('contracts', id, updates);
 
 export const createMobilization = (value: RecordValue) => createRecord('mobilizations', value);
-export const getMobilization = (id: string) => getRecord('mobilizations', id);
+export const getMobilization = (id: string | undefined) => getRecord('mobilizations', id);
 export const listMobilizations = (projectId?: string) => listRecords('mobilizations', 'createdAt', { projectId });
-export const updateMobilization = (id: string, updates: Partial<RecordValue>) => updateRecord('mobilizations', id, updates);
+export const updateMobilization = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('mobilizations', id, updates);
 
 export const createSiteLog = (value: RecordValue) => createRecord('site_logs', value);
 export const listSiteLogs = (projectId?: string) => listRecords('site_logs', 'recordedAt', { projectId });
 
 export const createWorkHold = (value: RecordValue) => createRecord('work_holds', value);
-export const getWorkHold = (id: string) => getRecord('work_holds', id);
+export const getWorkHold = (id: string | undefined) => getRecord('work_holds', id);
 export const listWorkHolds = (projectId?: string, activeOnly = false) => listRecords('work_holds', 'createdAt', { projectId, activeOnly });
-export const updateWorkHold = (id: string, updates: Partial<RecordValue>) => updateRecord('work_holds', id, updates);
+export const updateWorkHold = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('work_holds', id, updates);
 
 export const createDelegation = (value: RecordValue) => createRecord('delegations', value);
 export const listDelegations = () => listRecords('delegations', 'createdAt');
-export const updateDelegation = (id: string, updates: Partial<RecordValue>) => updateRecord('delegations', id, updates);
+export const updateDelegation = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('delegations', id, updates);
 
 export const createSafetyHold = (value: RecordValue) => createRecord('safety_holds', value);
-export const getSafetyHold = (id: string) => getRecord('safety_holds', id);
+export const getSafetyHold = (id: string | undefined) => getRecord('safety_holds', id);
 export const listSafetyHolds = (projectId?: string, activeOnly = false) => listRecords('safety_holds', 'createdAt', { projectId, activeOnly });
-export const updateSafetyHold = (id: string, updates: Partial<RecordValue>) => updateRecord('safety_holds', id, updates);
+export const updateSafetyHold = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('safety_holds', id, updates);
 
 export const createSupplier = (value: RecordValue) => createRecord('suppliers', value);
-export const getSupplier = (id: string) => getRecord('suppliers', id);
+export const getSupplier = (id: string | undefined) => getRecord('suppliers', id);
 export const listSuppliers = () => listRecords('suppliers', 'createdAt');
-export const updateSupplier = (id: string, updates: Partial<RecordValue>) => updateRecord('suppliers', id, updates);
+export const updateSupplier = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('suppliers', id, updates);
 
 export const createInvoice = (value: RecordValue) => createRecord('invoices', value);
-export const getInvoice = (id: string) => getRecord('invoices', id);
+export const getInvoice = (id: string | undefined) => getRecord('invoices', id);
 export const listInvoices = (projectId?: string) => listRecords('invoices', 'createdAt', { projectId });
-export const updateInvoice = (id: string, updates: Partial<RecordValue>) => updateRecord('invoices', id, updates);
+export const updateInvoice = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('invoices', id, updates);
 
 export const createWorkerReport = (value: RecordValue) => createRecord('worker_reports', value);
-export const getWorkerReport = (id: string) => getRecord('worker_reports', id);
+export const getWorkerReport = (id: string | undefined) => getRecord('worker_reports', id);
 export const listWorkerReports = (projectId?: string) => listRecords('worker_reports', 'submittedAt', { projectId });
-export const updateWorkerReport = (id: string, updates: Partial<RecordValue>) => updateRecord('worker_reports', id, updates);
+export const updateWorkerReport = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('worker_reports', id, updates);
 
 export const createVerification = (value: RecordValue) => createRecord('verifications', value);
 export const listVerifications = (workerReportId: string) => listRecords('verifications', 'verifiedAt', { relatedId: workerReportId });
 
 export const createDirectoryEntry = (value: RecordValue) => createRecord('directory_entries', value);
-export const getDirectoryEntry = (id: string) => getRecord('directory_entries', id);
+export const getDirectoryEntry = (id: string | undefined) => getRecord('directory_entries', id);
 export const listDirectoryEntries = () => listRecords('directory_entries', 'createdAt');
-export const updateDirectoryEntry = (id: string, updates: Partial<RecordValue>) => updateRecord('directory_entries', id, updates);
+export const updateDirectoryEntry = (id: string | undefined, updates: Partial<RecordValue>) => updateRecord('directory_entries', id, updates);
