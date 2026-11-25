@@ -57,17 +57,29 @@ export function OnboardingModal() {
           <h3 className="text-xl font-semibold text-gray-900">{current.title}</h3>
           <p className="mt-3 text-sm leading-6 text-gray-600">{current.body}</p>
 
-          <div className="mt-6 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={() => setStep((value) => Math.max(0, value - 1))}
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
-              disabled={step === 0}
-              title="Go back to the previous onboarding step"
-              aria-label="Go back to the previous onboarding step"
-            >
-              Back
-            </button>
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            {step === 0 ? (
+              <button
+                type="button"
+                onClick={finish}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                title="Skip onboarding and open the app dashboard"
+                aria-label="Skip onboarding and open the app dashboard"
+              >
+                Skip guide
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setStep((value) => Math.max(0, value - 1))}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={step === 0}
+                title="Go back to the previous onboarding step"
+                aria-label="Go back to the previous onboarding step"
+              >
+                Back
+              </button>
+            )}
 
             <button
               type="button"
