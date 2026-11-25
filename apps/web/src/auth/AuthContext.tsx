@@ -109,10 +109,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     async function restore() {
-      // Demo mode: auto-login as Demo Admin (LEAD_ARCHITECT), no backend needed
+      // Demo mode: do NOT auto-login. Let the login page show so users can
+      // choose between demo login or entering real credentials.
       if (typeof window !== 'undefined' && isDemoMode()) {
-        window.localStorage.setItem('mbms.demo', 'true');
-        setUser(DEMO_USER);
         setLoading(false);
         return;
       }
