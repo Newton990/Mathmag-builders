@@ -21,14 +21,6 @@ annotations:
     node_remove_native_binaries: true
     node_server: node
     npm_version: '11'
-    services:
-    - engine: postgres
-      name: database
   anybuild.run/provider: node
   anybuild.run/version: 0.34.0
   wasmer.io/version: 7.5.0
-app_id: da_2l9IzteUMNy0
-capabilities:
-  database:
-    engine: postgres
-enableDatabase: true
