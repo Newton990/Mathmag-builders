@@ -556,7 +556,7 @@ async function handleBookings(
     const reference = `MB-${visitDate.getUTCFullYear()}-${String(counter).padStart(3, '0')}`;
     const projectId = crypto.randomUUID();
     const project = {
-      id: projectId, reference, contactId: contactId ?? '', siteCounty: site?.county ?? '', siteSubCounty: site?.subCounty ?? null, siteArea: site?.area ?? '', siteDirections: site?.directions ?? null, projectType: site?.projectType ?? null, siteDescription: site?.description ?? null, currentStage: 'VISIT_BOOKED', createdFromConversationId: conversationId ?? null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+      id: projectId, projectId, reference, contactId: contactId ?? '', siteCounty: site?.county ?? '', siteSubCounty: site?.subCounty ?? null, siteArea: site?.area ?? '', siteDirections: site?.directions ?? null, projectType: site?.projectType ?? null, siteDescription: site?.description ?? null, currentStage: 'VISIT_BOOKED', createdFromConversationId: conversationId ?? null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     };
     const bookingId = crypto.randomUUID();
     const booking: Booking = { id: bookingId, projectId, scheduledAt: visitDate.toISOString(), status: 'BOOKED', paymentStatus: 'PENDING', visitFeeKes: visitFeeKes ?? null, specialInstructions: specialInstructions ?? null, checkInAt: null, checkInGps: null, checkOutAt: null, checkOutGps: null, assignedOfficerId: assignedOfficerId ?? null, bookedById: auth.userId, idempotencyKey, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };

@@ -137,7 +137,7 @@ async function createRecord<T extends RecordValue>(table: TableName, value: T): 
   const db = getSql();
   const rows = await db`
     INSERT INTO ${db(table)} (id, data)
-    VALUES (${value.id}, ${JSON.stringify(value)}::jsonb)
+    VALUES (${value.id}, ${value as any}::jsonb)
     ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data
     RETURNING data
   `;
@@ -168,7 +168,7 @@ async function updateRecord<T extends RecordValue>(
   };
   const rows = await db`
     UPDATE ${db(table)}
-    SET data = data || ${JSON.stringify(patch)}::jsonb
+    SET data = data || ${patch as any}::jsonb
     WHERE id = ${id}
     RETURNING data
   `;
@@ -260,11 +260,11 @@ export async function createProjectAndBooking(
 
     await transaction`
       INSERT INTO projects (id, data)
-      VALUES (${project.id}, ${JSON.stringify(project)}::jsonb)
+      VALUES (${project.id}, ${project as any}::jsonb)
     `;
     await transaction`
       INSERT INTO bookings (id, data)
-      VALUES (${booking.id}, ${JSON.stringify(booking)}::jsonb)
+      VALUES (${booking.id}, ${booking as any}::jsonb)
     `;
     return true;
   });
