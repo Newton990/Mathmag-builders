@@ -1,6 +1,5 @@
 kind: wasmer.io/App.v0
-name: mbms
-app_id: da_R36ILtlUL5Xk
+name: node-base-newton-pg
 owner: newton
 package: .
 annotations:
