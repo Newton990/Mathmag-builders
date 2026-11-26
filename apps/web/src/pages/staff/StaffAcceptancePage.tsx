@@ -5,6 +5,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useResource } from '../../lib/useResource';
 import { api, errorMessage } from '../../lib/api';
 import type { ProjectDetail, Proposal, PaymentMilestone, ModuleRelease } from '../../lib/types';
+import { HelpTip } from '../../components/HelpTip';
 import {
   Badge,
   Card,
@@ -194,6 +195,7 @@ export function StaffAcceptancePage() {
             <Link to={`/staff/projects/${id}/approvals`} className={secondaryButtonClass}>
               Approvals →
             </Link>
+            <HelpTip sectionId="acceptance-create" label="Help with acceptance" />
           </>
         }
       />

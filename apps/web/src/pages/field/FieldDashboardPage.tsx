@@ -62,14 +62,14 @@ export function FieldDashboardPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-base font-semibold text-gray-900">
-                      {booking.project.reference} · {booking.project.contact.fullName}
+                      {booking.project?.reference ?? 'Visit'} · {booking.project?.contact?.fullName ?? ''}
                     </p>
                     <p className="mt-1 text-sm text-gray-600">
                       {formatDateTime(booking.scheduledAt)}
                       {isToday ? <span className="ml-2 text-xs text-amber-700">Today</span> : null}
                     </p>
                     <p className="text-sm text-gray-600">
-                      {booking.project.siteArea}, {booking.project.siteCounty}
+                      {booking.project?.siteArea ?? ''}, {booking.project?.siteCounty ?? ''}
                     </p>
                     <p className="mt-1 text-sm text-gray-500">
                       Payment {humanize(booking.paymentStatus)}

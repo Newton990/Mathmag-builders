@@ -235,11 +235,11 @@ export function StaffDashboardPage() {
                           to={`/staff/reports/${report.id}`}
                           className="truncate text-sm font-medium text-gray-900 hover:underline"
                         >
-                          {report.survey?.booking.project.reference ?? 'Report'} · v
+                          {report.survey?.booking?.project?.reference ?? 'Report'} · v
                           {report.versionNumber}
                         </Link>
                         <p className="truncate text-xs text-gray-500">
-                          {report.survey?.booking.project.contact.fullName ?? ''}
+                          {report.survey?.booking?.project?.contact?.fullName ?? ''}
                         </p>
                       </div>
                       <Badge tone={statusTone(report.approvalState)}>
@@ -267,7 +267,7 @@ export function StaffDashboardPage() {
                           to={`/staff/reports/${report.id}`}
                           className="truncate text-sm font-medium text-gray-900 hover:underline"
                         >
-                          {report.survey?.booking.project.reference ?? 'Report'} · v
+                          {report.survey?.booking?.project?.reference ?? 'Report'} · v
                           {report.versionNumber}
                         </Link>
                         <p className="truncate text-xs text-gray-500">

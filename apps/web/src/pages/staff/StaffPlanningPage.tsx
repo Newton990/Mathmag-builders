@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useResource } from '../../lib/useResource';
 import { api, errorMessage } from '../../lib/api';
+import { HelpTip } from '../../components/HelpTip';
 import type {
   ProjectDetail,
   DesignTask,
@@ -380,6 +381,7 @@ export function StaffPlanningPage() {
             <Link to={`/staff/projects/${projectId}`} className={linkClass}>
               ← Project
             </Link>
+            <HelpTip sectionId="bookings-create" label="Help with bookings" />
           </>
         }
       />

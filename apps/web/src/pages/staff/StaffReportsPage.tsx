@@ -12,6 +12,7 @@ import {
   PageHeader,
   statusTone,
 } from '../../components/ui';
+import { HelpTip } from '../../components/HelpTip';
 import { formatDateTime, humanize } from '../../lib/format';
 
 const states = ['', 'DRAFT', 'IN_REVIEW', 'APPROVED', 'RETURNED'];
@@ -27,7 +28,9 @@ export function StaffReportsPage() {
       <PageHeader
         title="Reports"
         subtitle="Review, approval and assignment are separate actions. Publishing requires explicit publication."
-        actions={null}
+        actions={
+          <HelpTip sectionId="reports-create" label="Help with reports" />
+        }
       />
 
       <ErrorBanner message={resource.error} />

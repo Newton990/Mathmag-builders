@@ -38,7 +38,7 @@ export function StaffProjectsPage() {
 
   const filtered = query.trim()
     ? items.filter((project) => {
-        const haystack = `${project.reference} ${project.contact.fullName} ${project.siteArea} ${project.siteCounty}`.toLowerCase();
+        const haystack = `${project?.reference ?? ''} ${project?.contact?.fullName ?? ''} ${project?.siteArea ?? ''} ${project?.siteCounty ?? ''}`.toLowerCase();
         return haystack.includes(query.trim().toLowerCase());
       })
     : items;

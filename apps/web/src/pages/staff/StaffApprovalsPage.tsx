@@ -20,6 +20,7 @@ import {
   secondaryButtonClass,
   statusTone,
 } from '../../components/ui';
+import { HelpTip } from '../../components/HelpTip';
 import { formatDateTime, humanize } from '../../lib/format';
 
 type CaseTab = 'permits' | 'prints';
@@ -180,6 +181,7 @@ export function StaffApprovalsPage() {
             <Badge tone={statusTone(data.currentStage)}>{humanize(data.currentStage)}</Badge>
             <Link to={`/staff/projects/${id}/acceptance`} className={secondaryButtonClass}>← Acceptance</Link>
             <Link to={`/staff/projects/${id}/contracts`} className={secondaryButtonClass}>Contracts →</Link>
+            <HelpTip sectionId="approval-case" label="Help with approvals" />
           </>
         }
       />

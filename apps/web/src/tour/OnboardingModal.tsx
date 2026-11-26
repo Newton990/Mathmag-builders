@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { completeGuide, hasCompletedGuide } from './onboarding';
+import { useNavigate } from 'react-router-dom';
 
 const STEPS = [
   {
@@ -40,8 +41,21 @@ export function OnboardingModal() {
     <div className="fixed inset-0 z-[21000] flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
         <div className="border-b border-gray-200 bg-brand-900 px-6 py-5 text-white">
-          <p className="text-xs uppercase tracking-[0.2em] text-blue-200">First-time setup</p>
-          <h2 className="mt-2 text-2xl font-bold">{roleLabel}</h2>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-blue-200">First-time setup</p>
+              <h2 className="mt-2 text-2xl font-bold">{roleLabel}</h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/staff/guide')}
+              className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
+              title="Open user guide"
+              aria-label="Open user guide"
+            >
+              ?
+            </button>
+          </div>
         </div>
 
         <div className="p-6">

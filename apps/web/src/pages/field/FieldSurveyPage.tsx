@@ -86,7 +86,7 @@ export function FieldSurveyPage() {
     <div className="p-4">
       <PageHeader
         title={`Survey v${survey.version}`}
-        subtitle={`Booking ${survey.bookingId} · ${survey.booking.project.reference}`}
+        subtitle={`Booking ${survey.bookingId} · ${survey.booking?.project?.reference ?? ''}`}
         actions={
           <>
             <Badge tone={statusTone(survey.status)}>{humanize(survey.status)}</Badge>

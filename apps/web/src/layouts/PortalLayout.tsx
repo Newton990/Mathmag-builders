@@ -46,6 +46,15 @@ export function PortalLayout() {
               </NavLink>
               <button
                 type="button"
+                onClick={() => navigate('/staff/governance')}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+                title="Open user guide"
+                aria-label="Open user guide"
+              >
+                ?
+              </button>
+              <button
+                type="button"
                 onClick={() => void handleLogout()}
                 className="text-gray-500 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-gray-700"
                 data-help="Sign out of your client portal securely."

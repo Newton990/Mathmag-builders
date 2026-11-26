@@ -57,6 +57,7 @@ describe('demo mode defaults', () => {
     expect(signup.accessToken).toBeTruthy();
     expect(signup.user?.email).toBe('jane@demo.co.ke');
     expect(signup.user?.role).toBe('CLIENT');
+    // Raw api.ts demo signup sets demo mode; AuthContext.signup() overrides to live mode for real users.
     expect(window.localStorage.getItem('mbms.demo')).toBe('true');
     expect(window.localStorage.getItem('mbms.demoRole')).toBe('CLIENT');
   });

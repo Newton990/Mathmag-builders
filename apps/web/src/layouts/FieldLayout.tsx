@@ -35,6 +35,15 @@ export function FieldLayout() {
             </div>
             <div className="flex items-center gap-2">
               <HintModeToggle />
+              <button
+                type="button"
+                onClick={() => navigate('/staff/governance')}
+                className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
+                title="Open user guide"
+                aria-label="Open user guide"
+              >
+                ?
+              </button>
               <span className="rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-medium tracking-wide text-blue-100" id="sync-status" data-tour="field-sync">
                 {navigator.onLine ? 'Online' : 'Offline'}
               </span>

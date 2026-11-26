@@ -6,6 +6,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { homeForRole, useAuth } from '../auth/AuthContext';
 import { BeginnerGuide, ErrorBanner, buttonClass, inputClass } from '../components/ui';
+import { HelpTip } from '../components/HelpTip';
 
 // ─── Portal definitions ───────────────────────────────────────────────────────
 // Each card maps to a group of roles that land on the same dashboard.
@@ -55,7 +56,7 @@ type PortalId = (typeof PORTALS)[number]['id'];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export function LoginPage() {
-  const { user, mfaToken, login, signup, verifyMfa, cancelMfa, error, loginAsDemo } = useAuth();
+  const { user, mfaToken, login, signup, verifyMfa, cancelMfa, error, demoGuideActive, openDemoGuide, closeDemoGuide } = useAuth();
   const navigate = useNavigate();
 
   const [selected, setSelected] = useState<PortalId | null>(null);
@@ -66,6 +67,7 @@ export function LoginPage() {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [showSignup, setShowSignup] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Redirect authenticated users to their home dashboard immediately.
@@ -99,14 +101,8 @@ export function LoginPage() {
     }
   }
 
-  async function handleDemo() {
-    if (!portal) return;
-    setSubmitting(true);
-    try {
-      await loginAsDemo(portal.demoRole);
-    } finally {
-      setSubmitting(false);
-    }
+  function handleDemo() {
+    openDemoGuide();
   }
 
   async function handleSignup(event: FormEvent<HTMLFormElement>) {
@@ -157,6 +153,7 @@ export function LoginPage() {
           <p className="mb-4 text-center text-sm font-medium text-brand-200 uppercase tracking-widest">
             Select your portal to continue
           </p>
+          <HelpTip sectionId="login" label="Help with login" />
           <div className="grid gap-4 sm:grid-cols-3">
             {PORTALS.map((p) => (
               <button
@@ -334,7 +331,7 @@ export function LoginPage() {
                   title={`Open a demo version of the ${portal.label} with example project data`}
                   aria-label={`Open demo for ${portal.label}`}
                 >
-                  {portal.demoLabel}
+                  View Interactive Guide
                 </button>
               </form>
             )}
@@ -343,6 +340,80 @@ export function LoginPage() {
           <p className="mt-4 text-center text-xs text-brand-300">
             Access is role-based and every critical action is audited.
           </p>
+        </div>
+      )}
+
+      {/* ── Demo Guide overlay ────────────────────────────────────────── */}
+      {showGuide && (
+        <div className="fixed inset-0 z-[21000] flex items-center justify-center bg-black/60 p-4 sm:p-6">
+          <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl p-6 sm:p-8">
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Interactive Guide</h2>
+                <p className="mt-1 text-sm text-gray-600">
+                  Explore how MBMS works before creating an account. Each workspace
+                  shows only the data relevant to your role.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowGuide(false)}
+                className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+                title="Close guide and return to login"
+                aria-label="Close guide"
+              >
+                Close guide
+              </button>
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <div className="p-4 rounded-lg border border-gray-200 bg-gray-50">
+                <h3 className="font-semibold text-gray-900">Staff Portal</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Lead architects, junior architects, client relations officers, and
+                  management manage projects from enquiry through to publication.
+                </p>
+              </div>
+              <div className="p-4 rounded-lg border border-gray-200 bg-gray-50">
+                <h3 className="font-semibold text-gray-900">Field Officer App</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Visiting officers conduct site visits, complete surveys, and capture
+                  site data — online or offline.
+                </p>
+              </div>
+              <div className="p-4 rounded-lg border border-gray-200 bg-gray-50">
+                <h3 className="font-semibold text-gray-900">Client Portal</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Clients view only published project updates shared explicitly with
+                  them by the project team.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowGuide(false);
+                  setShowSignup(true);
+                }}
+                className="flex-1 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+                title="Create a new account and go to the live dashboard"
+                aria-label="Create account"
+              >
+                Create Account
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowGuide(false)}
+                className="flex-1 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                title="Sign in with your existing credentials"
+                aria-label="Sign in"
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

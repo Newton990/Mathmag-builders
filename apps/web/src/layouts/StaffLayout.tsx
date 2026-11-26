@@ -16,6 +16,7 @@ const navItems = [
   { to: '/staff/projects', label: 'Projects', end: false, tourId: 'nav-projects', help: 'All confirmed projects. Click a project to access planning, contracts, construction, and governance.' },
   { to: '/staff/reports', label: 'Reports', end: false,  tourId: 'nav-reports',  help: 'Site visit reports submitted by field officers. Review, approve, and publish them to clients.' },
   { to: '/staff/governance', label: 'Governance', end: false, tourId: 'nav-governance', help: 'Risk registers, compliance milestones, audit logs, and project closure records.' },
+  { to: '/staff/guide', label: 'Guide', end: false,    tourId: 'nav-guide',      help: 'User guide and help documentation for MBMS.' },
 ];
 
 export function StaffLayout() {
@@ -44,6 +45,15 @@ export function StaffLayout() {
               <p className="mt-1 text-xs text-blue-200">Mathmag Builders</p>
             </div>
             <HintModeToggle />
+            <button
+              type="button"
+              onClick={() => navigate('/staff/guide')}
+              className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20"
+              title="Open user guide"
+              aria-label="Open user guide"
+            >
+              ?
+            </button>
           </div>
 
           <nav className="flex-1 space-y-1 p-4">

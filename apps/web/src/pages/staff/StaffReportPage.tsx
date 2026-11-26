@@ -63,8 +63,8 @@ export function StaffReportPage() {
     );
   }
 
-  const projectId = report.survey.booking.project.id;
-  const projectRef = report.survey.booking.project.reference;
+  const projectId = report.survey?.booking?.project?.id;
+  const projectRef = report.survey?.booking?.project?.reference;
   const activePublication = report.publications.find((publication) => publication.revokedAt === null);
 
   async function submitReview(decision: 'APPROVED' | 'RETURNED') {

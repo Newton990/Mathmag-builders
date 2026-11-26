@@ -76,8 +76,8 @@ export function FieldVisitPage() {
   return (
     <div className="p-4">
       <PageHeader
-        title={booking.project.reference}
-        subtitle={`${booking.project.contact.fullName} · ${booking.project.siteArea}, ${booking.project.siteCounty}`}
+        title={booking.project?.reference ?? 'Visit'}
+        subtitle={`${booking.project?.contact?.fullName ?? ''} · ${booking.project?.siteArea ?? ''}, ${booking.project?.siteCounty ?? ''}`}
         actions={<Badge tone={statusTone(booking.status)}>{humanize(booking.status)}</Badge>}
       />
 
@@ -136,9 +136,9 @@ export function FieldVisitPage() {
 
         <Card>
           <h3 className="mb-2 text-sm font-semibold text-gray-900">Client</h3>
-          <p className="text-sm text-gray-900">{booking.project.contact.fullName}</p>
-          <p className="text-sm text-gray-600">{booking.project.contact.primaryPhone}</p>
-          {booking.project.contact.email ? <p className="text-sm text-gray-600">{booking.project.contact.email}</p> : null}
+          <p className="text-sm text-gray-900">{booking.project?.contact?.fullName ?? ''}</p>
+          <p className="text-sm text-gray-600">{booking.project?.contact?.primaryPhone ?? ''}</p>
+          {booking.project?.contact?.email ? <p className="text-sm text-gray-600">{booking.project.contact.email}</p> : null}
         </Card>
       </div>
     </div>

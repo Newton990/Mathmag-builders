@@ -22,8 +22,10 @@ interface AuthContextValue {
   verifyMfa: (code: string) => Promise<void>;
   cancelMfa: () => void;
   logout: () => Promise<void>;
-  /** Demo-only: instantly log in as a canned user for the given role. */
-  loginAsDemo: (role: UserRole) => Promise<void>;
+  /** Demo guide: opens a walkthrough overlay without touching auth state or tokens. */
+  demoGuideActive: boolean;
+  openDemoGuide: () => void;
+  closeDemoGuide: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -34,71 +36,12 @@ interface LoginResponse {
   accessToken?: string;
 }
 
-const DEMO_USER: CurrentUser = {
-  id: 'demo-admin',
-  name: 'Demo Admin',
-  email: 'demo@mathmag.co.ke',
-  role: 'LEAD_ARCHITECT',
-  isActive: true,
-  mfaEnabled: false,
-  lastLoginAt: new Date().toISOString(),
-};
-
-/** Canned demo users — one per role group, used by the portal login cards. */
-const DEMO_USERS: Partial<Record<UserRole, CurrentUser>> = {
-  LEAD_ARCHITECT: DEMO_USER,
-  JUNIOR_ARCHITECT: {
-    id: 'demo-junior',
-    name: 'Demo Junior Architect',
-    email: 'junior@mathmag.co.ke',
-    role: 'JUNIOR_ARCHITECT',
-    isActive: true,
-    mfaEnabled: false,
-    lastLoginAt: new Date().toISOString(),
-  },
-  CLIENT_RELATIONS_OFFICER: {
-    id: 'demo-cro',
-    name: 'Demo CRO',
-    email: 'cro@mathmag.co.ke',
-    role: 'CLIENT_RELATIONS_OFFICER',
-    isActive: true,
-    mfaEnabled: false,
-    lastLoginAt: new Date().toISOString(),
-  },
-  ADMIN_MANAGEMENT: {
-    id: 'demo-mgmt',
-    name: 'Demo Management',
-    email: 'mgmt@mathmag.co.ke',
-    role: 'ADMIN_MANAGEMENT',
-    isActive: true,
-    mfaEnabled: false,
-    lastLoginAt: new Date().toISOString(),
-  },
-  VISITING_OFFICER: {
-    id: 'demo-field',
-    name: 'Demo Field Officer',
-    email: 'field@mathmag.co.ke',
-    role: 'VISITING_OFFICER',
-    isActive: true,
-    mfaEnabled: false,
-    lastLoginAt: new Date().toISOString(),
-  },
-  CLIENT: {
-    id: 'demo-client',
-    name: 'Demo Client',
-    email: 'client@demo.co.ke',
-    role: 'CLIENT',
-    isActive: true,
-    mfaEnabled: false,
-    lastLoginAt: new Date().toISOString(),
-  },
-};
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [mfaToken, setMfaToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [demoGuideActive, setDemoGuideActive] = useState(false);
 
   const loadUser = useCallback(async () => {
     const me = await api.get<CurrentUser>('/auth/me');
@@ -145,6 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (!response.accessToken) throw new Error('The server did not return an access token');
       setAccessToken(response.accessToken);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('mbms.demo', 'false');
+      }
       await loadUser();
       return 'DONE' as const;
     } catch (err) {
@@ -174,8 +120,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mfaEnabled: false,
       };
       if (typeof window !== 'undefined') {
-        window.localStorage.setItem('mbms.demo', 'true');
-        window.localStorage.setItem('mbms.demoRole', role);
+        // After a real signup, stay in live mode so all API calls hit the
+        // real backend. Do NOT activate demo mode here.
+        window.localStorage.setItem('mbms.demo', 'false');
       }
       setUser(nextUser);
       return nextUser;
@@ -196,6 +143,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         setAccessToken(response.accessToken);
         setMfaToken(null);
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('mbms.demo', 'false');
+        }
         await loadUser();
       } catch (err) {
         setError(errorMessage(err));
@@ -210,14 +160,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
   }, []);
 
-  const loginAsDemo = useCallback(async (role: UserRole) => {
-    // Activate demo mode so the whole app stays in demo state.
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('mbms.demo', 'true');
-      window.localStorage.setItem('mbms.demoRole', role);
-    }
-    const demoUser = DEMO_USERS[role] ?? DEMO_USER;
-    setUser({ ...demoUser, role });
+  const openDemoGuide = useCallback(() => {
+    setDemoGuideActive(true);
+  }, []);
+
+  const closeDemoGuide = useCallback(() => {
+    setDemoGuideActive(false);
   }, []);
 
   const logout = useCallback(async () => {
@@ -232,8 +180,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, loading, mfaToken, error, login, signup, verifyMfa, cancelMfa, logout, loginAsDemo }),
-    [user, loading, mfaToken, error, login, signup, verifyMfa, cancelMfa, logout, loginAsDemo],
+    () => ({ user, loading, mfaToken, error, login, signup, verifyMfa, cancelMfa, logout, demoGuideActive, openDemoGuide, closeDemoGuide }),
+    [user, loading, mfaToken, error, login, signup, verifyMfa, cancelMfa, logout, demoGuideActive, openDemoGuide, closeDemoGuide],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
