@@ -504,8 +504,13 @@ async function send(path: string, options: RequestOptions): Promise<Response> {
   return fetch(`${API_BASE}${path}`, { method, credentials: 'include', headers });
 }
 
+// Auth endpoints always hit the real backend — demo mode never intercepts them.
+// This ensures signup/login/MFA with real credentials reach the server.
+const AUTH_ENDPOINTS = ['/auth/login', '/auth/signup', '/auth/mfa/verify', '/auth/me', '/auth/logout', '/auth/refresh'];
+const isAuthEndpoint = (p: string) => AUTH_ENDPOINTS.some((ep) => p.split('?')[0].replace(/\/+$/, '') === ep);
+
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  if (isDemoMode()) {
+  if (!isAuthEndpoint(path) && isDemoMode()) {
     const basePath = (path.split('?')[0] ?? path).replace(/\/+$/, '');
 
     if (basePath === '/auth/login') {
