@@ -307,7 +307,7 @@ export function LoginPage() {
                       <input id="signup-password" type="password" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} className={inputClass} placeholder="At least 8 characters" minLength={8} required />
                     </div>
                     <button type="submit" disabled={submitting} className={`${buttonClass} w-full`}>
-                      {submitting ? 'Creating account…' : 'Create account and view demo dashboard'}
+                      {submitting ? 'Creating account…' : 'Create account and open live dashboard'}
                     </button>
                   </form>
                 )}
